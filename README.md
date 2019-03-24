@@ -26,7 +26,7 @@ The following additional modules are required, and should be installed with pip.
 *   PyQt5
 *   zmq
 
-The following command should intall these.
+The following command should install these.
 
     pip install pyvisa PyQt5 zmq
 

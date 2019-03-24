@@ -86,7 +86,7 @@ Doing this can cause the file to become locked and prevent Cyckei from editing i
 ## Editing Configuration
 Editing the configuration file is crucial for the client to function properly. Any custom configuration files should be written in JSON and should mirror the default config.json in the program's root directory. Each section is described in more detail below:
 
--   **channels** - A list of channels curently connected to the computer.
+-   **channels** - A list of channels currently connected to the computer.
     -   *channel (string)* - Channel number for identification within application
     -   *gpib_address (int)* - Hardware address of GPIB interface. Can be found with a NI VISA application or the following python code:
 
