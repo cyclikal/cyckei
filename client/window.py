@@ -27,7 +27,7 @@ class MainWindow(QMainWindow):
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(
             "Cyckei"
         )
-        self.setWindowIcon(QIcon(r"res\icon.png"))
+        self.setWindowIcon(QIcon(r"resources\icon.png"))
         self.resize(1000, 562)
 
         # Create menu and status bar
@@ -43,7 +43,7 @@ class MainWindow(QMainWindow):
         self.tab_widget.addTab(ScriptEditor(self.channels, server), "Scripts")
         self.tab_widget.addTab(LogViewer(config), "Logs")
 
-        self.setStyleSheet(open("res/style.css", "r").read())
+        self.setStyleSheet(open("resources/style.css", "r").read())
 
     def create_menu(self, server):
         """Setup menu bar"""
@@ -126,7 +126,7 @@ class MainWindow(QMainWindow):
                            channel_widget.attributes["path"]]
                 batch.append(channel)
 
-            with open("res/batch.txt", "a") as file:
+            with open("resources/batch.txt", "a") as file:
                 file.truncate(0)
                 for channel in batch:
                     for value in channel:
@@ -143,7 +143,7 @@ class MainWindow(QMainWindow):
             QMessageBox.Yes
         )
         if reply == QMessageBox.Yes:
-            with open("res/batch.txt", "r") as file:
+            with open("resources/batch.txt", "r") as file:
                 for index, line in enumerate(file):
                     channel = self.channels[index]
                     values = line.split(",")
