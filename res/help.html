@@ -1,0 +1,264 @@
+<h1>Cyckei Client Help</h1>
+<h4>A battery cycler written in Python 3</h4>
+<hr>
+<h2>Controlling the Server</h2>
+<p>Cyckei uses a server background process to interface directly with Keithley instruments.
+This allows cycles to continue running even if the client is closed abruptly or becomes slow.
+The server is started automatically with the client, or can be started directly with the following command:</p>
+<pre><code>pythonw cyckei.py -s
+</code></pre>
+<p>The server can be controlled from the "Server" menu of the client application.</p>
+<h2>Starting a cycle</h2>
+<p>Various attributes of the cycle must be set in order to start a cycle. All of these have default values to prevent errors, however it is a good idea to manually specify them. The following should be set under the desired channel:</p>
+<table>
+<thead><tr>
+<th style="text-align:left">Option</th>
+<th style="text-align:center">Type</th>
+<th style="text-align:left">Description</th>
+<th style="text-align:center">Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Script</td>
+<td style="text-align:center">dropdown</td>
+<td style="text-align:left">Script with desired protocol. Automatically loaded from the 'cycleScripts' folder in the program's root directory.</td>
+<td style="text-align:center">First scanned file</td>
+</tr>
+<tr>
+<td style="text-align:left">Cell ID</td>
+<td style="text-align:center">text</td>
+<td style="text-align:left">Identification for cell. Recorded to output file.</td>
+<td style="text-align:center">0</td>
+</tr>
+<tr>
+<td style="text-align:left">Log file</td>
+<td style="text-align:center">text</td>
+<td style="text-align:left">Path to output file. Placed in the specified logs folder.</td>
+<td style="text-align:center">"defaultLog.txt"</td>
+</tr>
+<tr>
+<td style="text-align:left">Mass</td>
+<td style="text-align:center">text</td>
+<td style="text-align:left">Mass of cell.</td>
+<td style="text-align:center">1</td>
+</tr>
+<tr>
+<td style="text-align:left">Comment</td>
+<td style="text-align:center">text</td>
+<td style="text-align:left">Requestor's comment for cycle. Recorded to output file.</td>
+<td style="text-align:center">"No Comment"</td>
+</tr>
+<tr>
+<td style="text-align:left">Package type</td>
+<td style="text-align:center">dropdown</td>
+<td style="text-align:left">Type of cell package. Recorded to output file.</td>
+<td style="text-align:center">"Pouch"</td>
+</tr>
+<tr>
+<td style="text-align:left">Cell type</td>
+<td style="text-align:center">dropdown</td>
+<td style="text-align:left">Type of cell. Recorded to output file.</td>
+<td style="text-align:center">"Full"</td>
+</tr>
+<tr>
+<td style="text-align:left">Requestor</td>
+<td style="text-align:center">dropdown</td>
+<td style="text-align:left">Name of person starting cycle.</td>
+<td style="text-align:center">"Unspecified"</td>
+</tr>
+</tbody>
+</table>
+<p>The available buttons can be used to Start, Stop, Pause, or Resume the protocol.
+Note that the program will overwrite any existing output files if an identical log file is specified.
+The <em>Fill</em> button allows you to automatically create a log file name based on the entered cell ID. This takes the format of [id]A.pyb where the "A" designates which log file within a series.</p>
+<h2>Creating Scripts</h2>
+<p>Scripts can be created in the scripts tab of the client.
+This editor will automatically load the default included scripts, but can be used to open and edit additional files.</p>
+<p>Scripts are written in regular python code, and can contain loops and other statements to control cycle flow. There are seven built in protocols to control the cycler. Most of these protocols take some or all of the following parameters:</p>
+<table>
+<thead><tr>
+<th style="text-align:left">Parameter</th>
+<th style="text-align:left">Description</th>
+<th style="text-align:left">Format</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Value</td>
+<td style="text-align:left">Set a certain voltage or current to run at.</td>
+<td style="text-align:left">float</td>
+</tr>
+<tr>
+<td style="text-align:left">Reports</td>
+<td style="text-align:left">Set intervals of time and/or change in voltage or current to record at.</td>
+<td style="text-align:left">reports=(("current", <em>float</em>), ("time", "<em>int</em>:<em>int</em>:<em>int</em>"))</td>
+</tr>
+<tr>
+<td style="text-align:left">Ends</td>
+<td style="text-align:left">Set threshold of time and/or change in voltage or current to end current protocol.</td>
+<td style="text-align:left">ends=(("current", "&lt;", <em>float</em>), ("time", "&gt;", "<em>int</em>:<em>int</em>:<em>int</em>"))</td>
+</tr>
+</tbody>
+</table>
+<p>The following protocols are available:</p>
+<table>
+<thead><tr>
+<th style="text-align:left">Protocol</th>
+<th style="text-align:left">Description</th>
+<th style="text-align:center">Parameters</th>
+<th style="text-align:left">Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">AdvanceCycle</td>
+<td style="text-align:left">Start recording under next cycle in output file.</td>
+<td style="text-align:center">None</td>
+<td style="text-align:left">AdvanceCycle()</td>
+</tr>
+<tr>
+<td style="text-align:left">CCCharge</td>
+<td style="text-align:left">Charge at a set current.</td>
+<td style="text-align:center">Value, Reports, Ends</td>
+<td style="text-align:left">CCCharge(0.1, reports=(("voltage", 0.01), ("time", ":5:")), ends=(("voltage", "&gt;", 4.2), ("time", "&gt;", "4::")))</td>
+</tr>
+<tr>
+<td style="text-align:left">CCDischarge</td>
+<td style="text-align:left">Discharge at a set current.</td>
+<td style="text-align:center">Value, Reports, Ends</td>
+<td style="text-align:left">CCDischarge(0.1, reports=(("voltage", 0.01), ("time", ":5:")), ends=(("voltage", "&lt;", 3.0), ("time", "&gt;", "4::")))</td>
+</tr>
+<tr>
+<td style="text-align:left">CVCharge</td>
+<td style="text-align:left">Charge at a set voltage.</td>
+<td style="text-align:center">Value, Reports, Ends</td>
+<td style="text-align:left">CVCharge(4.2, reports=(("current", 0.01), ("time", ":5:")), ends=(("current", "&lt;", 0.005), ("time", "&gt;", "24::")))</td>
+</tr>
+<tr>
+<td style="text-align:left">CVDischarge</td>
+<td style="text-align:left">Discharge at a set voltage.</td>
+<td style="text-align:center">Value, Reports, Ends</td>
+<td style="text-align:left">CVDischarge(4.2, reports=(("current", 0.01), ("time", ":5:")), ends=(("current", "&lt;", 0.005), ("time", "&gt;", "24::")))</td>
+</tr>
+<tr>
+<td style="text-align:left">Rest</td>
+<td style="text-align:left">Record at a set interval.</td>
+<td style="text-align:center">Reports, Ends</td>
+<td style="text-align:left">Rest(reports=(("time", "::1"),), ends=(("time", "&gt;", "::15"),))</td>
+</tr>
+<tr>
+<td style="text-align:left">Sleep</td>
+<td style="text-align:left">Record at a set interval and turn channel off in between.</td>
+<td style="text-align:center">Reports, Ends</td>
+<td style="text-align:left">Sleep(reports=(("time", ":1:0"),), ends=(("time", "&gt;", "::15"),))</td>
+</tr>
+</tbody>
+</table>
+<p>An example script is shown below.
+There is also a simple script saved in the default_scripts folder which is available whenever the client is started.</p>
+<pre><code>for i in range(3):
+  AdvanceCycle()
+  CCCharge(0.1, reports=(("voltage", 0.01), ("time", ":5:")), ends=(("voltage", "&gt;", 4.2), ("time", "&gt;", "4::")))
+  CCDischarge(0.1, reports=(("voltage", 0.01), ("time", ":5:")), ends=(("voltage", "&lt;", 3.0), ("time", "&gt;", "4::")))
+  Rest(reports=(("time", "::1"),), ends=(("time", "&gt;", "::15"),))
+</code></pre>
+<p>Scripts are automatically checked when they are sent to the server.
+They can also be manually checked by clicking the "Check" button in the scripts tab.
+Checking a script ensures that (1) the script only contains legal arguments and (2) can be loaded by the server without immediate errors.
+Checking your scripts is a good practice to mitigate possible formatting issues and errors.
+However, care should still be taken while writing scripts as they are executed as any other python code within the application.</p>
+<h2>Working With Batches</h2>
+<p>The "Batch" menu allows large tests with multiple cells to be run more easily.
+Saving a batch writes the IDs and log files of each channel to the "batch" file which can be loaded later.
+The "Fill All" and "Increment" options allow you to automatically create log files based on each ID, and increment the last letter to indicate which test is being run on the same cell.</p>
+<h2>Viewing Logs</h2>
+<p>Logs are created to document measurements from each cell throughout it's cycle.
+They also have details about the cell and the cycle that was run on it.
+Log files are saved to the "record_dir" folder specified in the configuration under the specified name.
+To view a log from the client application, just open the logging tab.
+All logs are automatically loaded on startup, and new or updated ones can be viewed after clicking reload.
+Although you can copy the contents of a log file to an excel spreadsheet, log files <em>should not</em> be opened with excel or another application directly.
+Doing this can cause the file to become locked and prevent Cyckei from editing it.</p>
+<h2>Editing Configuration</h2>
+<p>Editing the configuration file is crucial for the client to function properly. Any custom configuration files should be written in JSON and should mirror the default config.json in the program's root directory. Each section is described in more detail below:</p>
+<ul>
+<li><p><strong>channels</strong> - A list of channels curently connected to the computer.</p>
+<ul>
+<li><em>channel (string)</em> - Channel number for identification within application</li>
+<li><p><em>gpib_address (int)</em> - Hardware address of GPIB interface. Can be found with a NI VISA application or the following python code:</p>
+<pre><code>import visa
+resource_manager = visa.ResourceManager()
+print(resource_manager.list_resources())
+</code></pre>
+</li>
+<li><em>keithley_model (string)</em> - Model number of keithley being used.</li>
+<li><em>keithley_channel (string)</em> - Particular channel on said keithley (a or b).</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><strong>zmq</strong> - A dictionary of properties that control how the client and server communicate.<ul>
+<li><em>port</em> - Port to communicate over.</li>
+<li><em>client</em><ul>
+<li><em>address (string)</em> - Address for the client to connect to. Usually localhost.</li>
+<li><em>retries (int)</em></li>
+<li><em>timeout (int)</em></li>
+</ul>
+</li>
+<li><em>server</em><ul>
+<li><em>address (string)</em> - Address for the server to listen on. Usually all.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p><strong>record_dir</strong> - The location to record cycle and program logs. Generally "logs" is acceptable.</p>
+</li>
+<li><p><strong>verbosity</strong> - The amount of information to be saved to log files. Generally should be set to 20, but the following levels can also be used. Lower values print more information for debugging purposes.</p>
+<ul>
+<li><em>Critical</em> - 50</li>
+<li><em>Error</em> - 40</li>
+<li><em>Warning</em> - 30</li>
+<li><em>Info</em> - 20</li>
+<li><em>Debug</em> - 10</li>
+<li><em>Notset</em> - 0</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><strong>default_scripts</strong> - A directory to load "default" or "initial" scripts from.</li>
+</ul>
+<p>Here is an example configuration file for a simple setup running on port 5556 with one Keithley with address 5:</p>
+<pre><code>{
+    "channels": [
+        {
+            "channel": "1",
+            "gpib_address": 5,
+            "keithley_model": "2602A",
+            "keithley_channel": "a"
+        },
+        {
+            "channel": "2",
+            "gpib_address": 5,
+            "keithley_model": "2602A",
+            "keithley_channel": "b"
+        }
+    ],
+    "zmq":{
+        "port": 5556,
+        "client":{
+          "address":"tcp://localhost",
+          "retries": 3,
+          "timeout": 2500
+        },
+        "server":{
+          "address":"tcp://*"
+        }
+    },
+    "record_dir": "logs",
+    "verbosity": 20,
+    "default_scripts": "default_scripts"
+}
+</code></pre>

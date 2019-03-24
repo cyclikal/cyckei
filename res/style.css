@@ -1,0 +1,26 @@
+QMainWindow {
+  background-color:#a3a3a3
+}
+
+.QWidget {
+  background-color:#c5d0db
+}
+
+LogViewer {
+  background-color:#c5dbda
+}
+
+ScriptEditor {
+  background-color:#c5c5db
+}
+
+ChannelWidget#even {
+  background-color:#c5d0db
+}
+ChannelWidget#odd {
+  background-color:#adbfd1
+}
+
+QLabel#id_label {
+  font-weight:bold
+}
