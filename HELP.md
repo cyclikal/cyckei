@@ -86,39 +86,39 @@ Doing this can cause the file to become locked and prevent Cyckei from editing i
 ## Editing Configuration
 Editing the configuration file is crucial for the client to function properly. Any custom configuration files should be written in JSON and should mirror the default config.json in the program's root directory. Each section is described in more detail below:
 
-- **channels** - A list of channels curently connected to the computer.
-  - *channel (string)* - Channel number for identification within application
-  - *gpib_address (int)* - Hardware address of GPIB interface. Can be found with a NI VISA application or the following python code:
+-   **channels** - A list of channels curently connected to the computer.
+    -   *channel (string)* - Channel number for identification within application
+    -   *gpib_address (int)* - Hardware address of GPIB interface. Can be found with a NI VISA application or the following python code:
 
         import visa
         resource_manager = visa.ResourceManager()
         print(resource_manager.list_resources())
-  - *keithley_model (string)* - Model number of keithley being used.
-  - *keithley_channel (string)* - Particular channel on said keithley (a or b).
+    -   *keithley_model (string)* - Model number of keithley being used.
+    -   *keithley_channel (string)* - Particular channel on said keithley (a or b).
 
 
-- **zmq** - A dictionary of properties that control how the client and server communicate.
-  - *port* - Port to communicate over.
-  - *client*
-    - *address (string)* - Address for the client to connect to. Usually localhost.
-    - *retries (int)*
-    - *timeout (int)*
-  - *server*
-    - *address (string)* - Address for the server to listen on. Usually all.
+-   **zmq** - A dictionary of properties that control how the client and server communicate.
+    -   *port* - Port to communicate over.
+    -   *client*
+        -   *address (string)* - Address for the client to connect to. Usually localhost.
+        -   *retries (int)*
+        -   *timeout (int)*
+    -   *server*
+        -   *address (string)* - Address for the server to listen on. Usually all.
 
 
-- **record_dir** - The location to record cycle and program logs. Generally "logs" is acceptable.
+-   **record_dir** - The location to record cycle and program logs. Generally "logs" is acceptable.
 
-- **verbosity** - The amount of information to be saved to log files. Generally should be set to 20, but the following levels can also be used. Lower values print more information for debugging purposes.
-  - *Critical* - 50
-  - *Error* - 40
-  - *Warning* - 30
-  - *Info* - 20
-  - *Debug* - 10
-  - *Notset* - 0
+-   **verbosity** - The amount of information to be saved to log files. Generally should be set to 20, but the following levels can also be used. Lower values print more information for debugging purposes.
+    -   *Critical* - 50
+    -   *Error* - 40
+    -   *Warning* - 30
+    -   *Info* - 20
+    -   *Debug* - 10
+    -   *Notset* - 0
 
 
-- **default_scripts** - A directory to load "default" or "initial" scripts from.
+-   **default_scripts** - A directory to load "default" or "initial" scripts from.
 
 Here is an example configuration file for a simple setup running on port 5556 with one Keithley with address 5:
 

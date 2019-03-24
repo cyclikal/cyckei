@@ -1,4 +1,4 @@
-# Cyckei Client Information
+# Cyckei Readme
 #### A battery cycler written in Python 3
 ---
 
@@ -22,11 +22,11 @@ For more details on using the application, refer to the HELP.md file or go to Me
 Cyckei is currently developed and tested on the latest version of Vanilla Python 3, but should work on most installations including Anaconda. We use Windows 10 for both development and deployment.
 
 *The following additional modules are required, and should be installed with pip.*
-* pyvisa
-* PyQt5
-* zmq
+*   pyvisa
+*   PyQt5
+*   zmq
 
 
     pip install pyvisa PyQt5 zmq
 
-  In addition, there may be additional drivers necessary depending on how you interface with the Keithley SourceMeter. We use the National Instruments GPIB-USB-HS adaptors which require NI's 488.2 driver and NI-VISA. There is a python based visa library included with py-visa, but this has not been tested with Cyckei.
+In addition, there may be additional drivers necessary depending on how you interface with the Keithley SourceMeter. We use the National Instruments GPIB-USB-HS adaptors which require NI's 488.2 driver and NI-VISA. There is a python based visa library included with py-visa, but this has not been tested with Cyckei.
