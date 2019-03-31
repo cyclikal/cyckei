@@ -24,7 +24,5 @@
           "address":"tcp://*"
         }
     },
-    "record_dir": "logs",
-    "verbosity": 20,
-    "default_scripts": "default_scripts"
+    "verbosity": 20
 }
