@@ -7,7 +7,7 @@ Cyckei uses a server background process to interface directly with Keithley inst
 This allows cycles to continue running even if the client is closed abruptly or becomes slow.
 The server is started automatically with the client, or can be started directly with the following command:
 
-    pythonw cyckei.py -s
+    python cyckei.pyw -s
 
 The server can be controlled from the "Server" menu of the client application.
 
@@ -55,7 +55,7 @@ The following protocols are available:
 |Sleep       |Record at a set interval and turn channel off in between.|Reports, Ends       |Sleep(reports=(("time", ":1:0"),), ends=(("time", ">", "::15"),))                                                    |
 
 An example script is shown below.
-There is also a simple script saved in the default_scripts folder which is available whenever the client is started.
+There is also a simple script saved in the scripts folder which is available whenever the client is started.
 
     for i in range(3):
       AdvanceCycle()
@@ -118,7 +118,6 @@ Editing the configuration file is crucial for the client to function properly. A
     -   *Notset* - 0
 
 
--   **default_scripts** - A directory to load "default" or "initial" scripts from.
 
 Here is an example configuration file for a simple setup running on port 5556 with one Keithley with address 5:
 
@@ -150,5 +149,4 @@ Here is an example configuration file for a simple setup running on port 5556 wi
         },
         "record_dir": "logs",
         "verbosity": 20,
-        "default_scripts": "default_scripts"
     }

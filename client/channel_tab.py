@@ -89,7 +89,7 @@ class ChannelWidget(QWidget):
         self.attributes["comment"] = "No Comment"
         self.attributes["package"] = "Pouch"
         self.attributes["type"] = "Full"
-        self.attributes["path"] = "defaultLogA.pyb"
+        self.attributes["path"] = "default.pyb"
         self.attributes["mass"] = 1
         self.attributes["requestor"] = "Unspecified"
         self.attributes["protocol_name"] = None
@@ -342,7 +342,7 @@ class ChannelWidget(QWidget):
         package["kwargs"]["channel"] = self.attributes["channel"]
         package["kwargs"]["meta"]["path"] = (
             self.attributes["record_folder"]
-            + "/.measurementsOf{}.temp".format(self.attributes["channel"])
+            + "/{}.temp".format(self.attributes["channel"])
         )
         package["kwargs"]["protocol"] = """Rest()"""
         self.server.send(package)

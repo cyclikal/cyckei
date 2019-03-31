@@ -14,7 +14,7 @@ Before the first launch, be sure to create the config.json file as described in 
 To start the application, double-click the cyckei.bat file or run the following command from the Cyckei installation folder.
 The "-s" flag can be used to start the server independently, but this is not necessary as it will be called by the client automatically.
 
-    pythonw cyckei.py
+    python cyckei.pyw
 
 For more details on using the application, refer to the HELP.md file or go to Menu > Help from within the client.
 

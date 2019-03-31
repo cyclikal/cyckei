@@ -81,7 +81,7 @@ class Server(object):
         logging.info(ping_result)
         if ping_result == "No Connection":
             logging.info("Could not connect, starting server")
-            Popen(["pythonw", "cyckei.py", "-s"],
+            Popen(["pythonw", "cyckei.pyw", "-s"],
                   creationflags=CREATE_NEW_CONSOLE)
             self.start_socket()
             QTimer.singleShot(5000, self.start_socket)
