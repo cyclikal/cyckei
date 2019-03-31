@@ -11,9 +11,27 @@ from client.script_tab import ScriptEditor
 from client.log_tab import LogViewer
 
 
-def help_page():
-    """Converts markdown helpfile to html and loads in browser"""
-    # # TODO: better help page
+def help():
+    """Direct to help"""
+    msg = QMessageBox()
+    msg.setIcon(QMessageBox.Information)
+    msg.setText("""For help refer to the HELP.md and README.md files
+located in the cyckei install location, or online on our GitLab page.\n\n
+gitlab.com/cyclikal/cyckei""")
+    msg.setWindowTitle("Help")
+    msg.exec_()
+
+
+def about():
+    """Display basic information about cyckei"""
+    msg = QMessageBox()
+    msg.setIcon(QMessageBox.Information)
+    msg.setText("""Cyckei is developed by Gabriel Ewig and Vincent
+Chevrier at Cyclikal, LLC.\n\nUpdates and source code can be found on GitLab at
+gitlab.com/cyclikal/cyckei.\n\nFor information about Cyclikal, visit
+cyclikal.com.""")
+    msg.setWindowTitle("About")
+    msg.exec_()
 
 
 class MainWindow(QMainWindow):
@@ -50,9 +68,13 @@ class MainWindow(QMainWindow):
         """Setup menu bar"""
         menu_options = []
 
+        menu_options.append(QAction("&About", self))
+        menu_options[-1].setStatusTip("About Cyckei")
+        menu_options[-1].triggered.connect(about)
+
         menu_options.append(QAction("&Help", self))
-        menu_options[-1].setStatusTip("View Help in Web Browser")
-        menu_options[-1].triggered.connect(help_page)
+        menu_options[-1].setStatusTip("View Help File")
+        menu_options[-1].triggered.connect(help)
 
         menu_options.append(QAction("&Exit", self))
         menu_options[-1].setStatusTip("Exit Client Application")
@@ -96,15 +118,15 @@ class MainWindow(QMainWindow):
         menu = menu_bar.addMenu("&Menu")
         menu.addAction(menu_options[0])
         menu.addAction(menu_options[1])
+        menu.addAction(menu_options[2])
 
         server = menu_bar.addMenu("&Server")
-        server.addAction(menu_options[2])
         server.addAction(menu_options[3])
         server.addAction(menu_options[4])
         server.addAction(menu_options[5])
+        server.addAction(menu_options[6])
 
         batch = menu_bar.addMenu("&Batch")
-        batch.addAction(menu_options[6])
         batch.addAction(menu_options[7])
         batch.addAction(menu_options[8])
         batch.addAction(menu_options[9])
