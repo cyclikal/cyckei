@@ -130,6 +130,7 @@ class MainWindow(QMainWindow):
         batch.addAction(menu_options[7])
         batch.addAction(menu_options[8])
         batch.addAction(menu_options[9])
+        batch.addAction(menu_options[10])
 
         return menu_bar
 
