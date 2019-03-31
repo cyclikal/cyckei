@@ -77,7 +77,7 @@ The "Fill All" and "Increment" options allow you to automatically create log fil
 ## Viewing Logs
 Logs are created to document measurements from each cell throughout it's cycle.
 They also have details about the cell and the cycle that was run on it.
-Log files are saved to the "record_dir" folder specified in the configuration under the specified name.
+Log files are saved to the "tests" folder specified in the configuration under the specified name.
 To view a log from the client application, just open the logging tab.
 All logs are automatically loaded on startup, and new or updated ones can be viewed after clicking reload.
 Although you can copy the contents of a log file to an excel spreadsheet, log files *should not* be opened with excel or another application directly.
@@ -106,8 +106,6 @@ Editing the configuration file is crucial for the client to function properly. A
     -   *server*
         -   *address (string)* - Address for the server to listen on. Usually all.
 
-
--   **record_dir** - The location to record cycle and program logs. Generally "logs" is acceptable.
 
 -   **verbosity** - The amount of information to be saved to log files. Generally should be set to 20, but the following levels can also be used. Lower values print more information for debugging purposes.
     -   *Critical* - 50
@@ -147,6 +145,5 @@ Here is an example configuration file for a simple setup running on port 5556 wi
               "address":"tcp://*"
             }
         },
-        "record_dir": "logs",
         "verbosity": 20,
     }

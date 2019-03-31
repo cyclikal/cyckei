@@ -63,7 +63,7 @@ class ChannelTab(QScrollArea):
         for channel in config["channels"]:
             self.channels.append(ChannelWidget(channel["channel"],
                                  server,
-                                 config["record_dir"]))
+                                 config["path"] + "\tests"))
             rows.addWidget(self.channels[-1])
 
     def paintEvent(self, event):

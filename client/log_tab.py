@@ -11,7 +11,7 @@ class LogViewer(QWidget):
     """Object of log tab"""
     def __init__(self, config):
         QWidget.__init__(self)
-        self.path = config["record_dir"]
+        self.path = config["path"] + "/tests"
 
         self.file_list = QListWidget()
         self.file_list.itemClicked.connect(self.list_clicked)

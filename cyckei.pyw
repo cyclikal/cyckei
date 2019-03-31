@@ -51,6 +51,8 @@ def file_structure():
         makedirs(PATH + "/tests")
     if not exists(PATH + "/config.json"):
         shutil.copy("resources/default.config.json", PATH + "/config.json")
+    if not exists(PATH + "/batch.txt"):
+        shutil.copy("resources/batch.txt", PATH + "/batch.txt")
 
 
 sys.excepthook = handle_exception
@@ -59,8 +61,7 @@ START_TIME = time.strftime("%H-%M-%S_%d-%b-%G")
 PATH = expanduser("~") + "/cyckei"
 file_structure()
 CONFIG = json.load(open(PATH + "/config.json", "r"))
-CONFIG["default_scripts"] = PATH + "/scripts"
-CONFIG["record_dir"] = PATH + "/tests"
+CONFIG["path"] = PATH
 
 if ARGS.server:
     print("Welcome to the cyckei server.")

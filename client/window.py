@@ -126,7 +126,7 @@ class MainWindow(QMainWindow):
                            channel_widget.attributes["path"]]
                 batch.append(channel)
 
-            with open("resources/batch.txt", "a") as file:
+            with open(config["path"] + "batch.txt", "a") as file:
                 file.truncate(0)
                 for channel in batch:
                     for value in channel:
@@ -143,7 +143,7 @@ class MainWindow(QMainWindow):
             QMessageBox.Yes
         )
         if reply == QMessageBox.Yes:
-            with open("resources/batch.txt", "r") as file:
+            with open(config["path"] + "resources/batch.txt", "r") as file:
                 for index, line in enumerate(file):
                     channel = self.channels[index]
                     values = line.split(",")

@@ -21,7 +21,7 @@ TIMEOUT = 3  # Seconds for listening to server before giving up.
 
 def main(config):
     """Initializes server and window"""
-    scripts.load_default_scripts(config["default_scripts"])
+    scripts.load_default_scripts(config["path"] + "/scripts")
     server = Server(config["zmq"]["client"]["address"], config["zmq"]["port"])
 
     app = QApplication(sys.argv)

@@ -8,7 +8,7 @@ SCRIPTS = []
 
 
 def load_default_scripts(path):
-    """Load scripts from default_scripts folder"""
+    """Load scripts from scripts folder"""
     files = listdir(path)
     if files is not None:
         for file in files:
