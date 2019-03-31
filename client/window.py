@@ -23,6 +23,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         # Set basic window properties
         self.setWindowTitle("Cyckei")
+        self.config = config
         # Allows icon to show in Windows Taskbar
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(
             "Cyckei"
@@ -37,11 +38,11 @@ class MainWindow(QMainWindow):
         self.tab_widget = QTabWidget(self)
         self.setCentralWidget(self.tab_widget)
 
-        channel_tab = ChannelTab(config, server)
+        channel_tab = ChannelTab(self.config, server)
         self.channels = channel_tab.channels
         self.tab_widget.addTab(channel_tab, "Channels")
         self.tab_widget.addTab(ScriptEditor(self.channels, server), "Scripts")
-        self.tab_widget.addTab(LogViewer(config), "Logs")
+        self.tab_widget.addTab(LogViewer(self.config), "Logs")
 
         self.setStyleSheet(open("resources/style.css", "r").read())
 
@@ -126,7 +127,7 @@ class MainWindow(QMainWindow):
                            channel_widget.attributes["path"]]
                 batch.append(channel)
 
-            with open(config["path"] + "batch.txt", "a") as file:
+            with open(self.config["path"] + "/batch.txt", "a") as file:
                 file.truncate(0)
                 for channel in batch:
                     for value in channel:
@@ -143,12 +144,13 @@ class MainWindow(QMainWindow):
             QMessageBox.Yes
         )
         if reply == QMessageBox.Yes:
-            with open(config["path"] + "resources/batch.txt", "r") as file:
+            with open(self.config["path"] + "/batch.txt", "r") as file:
                 for index, line in enumerate(file):
                     channel = self.channels[index]
                     values = line.split(",")
-                    channel.elements[2].setText(values[0])
-                    channel.elements[3].setText(values[1])
+                    if len(values) > 1:
+                        channel.elements[2].setText(values[0])
+                        channel.elements[3].setText(values[1])
 
     def fill_batch(self):
         """Executes autofill for each channel"""
