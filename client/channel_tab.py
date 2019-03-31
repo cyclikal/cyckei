@@ -5,6 +5,8 @@ Listed in the channel tab of the main window.
 
 import json
 import logging
+from os.path import exists
+from os import remove
 
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QComboBox, \
     QLineEdit, QPushButton, QLabel, QMessageBox, QScrollArea, QStyleOption, \
@@ -63,7 +65,7 @@ class ChannelTab(QScrollArea):
         for channel in config["channels"]:
             self.channels.append(ChannelWidget(channel["channel"],
                                  server,
-                                 config["path"] + "\tests"))
+                                 config["path"] + "/tests"))
             rows.addWidget(self.channels[-1])
 
     def paintEvent(self, event):
@@ -362,6 +364,9 @@ class ChannelWidget(QWidget):
         msg.setText(status)
         msg.setWindowTitle("Cell Status")
         msg.exec_()
+
+        if exists(package["kwargs"]["meta"]["path"]):
+            remove(package["kwargs"]["meta"]["path"])
 
     def set_id(self, text):
         """Set object identification from text box"""
