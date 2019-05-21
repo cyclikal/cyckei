@@ -7,6 +7,9 @@ import json
 import logging
 from os.path import exists
 from os import remove
+from os import makedirs
+from datetime import date
+
 
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QComboBox, \
     QLineEdit, QPushButton, QLabel, QMessageBox, QScrollArea, QStyleOption, \
@@ -253,8 +256,15 @@ class ChannelWidget(QWidget):
         self.json["kwargs"]["meta"]["comment"] = self.attributes["comment"]
         self.json["kwargs"]["meta"]["package"] = self.attributes["package"]
         self.json["kwargs"]["meta"]["cell_type"] = self.attributes["type"]
-        self.json["kwargs"]["meta"]["path"] = (
+        temp_path = (
             self.attributes["record_folder"]
+            + "/"
+            + str(date.today())
+        )
+        if not exists(temp_path):
+            makedirs(temp_path)
+        self.json["kwargs"]["meta"]["path"] = (
+            temp_path
             + "/"
             + self.attributes["path"]
         )

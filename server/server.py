@@ -146,6 +146,7 @@ def start(channel, meta, protocol, runners, sources):
     meta["channel"] = channel
     if get_runner_by_channel(channel, runners):
         return "Failed to start channel {}, already in use.".format(channel)
+
     # check if log file is being used
     path = meta["path"]
     for runner in runners:
