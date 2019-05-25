@@ -278,7 +278,7 @@ class ChannelWidget(QWidget):
         self.json["kwargs"]["protocol"] = protocol
 
     def update_status(self):
-        """Update status shown beow controls by contacting server"""
+        """Update status shown below controls by contacting server"""
         info_channel = self.server.info_channel(
             self.attributes["channel"]
         )["response"]
