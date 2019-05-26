@@ -1,25 +1,19 @@
-import sys
-import pkg_resources
-
+from pkg_resources import require
 from json import load
 from os.path import expanduser, exists
 from os import makedirs
 from shutil import copy
 
 
-def main(args=None):
+def main():
     """
         This is the main entrypoint and routine of Cyckei Vayu.
         Vayu aims to make cyckei more efficient in many aspects.
     """
-    if args is None:
-        args = sys.argv[1:]
 
-    version = pkg_resources.require("cyckei")[0].version
+    version = require("cyckei")[0].version
 
     print("Welcome to Cyckei Vayu version {}".format(version))
-
-    # Do argument parsing here (eg. with argparse) and anything else.
 
     # Setup recording direcory if unavailable
     record_dir = expanduser("~") + "/cyckei"
