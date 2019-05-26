@@ -1,0 +1,9 @@
+# This script demonstrates some basic Cyckei functions. For more information, view the help document at Menu > Help.
+# This script charges to 4 V at 10 mA, then discharges at 10 mA to 3 V. It then collects data for five minutes without applying voltage or current.
+# The cycle is repeated five times.
+
+for i in range(10):
+	AdvanceCycle()
+	CCCharge(0.01, reports=(("voltage", 0.01), ("time", ":5:")), ends=(("voltage", ">", 4), ("time", ">", "2::")))
+	CCDischarge(0.01, reports=(("voltage", 0.01), ("time", ":5:")), ends=(("voltage", "<", 3), ("time", ">", "2::")))
+	Sleep(reports=(("time", ":1:"),), ends=(("time", ">", ":5:"),))
