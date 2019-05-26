@@ -1,5 +1,8 @@
-from pkg_resources import require
+import logging
+
+from pkg_resources import require, DistributionNotFound
 from json import load
+from time import strftime
 from os.path import expanduser, exists
 from os import makedirs
 from shutil import copy
@@ -10,28 +13,38 @@ def main():
         This is the main entrypoint and routine of Cyckei Vayu.
         Vayu aims to make cyckei more efficient in many aspects.
     """
+    print("\n")
 
-    version = require("cyckei")[0].version
+    try:
+        version = require("cyckei")[0].version
+    except DistributionNotFound:
+        version = "(unpackaged)"
 
-    print("Welcome to Cyckei Vayu version {}".format(version))
+    print("Welcome to Cyckei Vayu version {}.".format(version))
 
     # Setup recording direcory if unavailable
+    print("Checking for recording directory...")
     record_dir = expanduser("~") + "/cyckei"
     file_structure(record_dir)
 
-    # load configuration
+    # Load configuration
+    print("Loading configuration...")
     config = load(open(record_dir + "/config.json", "r"))
     config["path"] = record_dir
+
+    # Start logging
+    log_file = "{}/application.log".format(record_dir)
+    print("Starting log...")
+    logging.basicConfig(filename=log_file, level=config["verbosity"],
+                        format='%(asctime)s %(message)s')
+    logging.info("--- Cyckei started.")
 
 
 def file_structure(path):
     """Checks for existing folder structure and sets up if missing"""
-    print("Checking for or creating files at \"{}\"...".format(path), end="")
 
     if not exists(path):
         makedirs(path)
-    if not exists(path + "/logs"):
-        makedirs(path + "/logs")
     if not exists(path + "/tests"):
         makedirs(path + "/tests")
     if not exists(path + "/config.json"):
@@ -41,8 +54,6 @@ def file_structure(path):
     if not exists(path + "/scripts"):
         makedirs(path + "/scripts")
         copy("resources/example-script", path + "/scripts/example")
-
-    print("Done!")
 
 
 if __name__ == "__main__":
