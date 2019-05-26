@@ -21,7 +21,11 @@ setup(
         "Operating System :: OS Independent",
         "Topic :: Scientific/Engineering",
     ],
-    install_requires=[],
+    install_requires=[
+        "zmq",
+        "pyvisa",
+
+    ],
     entry_points={
         "gui_scripts": [
             "cyckei = cyckei.__main__:main"

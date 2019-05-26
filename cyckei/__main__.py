@@ -2,10 +2,12 @@ import logging
 
 from pkg_resources import require, DistributionNotFound
 from json import load
-from time import strftime
 from os.path import expanduser, exists
 from os import makedirs
 from shutil import copy
+
+from server import server
+from client import client
 
 
 def main():
@@ -38,6 +40,12 @@ def main():
     logging.basicConfig(filename=log_file, level=config["verbosity"],
                         format='%(asctime)s %(message)s')
     logging.info("--- Cyckei started.")
+
+    # Open client window
+    # client.main(config)
+
+    # Start server
+    server.main(config)
 
 
 def file_structure(path):
