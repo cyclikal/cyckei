@@ -71,8 +71,6 @@ class CellRunner(object):
     }
 
     def __init__(self, **meta):
-        # import pdb
-        # pdb.set_trace()
         self.meta = self.META.copy()
         for k in self.meta.keys():
             self.meta[k] = meta.get(k, None)

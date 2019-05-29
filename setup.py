@@ -24,11 +24,11 @@ setup(
     install_requires=[
         "zmq",
         "pyvisa",
-
+        "PyQt5",
     ],
     entry_points={
-        "gui_scripts": [
+        "console_scripts": [
             "cyckei = cyckei.__main__:main"
-        ]
+        ],
     },
 )

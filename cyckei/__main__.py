@@ -5,9 +5,9 @@ from json import load
 from os.path import expanduser, exists
 from os import makedirs
 from shutil import copy
+from subprocess import Popen
 
-from server import server
-from client import client
+from cyckei.server import server
 
 
 def main():
@@ -35,14 +35,14 @@ def main():
     config["path"] = record_dir
 
     # Start logging
-    log_file = "{}/application.log".format(record_dir)
+    log_file = "{}/server.log".format(record_dir)
     print("Starting log...")
     logging.basicConfig(filename=log_file, level=config["verbosity"],
                         format='%(asctime)s %(message)s')
-    logging.info("--- Cyckei started.")
+    logging.info("--- Server started.")
 
     # Open client window
-    # client.main(config)
+    Popen(["python", "./cyckei/client/client.py"])
 
     # Start server
     server.main(config)
