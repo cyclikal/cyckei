@@ -293,7 +293,7 @@ class ChannelWidget(QWidget):
         except TypeError:
             status = info_channel
         self.elements[15].setText(status)
-        QTimer.singleShot(1000000, self.update_status)
+        QTimer.singleShot(10000, self.update_status)
 
     def start(self):
         """Update json and send "start" function to server"""
