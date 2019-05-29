@@ -52,10 +52,11 @@ class MainWindow(QMainWindow):
         self.tab_widget = QTabWidget(self)
         self.setCentralWidget(self.tab_widget)
 
-        channel_tab = ChannelTab(self.config, server)
-        self.channels = channel_tab.channels
-        # self.tab_widget.addTab(channel_tab, "Channels")
-        self.tab_widget.addTab(ScriptEditor(self.channels, server), "Scripts")
+        self.tab_widget.addTab(ChannelTab(self.config, server), "Channels")
+        self.tab_widget.addTab(
+            ScriptEditor(self.tab_widget.widget(0).channels, server),
+            "Scripts"
+        )
         self.tab_widget.addTab(LogViewer(self.config), "Logs")
 
         self.setStyleSheet(open("resources/style.css", "r").read())

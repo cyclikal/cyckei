@@ -53,14 +53,15 @@ def new_text_element(label, status, connect):
     return text
 
 
-class ChannelTab(QScrollArea):
+class ChannelTab(QWidget):
     def __init__(self, config, server):
         """Setup each channel widget and place in QVBoxlayout"""
-        QScrollArea.__init__(self)
-        self.setWidgetResizable(True)
+        QWidget.__init__(self)
 
+        scroll_area = QScrollArea(self)
+        scroll_area.setWidgetResizable(True)
         scroll_contents = QWidget()
-        self.setWidget(scroll_contents)
+        scroll_area.setWidget(scroll_contents)
         rows = QVBoxLayout(scroll_contents)
         rows.setSpacing(0)
 
@@ -70,6 +71,8 @@ class ChannelTab(QScrollArea):
                                  server,
                                  config["path"] + "/tests"))
             rows.addWidget(self.channels[-1])
+
+        self.resize(100, 100)
 
     def paintEvent(self, event):
         style_option = QStyleOption()
