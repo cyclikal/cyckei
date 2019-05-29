@@ -4,7 +4,6 @@ import time
 import traceback
 from collections import OrderedDict
 import logging
-from os.path import isfile
 
 import zmq
 
@@ -150,10 +149,11 @@ def start(channel, meta, protocol, runners, sources):
 
     # check if log file is being used
     path = meta["path"]
-    if isfile(path):
-        return(
-            "Failed to start channel, log file '{}' already in use."
-        ).format(path)
+    for runner in runners:
+        if runner.fpath == path:
+            return (
+                "Failed to start channel, log file '{}' already in use."
+            ).format(path)
 
     runner = CellRunner(**meta)
     # Set the channel source
