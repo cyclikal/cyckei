@@ -57,7 +57,7 @@ class Server(object):
                 return response
             except zmq.error.Again:
                 pass
-        self.close_socket()
+            self.close_socket()
 
         return json.loads("""{"response": "No Connection"}""")
 
