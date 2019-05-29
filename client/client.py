@@ -50,14 +50,13 @@ class Server(object):
             logging.debug("Sending: {}".format(to_send["function"]))
             self.socket.send_json(to_send)
 
-        while time.time() - start_time < TIMEOUT:
+            # while time.time() - start_time < TIMEOUT:
             try:
-                response = self.socket.recv_json(flags=zmq.NOBLOCK)
+                response = self.socket.recv_json()
                 logging.debug("Received: {}".format(response))
                 return response
             except zmq.error.Again:
-                pass
-            self.close_socket()
+                self.close_socket()
 
         return json.loads("""{"response": "No Connection"}""")
 
