@@ -2,7 +2,7 @@
 
 from os import listdir
 
-from PyQt5.QtWidgets import QListWidgetItem
+from PySide2.QtWidgets import QListWidgetItem
 
 SCRIPTS = []
 

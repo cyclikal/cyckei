@@ -1,8 +1,8 @@
 """Main window for the cyckei client."""
 
-from PyQt5.QtWidgets import QWidget, QMainWindow, QAction, qApp, QTabWidget,\
+from PySide2.QtWidgets import QWidget, QMainWindow, QAction, qApp, QTabWidget,\
     QMessageBox
-from PyQt5.QtGui import QIcon
+from PySide2.QtGui import QIcon
 
 from cyckei.client.channel_tab import ChannelTab
 from cyckei.client.script_tab import ScriptEditor

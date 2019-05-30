@@ -2,7 +2,7 @@
 
 import json
 
-from PyQt5.QtWidgets import QMessageBox
+from PySide2.QtWidgets import QMessageBox
 
 
 def check(protocol, server):

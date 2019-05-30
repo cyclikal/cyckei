@@ -11,11 +11,11 @@ from os import makedirs
 from datetime import date
 
 
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QComboBox, \
+from PySide2.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QComboBox, \
     QLineEdit, QPushButton, QLabel, QMessageBox, QScrollArea, QStyleOption, \
     QStyle
-from PyQt5.QtCore import QMetaObject, QTimer
-from PyQt5.QtGui import QPainter
+from PySide2.QtCore import QMetaObject, QTimer
+from PySide2.QtGui import QPainter
 
 from cyckei.client import scripts
 from cyckei.client import check
@@ -123,7 +123,7 @@ class ChannelWidget(QWidget):
         self.json = json.load(open("resources/defaultJSON.json"))
 
         # Update status
-        # self.update_status()
+        self.update_status()
 
     def setup_ui(self):
         """Creates all UI elements and adds them to self.elements list"""
@@ -250,7 +250,7 @@ class ChannelWidget(QWidget):
         QMetaObject.connectSlotsByName(self)
 
     def prepare_json(self, function):
-        """Sets the channel's json sscript to current values"""
+        """Sets the channel's json script to current values"""
         protocol = scripts.get_script_by_title(
             self.attributes["script_title"]).content
 
@@ -297,7 +297,7 @@ class ChannelWidget(QWidget):
         except TypeError:
             status = info_channel
         self.elements[15].setText(status)
-        QTimer.singleShot(10000, self.update_status)
+        QTimer.singleShot(1000, self.update_status)
 
     def start(self):
         """Update json and send "start" function to server"""

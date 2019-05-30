@@ -2,9 +2,9 @@
 
 from os import listdir, path
 import subprocess
-from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel, QPlainTextEdit,\
+from PySide2.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel, QPlainTextEdit,\
     QPushButton, QListWidget, QListWidgetItem, QWidget, QStyleOption, QStyle
-from PyQt5.QtGui import QPainter
+from PySide2.QtGui import QPainter
 
 
 class LogViewer(QWidget):

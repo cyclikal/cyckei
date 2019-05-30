@@ -1,10 +1,10 @@
 """Tab to view and edit scripts, also has access to checking procedure"""
 
-from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel, QPlainTextEdit,\
-    QPushButton, QListWidget, QFileDialog, QMessageBox, QWidget, QStyleOption, \
+from PySide2.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel, QPlainTextEdit,\
+    QPushButton, QListWidget, QFileDialog, QMessageBox, QWidget, QStyleOption,\
     QStyle
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPainter
+from PySide2.QtCore import Qt
+from PySide2.QtGui import QPainter
 from cyckei.client import scripts
 from cyckei.client import check
 

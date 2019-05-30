@@ -10,8 +10,8 @@ import time
 # from subprocess import Popen, CREATE_NEW_CONSOLE
 import zmq
 
-from PyQt5.QtWidgets import QApplication, QWidget, QMessageBox
-from PyQt5.QtCore import QTimer
+from PySide2.QtWidgets import QApplication, QWidget, QMessageBox
+from PySide2.QtCore import QTimer
 from os.path import expanduser
 
 from cyckei.client.window import MainWindow
@@ -62,7 +62,7 @@ class Server(object):
             logging.debug("Sending: {}".format(to_send["function"]))
             self.socket.send_json(to_send)
 
-            while True:  # time.time() - start_time < TIMEOUT:
+            if time.time() - start_time < TIMEOUT:
                 try:
                     response = self.socket.recv_json(flags=zmq.NOBLOCK)
                     logging.debug("Received: {}".format(response))

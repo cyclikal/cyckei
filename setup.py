@@ -24,7 +24,7 @@ setup(
     install_requires=[
         "zmq",
         "pyvisa",
-        "PyQt5",
+        "PySide2",
     ],
     entry_points={
         "console_scripts": [
