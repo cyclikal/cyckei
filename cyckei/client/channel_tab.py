@@ -19,6 +19,7 @@ from PySide2.QtGui import QPainter
 
 from cyckei.client import scripts
 from cyckei.client import check
+from worker import Worker
 
 
 def not_none(value):
@@ -54,7 +55,7 @@ def new_text_element(label, status, connect):
 
 
 class ChannelTab(QWidget):
-    def __init__(self, config, server):
+    def __init__(self, config, server, threadpool):
         """Setup each channel widget and place in QVBoxlayout"""
         QWidget.__init__(self)
 
@@ -70,9 +71,12 @@ class ChannelTab(QWidget):
 
         self.channels = []
         for channel in config["channels"]:
-            self.channels.append(ChannelWidget(channel["channel"],
-                                 server,
-                                 config["path"] + "/tests"))
+            self.channels.append(ChannelWidget(
+                channel["channel"],
+                server,
+                config["path"] + "/tests",
+                threadpool
+            ))
             rows.addWidget(self.channels[-1])
 
     def paintEvent(self, event):
@@ -86,7 +90,7 @@ class ChannelTab(QWidget):
 class ChannelWidget(QWidget):
     """Controls and stores information for a given channel"""
 
-    def __init__(self, channel, server, record_folder):
+    def __init__(self, channel, server, record_folder, threadpool):
         super().__init__()
         # Assignments
         self.server = server
@@ -103,6 +107,8 @@ class ChannelWidget(QWidget):
         self.attributes["requestor"] = "Unspecified"
         self.attributes["protocol_name"] = None
         self.attributes["script_title"] = None
+
+        self.threadpool = threadpool
 
         self.setMinimumSize(800, 54)
 
@@ -123,7 +129,8 @@ class ChannelWidget(QWidget):
         self.json = json.load(open("resources/defaultJSON.json"))
 
         # Update status
-        self.update_status()
+        status_worker = Worker(self.update_status)
+        self.threadpool.start(status_worker)
 
     def setup_ui(self):
         """Creates all UI elements and adds them to self.elements list"""
@@ -165,7 +172,7 @@ class ChannelWidget(QWidget):
         self.elements.append(new_button_element(
             "AutoFill",
             "Fill log file from cell identification, defaults to [id]A.log",
-            self.auto_fill
+            self.button_auto_fill
         ))
 
         # 5 - Mass
@@ -212,35 +219,35 @@ class ChannelWidget(QWidget):
         self.elements.append(new_button_element(
             "Check Cell",
             "Check Status of Connected Cell",
-            self.check
+            self.button_check
         ))
 
         # 11 - Start button
         self.elements.append(new_button_element(
             "Start",
             "Start Cycle",
-            self.start
+            self.button_start
         ))
 
         # 12 - Pause button
         self.elements.append(new_button_element(
             "Pause",
             "Pause Cycle",
-            self.pause
+            self.button_pause
         ))
 
         # 13 - Resume button
         self.elements.append(new_button_element(
             "Resume",
             "Resume Cycle",
-            self.resume
+            self.button_resume
         ))
 
         # 14 - Stop button
         self.elements.append(new_button_element(
             "Stop",
             "Stop Cycle",
-            self.stop
+            self.button_stop
         ))
 
         # 15 Cell Status
@@ -248,6 +255,33 @@ class ChannelWidget(QWidget):
         self.elements[-1].setStatusTip("Cell status")
 
         QMetaObject.connectSlotsByName(self)
+
+    # Begin Button Press Definitions
+    def button_auto_fill(self):
+        worker = Worker(self.autofill)
+        self.threadpool.start(worker)
+
+    def button_check(self):
+        worker = Worker(self.check)
+        self.threadpool.start(worker)
+
+    def button_start(self):
+        worker = Worker(self.start)
+        self.threadpool.start(worker)
+
+    def button_pause(self):
+        worker = Worker(self.pause)
+        self.threadpool.start(worker)
+
+    def button_resume(self):
+        worker = Worker(self.resume)
+        self.threadpool.start(worker)
+
+    def button_stop(self):
+        worker = Worker(self.stop)
+        self.threadpool.start(worker)
+
+    # Begin Button Execution Definition
 
     def prepare_json(self, function):
         """Sets the channel's json script to current values"""
@@ -299,53 +333,6 @@ class ChannelWidget(QWidget):
         self.elements[15].setText(status)
         QTimer.singleShot(1000, self.update_status)
 
-    def start(self):
-        """Update json and send "start" function to server"""
-        check_true = check.check(
-                                 scripts.get_script_by_title(
-                                    self.attributes["script_title"]
-                                 ).content, self.server)
-        if check_true:
-            self.prepare_json("start")
-            self.send()
-
-    def pause(self):
-        """Update json and send "pause" function to server"""
-        self.prepare_json("pause")
-        self.send()
-
-    def resume(self):
-        """Update json and send "resume" function to server"""
-        self.prepare_json("resume")
-        self.send()
-
-    def stop(self):
-        """Update json and send "stop" function to server"""
-        self.prepare_json("stop")
-        self.send()
-
-    def send(self):
-        """Sends json to server and updates status with response"""
-        resp = self.server.send(self.json)["response"]
-        logging.info(resp)
-        self.elements[15].setText(resp)
-
-    def script_box_activated(self, text):
-        """Sets object's script to one selected in dropdown"""
-        self.attributes["script_title"] = text
-
-    def package_box_activated(self, text):
-        """Sets object's package type to one selected in dropdown"""
-        self.attributes["package"] = text
-
-    def cell_box_activated(self, text):
-        """Sets object's cell type to one selected in dropdown"""
-        self.attributes["type"] = text
-
-    def requestor_box_activated(self, text):
-        """Sets object's requestor to one selected in dropdown"""
-        self.attributes["requestor"] = text
-
     def auto_fill(self):
         """Fill log text with value derived from cell identification"""
         if self.elements[2].text():
@@ -381,6 +368,56 @@ class ChannelWidget(QWidget):
 
         if exists(package["kwargs"]["meta"]["path"]):
             remove(package["kwargs"]["meta"]["path"])
+
+    def start(self):
+        """Update json and send "start" function to server"""
+        check_true = check.check(
+            scripts.get_script_by_title(
+                self.attributes["script_title"]
+            ).content, self.server
+        )
+        if check_true:
+            self.prepare_json("start")
+            self.send()
+
+    def pause(self):
+        """Update json and send "pause" function to server"""
+        self.prepare_json("pause")
+        self.send()
+
+    def resume(self):
+        """Update json and send "resume" function to server"""
+        self.prepare_json("resume")
+        self.send()
+
+    def stop(self):
+        """Update json and send "stop" function to server"""
+        self.prepare_json("stop")
+        self.send()
+
+    def send(self):
+        """Sends json to server and updates status with response"""
+        resp = self.server.send(self.json)["response"]
+        logging.info(resp)
+        self.elements[15].setText(resp)
+
+    # Begin Attribute Assignment Definitions
+
+    def script_box_activated(self, text):
+        """Sets object's script to one selected in dropdown"""
+        self.attributes["script_title"] = text
+
+    def package_box_activated(self, text):
+        """Sets object's package type to one selected in dropdown"""
+        self.attributes["package"] = text
+
+    def cell_box_activated(self, text):
+        """Sets object's cell type to one selected in dropdown"""
+        self.attributes["type"] = text
+
+    def requestor_box_activated(self, text):
+        """Sets object's requestor to one selected in dropdown"""
+        self.attributes["requestor"] = text
 
     def set_id(self, text):
         """Set object identification from text box"""

@@ -1,8 +1,11 @@
 """Main window for the cyckei client."""
 
+import logging
+
 from PySide2.QtWidgets import QWidget, QMainWindow, QAction, qApp, QTabWidget,\
     QMessageBox
 from PySide2.QtGui import QIcon
+from PySide2.QtCore import QThreadPool
 
 from cyckei.client.channel_tab import ChannelTab
 from cyckei.client.script_tab import ScriptEditor
@@ -13,10 +16,11 @@ def help():
     """Direct to help"""
     msg = QMessageBox()
     msg.setIcon(QMessageBox.Information)
-    msg.setText("""For
-     help refer to the HELP.md and README.md files
-located in the cyckei install location, or online on our GitLab page.\n\n
-gitlab.com/cyclikal/cyckei""")
+    msg.setText(
+        """For help refer to the HELP.md and README.md files located in
+        the cyckei install location, or online on our GitLab page.
+        \n\ngitlab.com/cyclikal/cyckei"""
+    )
     msg.setWindowTitle("Help")
     msg.exec_()
 
@@ -25,10 +29,12 @@ def about():
     """Display basic information about cyckei"""
     msg = QMessageBox()
     msg.setIcon(QMessageBox.Information)
-    msg.setText("""Cyckei is developed by Gabriel Ewig and Vincent
-Chevrier at Cyclikal, LLC.\n\nUpdates and source code can be found on GitLab at
-gitlab.com/cyclikal/cyckei.\n\nFor information about Cyclikal, visit
-cyclikal.com.""")
+    msg.setText(
+        """Cyckei is developed by Gabriel Ewig and Vincent
+        Chevrier at Cyclikal, LLC.\n\nUpdates and source code can be found on
+        GitLab at gitlab.com/cyclikal/cyckei.\n\nFor information about
+        Cyclikal, visit cyclikal.com."""
+    )
     msg.setWindowTitle("About")
     msg.exec_()
 
@@ -45,6 +51,12 @@ class MainWindow(QMainWindow):
         self.setWindowIcon(QIcon(r"resources\icon.png"))
         self.resize(1000, 562)
 
+        # Setup ThreadPool
+        self.threadpool = QThreadPool()
+        logging.info("Multithreading set with maximum {} threads".format(
+            self.threadpool.maxThreadCount()
+        ))
+
         # Create menu and status bar
         self.menu_bar = self.create_menu(server)
         self.status_bar = self.statusBar()
@@ -52,7 +64,10 @@ class MainWindow(QMainWindow):
         self.tab_widget = QTabWidget(self)
         self.setCentralWidget(self.tab_widget)
 
-        self.tab_widget.addTab(ChannelTab(self.config, server), "Channels")
+        self.tab_widget.addTab(
+            ChannelTab(self.config, server, self.threadpool),
+            "Channels"
+        )
         self.tab_widget.addTab(
             ScriptEditor(self.tab_widget.widget(0).channels, server),
             "Scripts"

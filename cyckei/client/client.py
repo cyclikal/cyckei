@@ -12,7 +12,7 @@ from os.path import expanduser
 
 from cyckei.client.window import MainWindow
 from cyckei.client import scripts
-from cyckei.client.server import Server
+from cyckei.client.client_server import Server
 
 
 def main():

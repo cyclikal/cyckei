@@ -146,7 +146,7 @@ def process_socket(socket, runners, sources, server_time):
         # check for a message, this will not block
         # it returns a python object already rebuilt from the json
         msg = socket.recv_json(flags=zmq.NOBLOCK)
-        logging.info("Packet request received")
+        logging.info("Packet request received: ".format(msg["function"]))
     except zmq.error.Again:
         msg = None
 
