@@ -58,7 +58,10 @@ class ChannelTab(QWidget):
         """Setup each channel widget and place in QVBoxlayout"""
         QWidget.__init__(self)
 
-        scroll_area = QScrollArea(self)
+        layout = QHBoxLayout(self)
+
+        scroll_area = QScrollArea()
+        layout.addWidget(scroll_area)
         scroll_area.setWidgetResizable(True)
         scroll_contents = QWidget()
         scroll_area.setWidget(scroll_contents)
@@ -71,8 +74,6 @@ class ChannelTab(QWidget):
                                  server,
                                  config["path"] + "/tests"))
             rows.addWidget(self.channels[-1])
-
-        self.resize(100, 100)
 
     def paintEvent(self, event):
         style_option = QStyleOption()
