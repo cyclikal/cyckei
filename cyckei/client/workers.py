@@ -28,7 +28,7 @@ def send(json, channel):
     socket.socket.close()
 
 
-def prepare_json(self, json, channel, function):
+def prepare_json(json, channel, function):
     """Sets the channel's json script to current values"""
     protocol = scripts.get_script_by_title(
         channel.attributes["script_title"]).content
@@ -167,7 +167,7 @@ class Control(QRunnable):
             if script_ok is False:
                 return
 
-        self.send(
+        send(
             prepare_json(json, self.channel, self.command),
             self.channel
         )
