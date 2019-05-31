@@ -12,7 +12,6 @@ from os.path import expanduser
 
 from cyckei.client.window import MainWindow
 from cyckei.client import scripts
-from cyckei.client.client_server import Server
 
 
 def main():
@@ -30,10 +29,9 @@ def main():
     logging.info("--- Client started.")
 
     scripts.load_default_scripts(config["path"] + "/scripts")
-    server = Server(config["zmq"]["client"]["address"], config["zmq"]["port"])
 
     app = QApplication(sys.argv)
-    window = MainWindow(config, server)
+    window = MainWindow(config)
     window.show()
 
     sys.exit(app.exec_())

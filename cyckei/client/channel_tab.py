@@ -50,7 +50,7 @@ def new_text_element(label, status, connect):
 
 
 class ChannelTab(QWidget):
-    def __init__(self, config, server, threadpool):
+    def __init__(self, config, threadpool):
         """Setup each channel widget and place in QVBoxlayout"""
         QWidget.__init__(self)
 
@@ -68,7 +68,6 @@ class ChannelTab(QWidget):
         for channel in config["channels"]:
             self.channels.append(ChannelWidget(
                 channel["channel"],
-                server,
                 config["path"] + "/tests",
                 threadpool
             ))
@@ -85,9 +84,8 @@ class ChannelTab(QWidget):
 class ChannelWidget(QWidget):
     """Controls and stores information for a given channel"""
 
-    def __init__(self, channel, server, record_folder, threadpool):
+    def __init__(self, channel, record_folder, threadpool):
         super().__init__()
-        self.server = server
         # Default Values
         self.attributes = {}
         self.attributes["channel"] = channel
@@ -124,7 +122,7 @@ class ChannelWidget(QWidget):
         self.json = json.load(open("resources/defaultJSON.json"))
 
         # Update status
-        self.threadpool.start(workers.UpdateStatus(self, self.server))
+        self.threadpool.start(workers.UpdateStatus(self))
 
     def setup_ui(self):
         """Creates all UI elements and adds them to self.elements list"""
@@ -211,9 +209,9 @@ class ChannelWidget(QWidget):
 
         # 10 - Start button
         self.elements.append(new_button_element(
-            "Check Cell",
-            "Check Status of Connected Cell",
-            self.button_check
+            "Read Cell",
+            "Read Voltage of Connected Cell",
+            self.button_read
         ))
 
         # 11 - Start button
@@ -252,27 +250,27 @@ class ChannelWidget(QWidget):
 
     # Begin Button Press Definitions
     def button_auto_fill(self):
-        self.threadpool.start(workers.AutoFill(self, self.server))
+        self.threadpool.start(workers.AutoFill(self))
         logging.debug("AutoFill Pressed")
 
-    def button_check(self):
-        self.threadpool.start(workers.Check(self, self.server))
-        logging.debug("Check Pressed")
+    def button_read(self):
+        self.threadpool.start(workers.Read(self))
+        logging.debug("Read Pressed")
 
     def button_start(self):
-        self.threadpool.start(workers.Control(self, self.server, "start"))
+        self.threadpool.start(workers.Control(self, "start"))
         logging.debug("Start Pressed")
 
     def button_pause(self):
-        self.threadpool.start(workers.Control(self, self.server, "pause"))
+        self.threadpool.start(workers.Control(self, "pause"))
         logging.debug("Pause Pressed")
 
     def button_resume(self):
-        self.threadpool.start(workers.Control(self, self.server, "resume"))
+        self.threadpool.start(workers.Control(self, "resume"))
         logging.debug("Resume Pressed")
 
     def button_stop(self):
-        self.threadpool.start(workers.Controll(self, self.server, "stop"))
+        self.threadpool.start(workers.Controll(self, "stop"))
         logging.debug("Stop Pressed")
 
     # Begin Attribute Assignment Definitions

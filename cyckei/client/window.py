@@ -10,6 +10,7 @@ from PySide2.QtCore import QThreadPool
 from cyckei.client.channel_tab import ChannelTab
 from cyckei.client.script_tab import ScriptEditor
 from cyckei.client.log_tab import LogViewer
+from workers import Ping
 
 
 def help():
@@ -42,7 +43,7 @@ def about():
 class MainWindow(QMainWindow):
     """Main Window class which is and sets up itself"""
     # Setup main windows
-    def __init__(self, config, server):
+    def __init__(self, config):
         super().__init__()
         # Set basic window properties
         self.setWindowTitle("Cyckei")
@@ -58,25 +59,25 @@ class MainWindow(QMainWindow):
         ))
 
         # Create menu and status bar
-        self.menu_bar = self.create_menu(server)
+        self.menu_bar = self.create_menu()
         self.status_bar = self.statusBar()
 
         self.tab_widget = QTabWidget(self)
         self.setCentralWidget(self.tab_widget)
 
         self.tab_widget.addTab(
-            ChannelTab(self.config, server, self.threadpool),
+            ChannelTab(self.config, self.threadpool),
             "Channels"
         )
         self.tab_widget.addTab(
-            ScriptEditor(self.tab_widget.widget(0).channels, server),
+            ScriptEditor(self.tab_widget.widget(0).channels),
             "Scripts"
         )
         self.tab_widget.addTab(LogViewer(self.config), "Logs")
 
         self.setStyleSheet(open("resources/style.css", "r").read())
 
-    def create_menu(self, server):
+    def create_menu(self):
         """Setup menu bar"""
         menu_options = []
 
@@ -94,19 +95,7 @@ class MainWindow(QMainWindow):
 
         menu_options.append(QAction("&Ping", self))
         menu_options[-1].setStatusTip("Ping Server for Response")
-        menu_options[-1].triggered.connect(server.ping_server)
-
-        menu_options.append(QAction("&Time", self))
-        menu_options[-1].setStatusTip("Get Current Server Time")
-        menu_options[-1].triggered.connect(server.get_server_time)
-
-        menu_options.append(QAction("&Reconnect", self))
-        menu_options[-1].setStatusTip("Reconnect to Server")
-        # menu_options[-1].triggered.connect(server.start_socket)
-
-        menu_options.append(QAction("&Kill", self))
-        menu_options[-1].setStatusTip("Kill Server")
-        # menu_options[-1].triggered.connect(server.kill_server)
+        menu_options[-1].triggered.connect(self.ping_server)
 
         menu_options.append(QAction("&Save", self))
         menu_options[-1].setStatusTip("Save Batch of IDs and Log Files")
@@ -134,17 +123,17 @@ class MainWindow(QMainWindow):
 
         server = menu_bar.addMenu("&Server")
         server.addAction(menu_options[3])
-        server.addAction(menu_options[4])
-        server.addAction(menu_options[5])
-        server.addAction(menu_options[6])
 
         batch = menu_bar.addMenu("&Batch")
+        batch.addAction(menu_options[4])
+        batch.addAction(menu_options[5])
+        batch.addAction(menu_options[6])
         batch.addAction(menu_options[7])
-        batch.addAction(menu_options[8])
-        batch.addAction(menu_options[9])
-        batch.addAction(menu_options[10])
 
         return menu_bar
+
+    def ping_server(self):
+        self.threadpool.start(Ping())
 
     def save_batch(self):
         """Saves id and log information to file"""

@@ -62,19 +62,28 @@ def prepare_json(self, json, channel, function):
     return json
 
 
-class UpdateStatus(QRunnable):
-    """Update status shown below controls by contacting server"""
-    def __init__(self, channel, server):
-        super(UpdateStatus, self).__init__()
-        self.channel = channel
-        self.server = server
+class Ping(QRunnable):
+    def __init__(self):
+        super(Ping, self).__init__()
 
     @Slot()
     def run(self):
+        Socket().ping_server()
+
+
+class UpdateStatus(QRunnable):
+    """Update status shown below controls by contacting server"""
+    def __init__(self, channel):
+        super(UpdateStatus, self).__init__()
+        self.channel = channel
+
+    @Slot()
+    def run(self):
+        socket = Socket("tcp://localhost", 5556)
         while True:
-            info_channel = self.server.info_channel(
+            info_channel = socket.info_channel(
                 self.channel.attributes["channel"])["response"]
-            channel_status = self.server.channel_status(
+            channel_status = socket.channel_status(
                 self.channel.attributes["channel"])["response"]
             try:
                 status = (channel_status
@@ -91,10 +100,9 @@ class UpdateStatus(QRunnable):
 
 class AutoFill(QRunnable):
     """Fill log text with value derived from cell identification"""
-    def __init__(self, channel, server):
+    def __init__(self, channel):
         super(AutoFill, self).__init__()
         self.channel = channel
-        self.server = server
 
     @Slot()
     def run(self):
@@ -103,12 +111,11 @@ class AutoFill(QRunnable):
                 "{}A.pyb".format(self.elements[2].text()))
 
 
-class Check(QRunnable):
+class Read(QRunnable):
     """Tell channel to Rest() long enough to get voltage reading on cell"""
-    def __init__(self, channel, server):
+    def __init__(self, channel):
         super(Check, self).__init__()
         self.channel = channel
-        self.server = server
 
     @Slot()
     def run(self):
@@ -144,24 +151,93 @@ class Check(QRunnable):
 
 class Control(QRunnable):
     """Update json and send "start" function to server"""
-    def __init__(self, channel, server, command):
-        super(Start, self).__init__()
+    def __init__(self, channel, command):
+        super(Control, self).__init__()
         self.channel = channel
-        self.server = server
         self.command = command
 
     @Slot()
     def run(self):
         if self.command == "start":
-            check_true = check.check(
-                scripts.get_script_by_title(
-                    self.channel.attributes["script_title"]
-                ).content, self.server
-            )
-            if check_true == False:
+            script_ok = self.threadpool.start(
+                check(scripts.get_script_by_title(
+                    self.channel.attributes["script_title"]).content))
+            if script_ok is False:
                 return
 
         self.send(
             prepare_json(json, self.channel, self.command),
             self.channel
         )
+
+
+class Check(QRunnable):
+    def __init__(self, protocol):
+        super(Control, self).__init__()
+        self.protocol = protocol
+
+    @Slot()
+    def run(self):
+        """Initiates checking tests"""
+        passed, msg = self.legal_test(self.protocol)
+        if not passed:
+            return self.end_false(msg)
+        passed, msg = self.run_test(self.protocol)
+        if not passed:
+            return self.end_false(msg)
+        return True
+
+    def legal_test(protocol):
+        """Checks if script only contains valid commands"""
+        conditions = ["#",
+                      "for",
+                      "AdvanceCycle()",
+                      "CCCharge(",
+                      "CCDischarge(",
+                      "CVCharge(",
+                      "CVDischarge(",
+                      "Rest(",
+                      "Sleep("]
+
+        for line in protocol.splitlines():
+            line = line.replace(" ", "")
+            line = line.replace("\t", "")
+
+            valid = False
+            for condition in conditions:
+                if line.startswith(condition) or not line:
+                    valid = True
+                    break
+            if not valid:
+                return False, "Illegal command: \"" + line + "\"."
+
+        return True, "Passed"
+
+    def run_test(protocol):
+        """Checks if server can load script successfully"""
+        packet = prepare_json(protocol)
+        response = send(packet)["response"]
+        if response == "Passed":
+            return True, "Passed"
+        return (False,
+                "Server failed to run script. Error: \"{}\".".format(response))
+
+    def end_false(reason):
+        """Show message box with error statement and return false"""
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Warning)
+        msg.setText("Failed!")
+        msg.setInformativeText("Script did not pass the check.")
+        msg.setWindowTitle("Check Failed")
+        msg.setDetailedText(reason)
+        msg.exec_()
+        return False
+
+    def prepare_json(protocol):
+        """create json to send to server"""
+        json_packet = json.load(open("resources/defaultJSON.json"))
+
+        json_packet["function"] = "test"
+        json_packet["kwargs"]["protocol"] = protocol
+
+        return json_packet

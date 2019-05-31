@@ -1,20 +1,19 @@
 """Tab to view and edit scripts, also has access to checking procedure"""
 
-from PySide2.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel, QPlainTextEdit,\
-    QPushButton, QListWidget, QFileDialog, QMessageBox, QWidget, QStyleOption,\
-    QStyle
+from PySide2.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel,\
+    QPlainTextEdit, QPushButton, QListWidget, QFileDialog, QMessageBox,\
+    QWidget, QStyleOption, QStyle
 from PySide2.QtCore import Qt
 from PySide2.QtGui import QPainter
 from cyckei.client import scripts
-from cyckei.client import check
+from workers import Check
 
 
 class ScriptEditor(QWidget):
     """Main object of script tab"""
-    def __init__(self, channels, server):
+    def __init__(self, channels):
         QWidget.__init__(self)
         self.channels = channels
-        self.server = server
 
         # Create overall layout
         columns = QHBoxLayout(self)
@@ -106,7 +105,9 @@ class ScriptEditor(QWidget):
 
     def check(self):
         """Run check protocol to verify validity"""
-        if check.check(self.editor.toPlainText(), self.server):
+        if self.threadpool.start(
+            Check(scripts.get_script_by_title(
+                self.channel.attributes["script_title"]).content)):
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Information)
             msg.setText("Passed!")
