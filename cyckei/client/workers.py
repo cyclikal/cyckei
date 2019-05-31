@@ -20,6 +20,7 @@ def not_none(value):
 
 def send(json, channel):
     """Sends json to server and updates status with response"""
+    # TODO: Load info from config
     socket = Socket("tcp://localhost", 5556)
     resp = socket.send(json)["response"]
     logging.info(resp)
@@ -68,7 +69,8 @@ class Ping(QRunnable):
 
     @Slot()
     def run(self):
-        Socket().ping_server()
+        # TODO: Load info from config
+        Socket("tcp://localhost", 5556).ping_server()
 
 
 class UpdateStatus(QRunnable):

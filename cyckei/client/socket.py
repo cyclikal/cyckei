@@ -19,29 +19,12 @@ class Socket(object):
 
     def send(self, to_send):
         """Sends packet to server"""
-        start_time = time()
         logging.debug("Sending: {}".format(to_send["function"]))
 
         self.socket.send_json(to_send)
         response = self.socket.recv_json()
         logging.debug("Received: {}".format(response))
         return response
-
-        while True:
-            if time() - start_time < TIMEOUT:
-                try:
-                    response = self.socket.recv_json(FLAGS=zmq.N)
-                    logging.debug("Received: {}".format(response))
-                    return response
-                except zmq.error.Again as error:
-                    logging.debug("Retrying: {}".format(error))
-                    sleep(0.1)
-            else:
-                logging.debug("Reached Timeout, closing socket.")
-                self.close_socket()
-                break
-
-        return json.loads("""{"response": "No Connection"}""")
 
     def ping_server(self):
         """Sends ping to server to check if connection functions"""
