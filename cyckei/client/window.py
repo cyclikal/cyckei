@@ -100,9 +100,9 @@ class MainWindow(QMainWindow):
         menu_options[-1].setStatusTip("Get Current Server Time")
         menu_options[-1].triggered.connect(server.get_server_time)
 
-        menu_options.append(QAction("&Start / Reconnect", self))
-        menu_options[-1].setStatusTip("Start or Reconnect to Server")
-        menu_options[-1].triggered.connect(server.start_server_app)
+        menu_options.append(QAction("&Reconnect", self))
+        menu_options[-1].setStatusTip("Reconnect to Server")
+        menu_options[-1].triggered.connect(server.start_socket)
 
         menu_options.append(QAction("&Kill", self))
         menu_options[-1].setStatusTip("Kill Server")

@@ -1,9 +1,8 @@
-import time
 import zmq
 import json
 import logging
 
-from PySide2.QtCore import QTimer
+from time import sleep, time
 from PySide2.QtWidgets import QMessageBox, QWidget
 
 TIMEOUT = 3  # Seconds for listening to server before giving up.
@@ -18,22 +17,33 @@ class Server(object):
         self.communication = False
         self.context = zmq.Context()
         self.socket = None
+        self.start_socket()
 
     def send(self, to_send):
         """Sends packet to server"""
         if self.communication:
-            start_time = time.time()
+            logging.debug("Sending Packet")
+            start_time = time()
             logging.debug("Sending: {}".format(to_send["function"]))
-            self.socket.send_json(to_send)
 
-            if time.time() - start_time < TIMEOUT:
-                try:
-                    response = self.socket.recv_json(flags=zmq.NOBLOCK)
-                    logging.debug("Received: {}".format(response))
-                    return response
-                except zmq.error.Again:
-                    pass
-                self.close_socket()
+            self.socket.send_json(to_send)
+            response = self.socket.recv_json()
+            logging.debug("Received: {}".format(response))
+            return response
+
+            while True:
+                if time() - start_time < TIMEOUT:
+                    try:
+                        response = self.socket.recv_json()
+                        logging.debug("Received: {}".format(response))
+                        return response
+                    except zmq.error.Again as error:
+                        logging.debug("Retrying: {}".format(error))
+                        sleep(0.1)
+                else:
+                    logging.debug("Reached Timeout, closing socket.")
+                    self.close_socket()
+                    break
 
         return json.loads("""{"response": "No Connection"}""")
 
@@ -48,16 +58,6 @@ class Server(object):
         self.socket = self.context.socket(zmq.REQ)
         self.socket.connect("{}:{}".format(self.address, self.port))
         self.communication = True
-
-    def start_server_app(self):
-        """Launches server as another process and tries to connect"""
-        logging.info("Attempting to connect to server.")
-        self.start_socket()
-        ping_result = self.ping()
-        logging.info(ping_result)
-        if ping_result == "No Connection":
-            logging.error("Could not connect, retrying")
-            QTimer.singleShot(5000, self.start_socket)
 
     def ping_server(self):
         """Sends ping to server to check if connection functions"""

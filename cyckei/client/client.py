@@ -31,7 +31,6 @@ def main():
 
     scripts.load_default_scripts(config["path"] + "/scripts")
     server = Server(config["zmq"]["client"]["address"], config["zmq"]["port"])
-    server.start_socket()
 
     app = QApplication(sys.argv)
     window = MainWindow(config, server)
