@@ -5,21 +5,16 @@ Listed in the channel tab of the main window.
 
 import json
 import logging
-from os.path import exists
-from os import remove
-from os import makedirs
-from datetime import date
 
 
 from PySide2.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QComboBox, \
-    QLineEdit, QPushButton, QLabel, QMessageBox, QScrollArea, QStyleOption, \
+    QLineEdit, QPushButton, QLabel, QScrollArea, QStyleOption, \
     QStyle
-from PySide2.QtCore import QMetaObject, QTimer
+from PySide2.QtCore import QMetaObject
 from PySide2.QtGui import QPainter
 
 from cyckei.client import scripts
-from cyckei.client import check
-from worker import Worker
+import workers
 
 
 def not_none(value):
@@ -92,7 +87,6 @@ class ChannelWidget(QWidget):
 
     def __init__(self, channel, server, record_folder, threadpool):
         super().__init__()
-        # Assignments
         self.server = server
         # Default Values
         self.attributes = {}
@@ -117,6 +111,7 @@ class ChannelWidget(QWidget):
         settings = QHBoxLayout()
         rows.addLayout(settings)
         self.setup_ui()
+
         for element in self.elements:
             settings.addWidget(element)
         rows.addWidget(self.elements[-1])
@@ -129,8 +124,7 @@ class ChannelWidget(QWidget):
         self.json = json.load(open("resources/defaultJSON.json"))
 
         # Update status
-        status_worker = Worker(self.update_status)
-        self.threadpool.start(status_worker)
+        self.threadpool.start(workers.UpdateStatus(self, self.server))
 
     def setup_ui(self):
         """Creates all UI elements and adds them to self.elements list"""
@@ -258,148 +252,28 @@ class ChannelWidget(QWidget):
 
     # Begin Button Press Definitions
     def button_auto_fill(self):
-        worker = Worker(self.autofill)
-        self.threadpool.start(worker)
+        self.threadpool.start(workers.AutoFill(self, self.server))
+        logging.debug("AutoFill Pressed")
 
     def button_check(self):
-        worker = Worker(self.check)
-        self.threadpool.start(worker)
+        self.threadpool.start(workers.Check(self, self.server))
+        logging.debug("Check Pressed")
 
     def button_start(self):
-        worker = Worker(self.start)
-        self.threadpool.start(worker)
+        self.threadpool.start(workers.Start(self, self.server))
+        logging.debug("Start Pressed")
 
     def button_pause(self):
-        worker = Worker(self.pause)
-        self.threadpool.start(worker)
+        self.threadpool.start(workers.Pause(self, self.server))
+        logging.debug("Pause Pressed")
 
     def button_resume(self):
-        worker = Worker(self.resume)
-        self.threadpool.start(worker)
+        self.threadpool.start(workers.Resume(self, self.server))
+        logging.debug("Resume Pressed")
 
     def button_stop(self):
-        worker = Worker(self.stop)
-        self.threadpool.start(worker)
-
-    # Begin Button Execution Definition
-
-    def prepare_json(self, function):
-        """Sets the channel's json script to current values"""
-        protocol = scripts.get_script_by_title(
-            self.attributes["script_title"]).content
-
-        self.json["function"] = function
-        self.json["kwargs"]["channel"] = self.attributes["channel"]
-        self.json["kwargs"]["meta"]["cellid"] = self.attributes["id"]
-        self.json["kwargs"]["meta"]["comment"] = self.attributes["comment"]
-        self.json["kwargs"]["meta"]["package"] = self.attributes["package"]
-        self.json["kwargs"]["meta"]["cell_type"] = self.attributes["type"]
-        temp_path = (
-            self.attributes["record_folder"]
-            + "/"
-            + str(date.today())
-        )
-        if not exists(temp_path):
-            makedirs(temp_path)
-        self.json["kwargs"]["meta"]["path"] = (
-            temp_path
-            + "/"
-            + self.attributes["path"]
-        )
-        self.json["kwargs"]["meta"]["mass"] = self.attributes["mass"]
-        self.json["kwargs"]["meta"]["protocol_name"] = (
-            self.attributes["script_title"]
-        )
-        self.json["kwargs"]["meta"]["requester"] = self.attributes["requestor"]
-        self.json["kwargs"]["meta"]["channel"] = self.attributes["channel"]
-        self.json["kwargs"]["meta"]["protocol"] = protocol
-        self.json["kwargs"]["protocol"] = protocol
-
-    def update_status(self):
-        """Update status shown below controls by contacting server"""
-        info_channel = self.server.info_channel(
-            self.attributes["channel"]
-        )["response"]
-        channel_status = self.server.channel_status(
-            self.attributes["channel"]
-        )["response"]
-        try:
-            status = (channel_status
-                      + " - " + not_none(info_channel["state"])
-                      + " | C: " + not_none(info_channel["current"])
-                      + ", V: " + not_none(info_channel["voltage"]))
-        except TypeError:
-            status = info_channel
-        self.elements[15].setText(status)
-        QTimer.singleShot(1000, self.update_status)
-
-    def auto_fill(self):
-        """Fill log text with value derived from cell identification"""
-        if self.elements[2].text():
-            self.elements[3].setText("{}A.pyb".format(self.elements[2].text()))
-
-    def check(self):
-        """Tell channel to Rest() long enough to get voltage reading on cell"""
-        package = json.load(open("resources/defaultJSON.json"))
-        package["function"] = "start"
-        package["kwargs"]["channel"] = self.attributes["channel"]
-        package["kwargs"]["meta"]["path"] = (
-            self.attributes["record_folder"]
-            + "/{}.temp".format(self.attributes["channel"])
-        )
-        package["kwargs"]["protocol"] = """Rest()"""
-        self.server.send(package)
-
-        info_channel = self.server.info_channel(
-            self.attributes["channel"])["response"]
-        try:
-            status = ("Voltage of cell: "
-                      + not_none(info_channel["voltage"]))
-        except Exception:
-            status = "Could not read cell voltage."
-
-        package["function"] = "stop"
-        self.server.send(package)
-
-        msg = QMessageBox()
-        msg.setText(status)
-        msg.setWindowTitle("Cell Status")
-        msg.exec_()
-
-        if exists(package["kwargs"]["meta"]["path"]):
-            remove(package["kwargs"]["meta"]["path"])
-
-    def start(self):
-        """Update json and send "start" function to server"""
-        check_true = check.check(
-            scripts.get_script_by_title(
-                self.attributes["script_title"]
-            ).content, self.server
-        )
-        if check_true:
-            self.prepare_json("start")
-            self.send()
-
-    def pause(self):
-        """Update json and send "pause" function to server"""
-        self.prepare_json("pause")
-        self.send()
-
-    def resume(self):
-        """Update json and send "resume" function to server"""
-        self.prepare_json("resume")
-        self.send()
-
-    def stop(self):
-        """Update json and send "stop" function to server"""
-        self.prepare_json("stop")
-        self.send()
-
-    def send(self):
-        """Sends json to server and updates status with response"""
-        resp = self.server.send(self.json)["response"]
-        logging.info(resp)
-        self.elements[15].setText(resp)
+        self.threadpool.start(workers.Stop(self, self.server))
+        logging.debug("Stop Pressed")
 
     # Begin Attribute Assignment Definitions
 
