@@ -1,2 +1,2 @@
 python setup.py sdist
-twine upload dist/*
+twine upload dist/cyckei-0.0.1.dev4.tar.gz

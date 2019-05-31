@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="cyckei",
-    version="0.0.1.dev3",
+    version="0.0.1.dev4",
     author="Gabriel Ewig",
     author_email="gabriel@cyclikal.com",
     description="Keithley Battery Cycler for Python3",
