@@ -102,11 +102,11 @@ class MainWindow(QMainWindow):
 
         menu_options.append(QAction("&Reconnect", self))
         menu_options[-1].setStatusTip("Reconnect to Server")
-        menu_options[-1].triggered.connect(server.start_socket)
+        # menu_options[-1].triggered.connect(server.start_socket)
 
         menu_options.append(QAction("&Kill", self))
         menu_options[-1].setStatusTip("Kill Server")
-        menu_options[-1].triggered.connect(server.kill_server)
+        # menu_options[-1].triggered.connect(server.kill_server)
 
         menu_options.append(QAction("&Save", self))
         menu_options[-1].setStatusTip("Save Batch of IDs and Log Files")

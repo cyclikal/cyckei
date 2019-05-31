@@ -10,6 +10,7 @@ from time import sleep
 
 import scripts
 import check
+from socket import Socket
 
 
 def not_none(value):
@@ -17,11 +18,13 @@ def not_none(value):
     return "None" if value is None else str(value)
 
 
-def send(server, json, channel):
+def send(json, channel):
     """Sends json to server and updates status with response"""
-    resp = server.send(json)["response"]
+    socket = Socket("tcp://localhost", 5556)
+    resp = socket.send(json)["response"]
     logging.info(resp)
     channel.elements[15].setText(resp)
+    socket.socket.close()
 
 
 def prepare_json(self, json, channel, function):
@@ -139,71 +142,26 @@ class Check(QRunnable):
             remove(package["kwargs"]["meta"]["path"])
 
 
-class Start(QRunnable):
+class Control(QRunnable):
     """Update json and send "start" function to server"""
-    def __init__(self, channel, server):
+    def __init__(self, channel, server, command):
         super(Start, self).__init__()
         self.channel = channel
         self.server = server
+        self.command = command
 
     @Slot()
     def run(self):
-        check_true = check.check(
-            scripts.get_script_by_title(
-                self.channel.attributes["script_title"]
-            ).content, self.server
-        )
-        if check_true:
-            self.send(
-                self.server,
-                prepare_json(json, self.channel, "start"),
-                self.channel
+        if self.command == "start":
+            check_true = check.check(
+                scripts.get_script_by_title(
+                    self.channel.attributes["script_title"]
+                ).content, self.server
             )
+            if check_true == False:
+                return
 
-
-class Pause(QRunnable):
-    """Update json and send "pause" function to server"""
-    def __init__(self, channel, server):
-        super(Pause, self).__init__()
-        self.channel = channel
-        self.server = server
-
-    @Slot()
-    def run(self):
         self.send(
-            self.server,
-            prepare_json(json, self.channel, "pause"),
-            self.channel
-        )
-
-
-class Resume(QRunnable):
-    """Update json and send "resume" function to server"""
-    def __init__(self, channel, server):
-        super(Resume, self).__init__()
-        self.channel = channel
-        self.server = server
-
-    @Slot()
-    def run(self):
-        self.send(
-            self.server,
-            prepare_json(json, self.channel, "resume"),
-            self.channel
-        )
-
-
-class Stop(QRunnable):
-    """Update json and send "stop" function to server"""
-    def __init__(self, channel, server):
-        super(Stop, self).__init__()
-        self.channel = channel
-        self.server = server
-
-    @Slot()
-    def run(self):
-        self.send(
-            self.server,
-            prepare_json(json, self.channel, "stop"),
+            prepare_json(json, self.channel, self.command),
             self.channel
         )

@@ -140,15 +140,9 @@ def process_socket(socket, runners, sources, server_time):
         None
 
     """
-    logging.debug("cyckei.server.server.process_socket: entered")
 
-    try:
-        # check for a message, this will not block
-        # it returns a python object already rebuilt from the json
-        msg = socket.recv_json(flags=zmq.NOBLOCK)
-        logging.info("Packet request received: ".format(msg["function"]))
-    except zmq.error.Again:
-        msg = None
+    msg = socket.recv_json()
+    logging.info("Packet request received: ".format(msg["function"]))
 
     if msg is not None:
         response = {"response": None, "message": None}

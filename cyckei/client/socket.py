@@ -8,56 +8,40 @@ from PySide2.QtWidgets import QMessageBox, QWidget
 TIMEOUT = 3  # Seconds for listening to server before giving up.
 
 
-class Server(object):
+class Socket(object):
     """Handles connection, communication, and control of server over ZMQ"""
 
     def __init__(self, address, port):
         self.address = address
         self.port = port
-        self.communication = False
-        self.context = zmq.Context()
-        self.socket = None
-        self.start_socket()
+        self.socket = zmq.Context().socket(zmq.REQ)
+        self.socket.connect("{}:{}".format(self.address, self.port))
 
     def send(self, to_send):
         """Sends packet to server"""
-        if self.communication:
-            logging.debug("Sending Packet")
-            start_time = time()
-            logging.debug("Sending: {}".format(to_send["function"]))
+        start_time = time()
+        logging.debug("Sending: {}".format(to_send["function"]))
 
-            self.socket.send_json(to_send)
-            response = self.socket.recv_json()
-            logging.debug("Received: {}".format(response))
-            return response
+        self.socket.send_json(to_send)
+        response = self.socket.recv_json()
+        logging.debug("Received: {}".format(response))
+        return response
 
-            while True:
-                if time() - start_time < TIMEOUT:
-                    try:
-                        response = self.socket.recv_json()
-                        logging.debug("Received: {}".format(response))
-                        return response
-                    except zmq.error.Again as error:
-                        logging.debug("Retrying: {}".format(error))
-                        sleep(0.1)
-                else:
-                    logging.debug("Reached Timeout, closing socket.")
-                    self.close_socket()
-                    break
+        while True:
+            if time() - start_time < TIMEOUT:
+                try:
+                    response = self.socket.recv_json(FLAGS=zmq.N)
+                    logging.debug("Received: {}".format(response))
+                    return response
+                except zmq.error.Again as error:
+                    logging.debug("Retrying: {}".format(error))
+                    sleep(0.1)
+            else:
+                logging.debug("Reached Timeout, closing socket.")
+                self.close_socket()
+                break
 
         return json.loads("""{"response": "No Connection"}""")
-
-    def close_socket(self):
-        """Closes connection with server to reset queue"""
-        self.socket.close()
-        self.communication = False
-
-    def start_socket(self):
-        """Connects socket to specified ZMQ port"""
-        logging.info("Client connecting to port {}...".format(self.port))
-        self.socket = self.context.socket(zmq.REQ)
-        self.socket.connect("{}:{}".format(self.address, self.port))
-        self.communication = True
 
     def ping_server(self):
         """Sends ping to server to check if connection functions"""

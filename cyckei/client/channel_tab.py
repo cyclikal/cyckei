@@ -260,19 +260,19 @@ class ChannelWidget(QWidget):
         logging.debug("Check Pressed")
 
     def button_start(self):
-        self.threadpool.start(workers.Start(self, self.server))
+        self.threadpool.start(workers.Control(self, self.server, "start"))
         logging.debug("Start Pressed")
 
     def button_pause(self):
-        self.threadpool.start(workers.Pause(self, self.server))
+        self.threadpool.start(workers.Control(self, self.server, "pause"))
         logging.debug("Pause Pressed")
 
     def button_resume(self):
-        self.threadpool.start(workers.Resume(self, self.server))
+        self.threadpool.start(workers.Control(self, self.server, "resume"))
         logging.debug("Resume Pressed")
 
     def button_stop(self):
-        self.threadpool.start(workers.Stop(self, self.server))
+        self.threadpool.start(workers.Controll(self, self.server, "stop"))
         logging.debug("Stop Pressed")
 
     # Begin Attribute Assignment Definitions
