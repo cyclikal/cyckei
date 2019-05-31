@@ -2,7 +2,6 @@ import zmq
 import json
 import logging
 
-from time import sleep, time
 from PySide2.QtWidgets import QMessageBox, QWidget
 
 TIMEOUT = 3  # Seconds for listening to server before giving up.

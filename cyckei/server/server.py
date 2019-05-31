@@ -142,13 +142,13 @@ def process_socket(socket, runners, sources, server_time):
     """
 
     msg = socket.recv_json()
-    logging.info("Packet request received: ".format(msg["function"]))
 
     if msg is not None:
         response = {"response": None, "message": None}
         try:
             # a message has been received
             fun = msg["function"]
+            logging.info("Packet request received: {}".format(fun))
             kwargs = msg.get("kwargs", None)
             # response = {"version": __version__, "response": None}
             resp = "Unknown function"
