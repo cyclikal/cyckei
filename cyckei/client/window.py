@@ -185,7 +185,7 @@ class MainWindow(QMainWindow):
     def fill_batch(self):
         """Executes autofill for each channel"""
         for channel in self.channels:
-            channel.auto_fill()
+            channel.button_auto_fill()
 
     def increment_batch(self):
         """Increments last letter of batch by char number"""
