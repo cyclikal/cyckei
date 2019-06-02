@@ -4,7 +4,7 @@ import logging
 from PySide2.QtCore import QRunnable, Slot
 from PySide2.QtWidgets import QMessageBox
 from os.path import exists
-from os import makedirs, remove
+from os import makedirs
 from datetime import date
 from time import sleep
 
@@ -110,7 +110,7 @@ class AutoFill(QRunnable):
     def run(self):
         if self.channel.elements[2].text():
             self.channel.elements[3].setText(
-                "{}A.pyb".format(self.elements[2].text()))
+                "{}A.pyb".format(self.channel.elements[2].text()))
 
 
 class Read(QRunnable):
