@@ -8,7 +8,6 @@ from os import makedirs, remove
 from datetime import date
 from time import sleep
 
-import check
 from socket import Socket
 
 
@@ -17,14 +16,14 @@ def not_none(value):
     return "None" if value is None else str(value)
 
 
-def send(json, channel):
+def send(json):
     """Sends json to server and updates status with response"""
     # TODO: Load info from config
     socket = Socket("tcp://localhost", 5556)
     resp = socket.send(json)["response"]
     logging.info(resp)
-    channel.elements[15].setText(resp)
     socket.socket.close()
+    return resp
 
 
 def prepare_json(channel, function, scripts):
@@ -81,6 +80,7 @@ class UpdateStatus(QRunnable):
 
     @Slot()
     def run(self):
+        # TODO: Utilize configuration
         socket = Socket("tcp://localhost", 5556)
         while True:
             info_channel = socket.info_channel(
@@ -116,11 +116,12 @@ class AutoFill(QRunnable):
 class Read(QRunnable):
     """Tell channel to Rest() long enough to get voltage reading on cell"""
     def __init__(self, channel):
-        super(Check, self).__init__()
+        super(Read, self).__init__()
         self.channel = channel
 
     @Slot()
     def run(self):
+        socket = Socket("tcp://localhost", 5556)
         package = json.load(open("resources/defaultJSON.json"))
         package["function"] = "start"
         package["kwargs"]["channel"] = self.channel.attributes["channel"]
@@ -129,9 +130,9 @@ class Read(QRunnable):
             + "/{}.temp".format(self.channel.attributes["channel"])
         )
         package["kwargs"]["protocol"] = """Rest()"""
-        self.server.send(package)
+        socket.send(package)
 
-        info_channel = self.server.info_channel(
+        info_channel = socket.info_channel(
             self.channel.attributes["channel"])["response"]
         try:
             status = ("Voltage of cell: "
@@ -140,15 +141,11 @@ class Read(QRunnable):
             status = "Could not read cell voltage."
 
         package["function"] = "stop"
-        self.server.send(package)
+        socket.send(package)
 
-        msg = QMessageBox()
-        msg.setText(status)
-        msg.setWindowTitle("Cell Status")
-        msg.exec_()
+        self.channel.elements[-1].setText(status)
 
-        if exists(package["kwargs"]["meta"]["path"]):
-            remove(package["kwargs"]["meta"]["path"])
+        socket.socket.close()
 
 
 class Control(QRunnable):
@@ -162,21 +159,18 @@ class Control(QRunnable):
     @Slot()
     def run(self):
         if self.command == "start":
-            script_ok = self.threadpool.start(
-                check(self.scripts.get_script_by_title(
-                    self.channel.attributes["script_title"]).content))
+            script_ok = Check(self.scripts.get_script_by_title(
+                    self.channel.attributes["script_title"]).content).run()
             if script_ok is False:
                 return
 
-        send(
-            prepare_json(self.channel, self.command, self.scripts),
-            self.channel
-        )
+        response = send(prepare_json(self.channel, self.command, self.scripts))
+        self.channel.elements[-1].setText(response)
 
 
 class Check(QRunnable):
     def __init__(self, protocol):
-        super(Control, self).__init__()
+        super(Check, self).__init__()
         self.protocol = protocol
 
     @Slot()
@@ -219,7 +213,7 @@ class Check(QRunnable):
     def run_test(self, protocol):
         """Checks if server can load script successfully"""
         packet = self.prepare_json(protocol)
-        response = send(packet)["response"]
+        response = send(packet)
         if response == "Passed":
             return True, "Passed"
         return (False,
