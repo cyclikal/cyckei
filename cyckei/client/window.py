@@ -20,8 +20,8 @@ def help():
     msg.setIcon(QMessageBox.Information)
     msg.setText(
         """For help refer to the HELP.md and README.md files located in
-        the cyckei install location, or online on our GitLab page.
-        \n\ngitlab.com/cyclikal/cyckei"""
+the cyckei install location, or online on our GitLab page.
+\n\ngitlab.com/cyclikal/cyckei"""
     )
     msg.setWindowTitle("Help")
     msg.exec_()
@@ -33,9 +33,9 @@ def about():
     msg.setIcon(QMessageBox.Information)
     msg.setText(
         """Cyckei is developed by Gabriel Ewig and Vincent
-        Chevrier at Cyclikal, LLC.\n\nUpdates and source code can be found on
-        GitLab at gitlab.com/cyclikal/cyckei.\n\nFor information about
-        Cyclikal, visit cyclikal.com."""
+Chevrier at Cyclikal, LLC.\n\nUpdates and source code can be found on
+GitLab at gitlab.com/cyclikal/cyckei.\n\nFor information about
+Cyclikal, visit cyclikal.com."""
     )
     msg.setWindowTitle("About")
     msg.exec_()
