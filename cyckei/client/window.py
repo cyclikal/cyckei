@@ -74,8 +74,9 @@ class MainWindow(QMainWindow):
             ChannelTab(self.config, self.threadpool, scripts),
             "Channels"
         )
+        self.channels = self.tab_widget.widget(0).channels
         self.tab_widget.addTab(
-            ScriptEditor(self.tab_widget.widget(0).channels, scripts),
+            ScriptEditor(self.channels, scripts),
             "Scripts"
         )
         self.tab_widget.addTab(LogViewer(self.config), "Logs")
