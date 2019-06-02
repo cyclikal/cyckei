@@ -9,7 +9,7 @@ import logging
 
 from PySide2.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QComboBox, \
     QLineEdit, QPushButton, QLabel, QScrollArea, QStyleOption, \
-    QStyle
+    QStyle, QMessageBox
 from PySide2.QtCore import QMetaObject
 from PySide2.QtGui import QPainter
 
@@ -260,8 +260,16 @@ class ChannelWidget(QWidget):
         logging.debug("AutoFill Pressed")
 
     def button_read(self):
-        self.threadpool.start(workers.Read(self))
         logging.debug("Read Pressed")
+        worker = workers.Read(self)
+        worker.signals.finished.connect(self.post_message)
+        self.threadpool.start(worker)
+
+    def post_message(self, status):
+        msg = QMessageBox()
+        msg.setText(status)
+        msg.setWindowTitle("Read Cell")
+        msg.exec_()
 
     def button_start(self):
         self.threadpool.start(workers.Control(self, "start", self.scripts))

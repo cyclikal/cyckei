@@ -1,7 +1,7 @@
 import json
 import logging
 
-from PySide2.QtCore import QRunnable, Slot
+from PySide2.QtCore import QRunnable, Slot, Signal, QObject
 from PySide2.QtWidgets import QMessageBox
 from os.path import exists
 from os import makedirs
@@ -62,6 +62,10 @@ def prepare_json(channel, function, scripts):
     return json_packet
 
 
+class Signals(QObject):
+    finished = Signal(object)
+
+
 class Ping(QRunnable):
     def __init__(self):
         super(Ping, self).__init__()
@@ -118,6 +122,7 @@ class Read(QRunnable):
     def __init__(self, channel):
         super(Read, self).__init__()
         self.channel = channel
+        self.signals = Signals()
 
     @Slot()
     def run(self):
@@ -143,9 +148,8 @@ class Read(QRunnable):
         package["function"] = "stop"
         socket.send(package)
 
-        self.channel.elements[-1].setText(status)
-
         socket.socket.close()
+        self.signals.finished.emit(status)
 
 
 class Control(QRunnable):
