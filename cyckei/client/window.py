@@ -51,7 +51,7 @@ class MainWindow(QMainWindow):
         self.config = config
         # Allows icon to show in Windows Taskbar
         self.setWindowIcon(QIcon("resources/icon.png"))
-        self.resize(1000, 562)
+        self.resize(1100, 600)
 
         # Setup ThreadPool
         self.threadpool = QThreadPool()
