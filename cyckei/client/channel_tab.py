@@ -13,7 +13,6 @@ from PySide2.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QComboBox, \
 from PySide2.QtCore import QMetaObject
 from PySide2.QtGui import QPainter
 
-from cyckei.client import scripts
 import workers
 
 
@@ -50,7 +49,7 @@ def new_text_element(label, status, connect):
 
 
 class ChannelTab(QWidget):
-    def __init__(self, config, threadpool):
+    def __init__(self, config, threadpool, scripts):
         """Setup each channel widget and place in QVBoxlayout"""
         QWidget.__init__(self)
 
@@ -69,7 +68,8 @@ class ChannelTab(QWidget):
             self.channels.append(ChannelWidget(
                 channel["channel"],
                 config["path"] + "/tests",
-                threadpool
+                threadpool,
+                scripts
             ))
             rows.addWidget(self.channels[-1])
 
@@ -84,7 +84,7 @@ class ChannelTab(QWidget):
 class ChannelWidget(QWidget):
     """Controls and stores information for a given channel"""
 
-    def __init__(self, channel, record_folder, threadpool):
+    def __init__(self, channel, record_folder, threadpool, scripts):
         super().__init__()
         # Default Values
         self.attributes = {}
@@ -101,6 +101,7 @@ class ChannelWidget(QWidget):
         self.attributes["script_title"] = None
 
         self.threadpool = threadpool
+        self.scripts = scripts
 
         self.setMinimumSize(800, 54)
 
@@ -140,9 +141,9 @@ class ChannelWidget(QWidget):
 
         # 1 - Script selection box
         available_scripts = []
-        if scripts.SCRIPTS:
-            self.attributes["script_title"] = scripts.SCRIPTS[0].title
-            for script in scripts.SCRIPTS:
+        if self.scripts.script_list:
+            self.attributes["script_title"] = self.scripts.script_list[0].title
+            for script in self.scripts.script_list:
                 available_scripts.append(script.title)
         self.elements.append(new_combo_element(available_scripts,
                                                "Select scripts to run",
@@ -258,19 +259,19 @@ class ChannelWidget(QWidget):
         logging.debug("Read Pressed")
 
     def button_start(self):
-        self.threadpool.start(workers.Control(self, "start"))
+        self.threadpool.start(workers.Control(self, "start", self.scripts))
         logging.debug("Start Pressed")
 
     def button_pause(self):
-        self.threadpool.start(workers.Control(self, "pause"))
+        self.threadpool.start(workers.Control(self, "pause", self.scripts))
         logging.debug("Pause Pressed")
 
     def button_resume(self):
-        self.threadpool.start(workers.Control(self, "resume"))
+        self.threadpool.start(workers.Control(self, "resume", self.scripts))
         logging.debug("Resume Pressed")
 
     def button_stop(self):
-        self.threadpool.start(workers.Control(self, "stop"))
+        self.threadpool.start(workers.Control(self, "stop", self.scripts))
         logging.debug("Stop Pressed")
 
     # Begin Attribute Assignment Definitions

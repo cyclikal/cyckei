@@ -11,6 +11,7 @@ from cyckei.client.channel_tab import ChannelTab
 from cyckei.client.script_tab import ScriptEditor
 from cyckei.client.log_tab import LogViewer
 from workers import Ping
+from scripts import Scripts
 
 
 def help():
@@ -58,6 +59,10 @@ class MainWindow(QMainWindow):
             self.threadpool.maxThreadCount()
         ))
 
+        # Load scripts
+        scripts = Scripts()
+        scripts.load_default_scripts(config["path"] + "/scripts")
+
         # Create menu and status bar
         self.menu_bar = self.create_menu()
         self.status_bar = self.statusBar()
@@ -66,11 +71,11 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.tab_widget)
 
         self.tab_widget.addTab(
-            ChannelTab(self.config, self.threadpool),
+            ChannelTab(self.config, self.threadpool, scripts),
             "Channels"
         )
         self.tab_widget.addTab(
-            ScriptEditor(self.tab_widget.widget(0).channels),
+            ScriptEditor(self.tab_widget.widget(0).channels, scripts),
             "Scripts"
         )
         self.tab_widget.addTab(LogViewer(self.config), "Logs")

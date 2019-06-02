@@ -11,9 +11,10 @@ from workers import Check
 
 class ScriptEditor(QWidget):
     """Main object of script tab"""
-    def __init__(self, channels):
+    def __init__(self, channels, scripts):
         QWidget.__init__(self)
         self.channels = channels
+        self.scripts = scripts
 
         # Create overall layout
         columns = QHBoxLayout(self)
@@ -60,7 +61,7 @@ class ScriptEditor(QWidget):
         """Create list of script files"""
         self.file_list = QListWidget()
         self.file_list.itemClicked.connect(self.list_clicked)
-        for script in scripts.SCRIPTS:
+        for script in self.scripts.script_list:
             self.file_list.addItem(script)
 
     def list_clicked(self, item):
@@ -83,7 +84,7 @@ class ScriptEditor(QWidget):
 
     def remove(self):
         """Remove script from lisr and channel selector"""
-        scripts.SCRIPTS.remove(self.file_list.currentItem())
+        self.scripts.scripts_list.remove(self.file_list.currentItem())
         for channel in self.channels:
             channel.elements[1].removeItem(channel.elements[1].findText(
                     self.file_list.currentItem().title,
@@ -117,10 +118,10 @@ class ScriptEditor(QWidget):
 
     def add(self, file):
         """Add new script to list to make available"""
-        scripts.SCRIPTS.append(scripts.Script(file[1], file[0]))
-        self.file_list.addItem(scripts.SCRIPTS[-1])
+        self.scripts.script_list.append(scripts.Script(file[1], file[0]))
+        self.file_list.addItem(self.scripts.script_list[-1])
         for channel in self.channels:
-            channel.elements[1].addItem(scripts.SCRIPTS[-1].title)
+            channel.elements[1].addItem(self.scripts.script_list[-1].title)
 
     def paintEvent(self, event):
         style_option = QStyleOption()

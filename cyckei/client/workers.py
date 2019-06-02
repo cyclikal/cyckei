@@ -8,7 +8,6 @@ from os import makedirs, remove
 from datetime import date
 from time import sleep
 
-import scripts
 import check
 from socket import Socket
 
@@ -28,17 +27,18 @@ def send(json, channel):
     socket.socket.close()
 
 
-def prepare_json(json, channel, function):
+def prepare_json(channel, function, scripts):
     """Sets the channel's json script to current values"""
     protocol = scripts.get_script_by_title(
         channel.attributes["script_title"]).content
+    json_packet = json.load(open("resources/defaultJSON.json"))
 
-    json["function"] = function
-    json["kwargs"]["channel"] = channel.attributes["channel"]
-    json["kwargs"]["meta"]["cellid"] = channel.attributes["id"]
-    json["kwargs"]["meta"]["comment"] = channel.attributes["comment"]
-    json["kwargs"]["meta"]["package"] = channel.attributes["package"]
-    json["kwargs"]["meta"]["cell_type"] = channel.attributes["type"]
+    json_packet["function"] = function
+    json_packet["kwargs"]["channel"] = channel.attributes["channel"]
+    json_packet["kwargs"]["meta"]["cellid"] = channel.attributes["id"]
+    json_packet["kwargs"]["meta"]["comment"] = channel.attributes["comment"]
+    json_packet["kwargs"]["meta"]["package"] = channel.attributes["package"]
+    json_packet["kwargs"]["meta"]["cell_type"] = channel.attributes["type"]
     temp_path = (
         channel.attributes["record_folder"]
         + "/"
@@ -46,21 +46,21 @@ def prepare_json(json, channel, function):
     )
     if not exists(temp_path):
         makedirs(temp_path)
-    json["kwargs"]["meta"]["path"] = (
+    json_packet["kwargs"]["meta"]["path"] = (
         temp_path
         + "/"
         + channel.attributes["path"]
     )
-    json["kwargs"]["meta"]["mass"] = channel.attributes["mass"]
-    json["kwargs"]["meta"]["protocol_name"]\
+    json_packet["kwargs"]["meta"]["mass"] = channel.attributes["mass"]
+    json_packet["kwargs"]["meta"]["protocol_name"]\
         = channel.attributes["script_title"]
-    json["kwargs"]["meta"]["requester"]\
+    json_packet["kwargs"]["meta"]["requester"]\
         = channel.attributes["requestor"]
-    json["kwargs"]["meta"]["channel"] = channel.attributes["channel"]
-    json["kwargs"]["meta"]["protocol"] = protocol
-    json["kwargs"]["protocol"] = protocol
+    json_packet["kwargs"]["meta"]["channel"] = channel.attributes["channel"]
+    json_packet["kwargs"]["meta"]["protocol"] = protocol
+    json_packet["kwargs"]["protocol"] = protocol
 
-    return json
+    return json_packet
 
 
 class Ping(QRunnable):
@@ -153,22 +153,23 @@ class Read(QRunnable):
 
 class Control(QRunnable):
     """Update json and send "start" function to server"""
-    def __init__(self, channel, command):
+    def __init__(self, channel, command, scripts):
         super(Control, self).__init__()
         self.channel = channel
         self.command = command
+        self.scripts = scripts
 
     @Slot()
     def run(self):
         if self.command == "start":
             script_ok = self.threadpool.start(
-                check(scripts.get_script_by_title(
+                check(self.scripts.get_script_by_title(
                     self.channel.attributes["script_title"]).content))
             if script_ok is False:
                 return
 
         send(
-            prepare_json(json, self.channel, self.command),
+            prepare_json(self.channel, self.command, self.scripts),
             self.channel
         )
 
@@ -189,7 +190,7 @@ class Check(QRunnable):
             return self.end_false(msg)
         return True
 
-    def legal_test(protocol):
+    def legal_test(self, protocol):
         """Checks if script only contains valid commands"""
         conditions = ["#",
                       "for",
@@ -215,16 +216,16 @@ class Check(QRunnable):
 
         return True, "Passed"
 
-    def run_test(protocol):
+    def run_test(self, protocol):
         """Checks if server can load script successfully"""
-        packet = prepare_json(protocol)
+        packet = self.prepare_json(protocol)
         response = send(packet)["response"]
         if response == "Passed":
             return True, "Passed"
         return (False,
                 "Server failed to run script. Error: \"{}\".".format(response))
 
-    def end_false(reason):
+    def end_false(self, reason):
         """Show message box with error statement and return false"""
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Warning)
@@ -235,7 +236,7 @@ class Check(QRunnable):
         msg.exec_()
         return False
 
-    def prepare_json(protocol):
+    def prepare_json(self, protocol):
         """create json to send to server"""
         json_packet = json.load(open("resources/defaultJSON.json"))
 

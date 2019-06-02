@@ -11,7 +11,6 @@ from PySide2.QtWidgets import QApplication
 from os.path import expanduser
 
 from cyckei.client.window import MainWindow
-from cyckei.client import scripts
 
 
 def main():
@@ -27,8 +26,6 @@ def main():
     logging.basicConfig(filename=log_file, level=config["verbosity"],
                         format='%(asctime)s %(message)s')
     logging.info("--- Client started.")
-
-    scripts.load_default_scripts(config["path"] + "/scripts")
 
     app = QApplication(sys.argv)
     window = MainWindow(config)

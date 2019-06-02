@@ -4,23 +4,24 @@ from os import listdir
 
 from PySide2.QtWidgets import QListWidgetItem
 
-SCRIPTS = []
 
+class Scripts(object):
+    def __init__(self):
+        self.script_list = []
 
-def load_default_scripts(path):
-    """Load scripts from scripts folder"""
-    files = listdir(path)
-    if files is not None:
-        for file in files:
-            SCRIPTS.append(Script(file, path))
+    def load_default_scripts(self, path):
+        """Load scripts from scripts folder"""
+        files = listdir(path)
+        if files is not None:
+            for file in files:
+                self.script_list.append(Script(file, path))
 
-
-def get_script_by_title(title):
-    """Returns script object with given title"""
-    for script in SCRIPTS:
-        if script.title == title:
-            return script
-    return None
+    def get_script_by_title(self, title):
+        """Returns script object with given title"""
+        for script in self.script_list:
+            if script.title == title:
+                return script
+        return None
 
 
 class Script(QListWidgetItem):
