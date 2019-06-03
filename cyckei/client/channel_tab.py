@@ -126,7 +126,9 @@ class ChannelWidget(QWidget):
         self.json = json.load(open("resources/defaultJSON.json"))
 
         # Update status
-        self.threadpool.start(workers.UpdateStatus(self))
+        worker = workers.UpdateStatus(self)
+        worker.signals.status.connect(self.post_status)
+        self.threadpool.start(worker)
 
     def setup_ui(self):
         """Creates all UI elements and adds them to self.elements list"""
@@ -262,30 +264,45 @@ class ChannelWidget(QWidget):
     def button_read(self):
         logging.debug("Read Pressed")
         worker = workers.Read(self)
-        worker.signals.finished.connect(self.post_message)
+        worker.signals.alert.connect(self.post_message)
         self.threadpool.start(worker)
+
+    def button_start(self):
+        logging.debug("Start Pressed")
+        worker = workers.Control(self, "start", self.scripts)
+        worker.signals.status.connect(self.post_feedback)
+        self.threadpool.start(worker)
+
+    def button_pause(self):
+        logging.debug("Pause Pressed")
+        worker = workers.Control(self, "pause", self.scripts)
+        worker.signals.status.connect(self.post_feedback)
+        self.threadpool.start(worker)
+
+    def button_resume(self):
+        logging.debug("Resume Pressed")
+        worker = workers.Control(self, "resume", self.scripts)
+        worker.signals.status.connect(self.post_feedback)
+        self.threadpool.start(worker)
+
+    def button_stop(self):
+        logging.debug("Stop Pressed")
+        worker = workers.Control(self, "stop", self.scripts)
+        worker.signals.status.connect(self.post_feedback)
+        self.threadpool.start(worker)
+
+    # Begin Signal Response Definitions
 
     def post_message(self, status):
         msg = QMessageBox()
         msg.setText(status)
-        msg.setWindowTitle("Read Cell")
         msg.exec_()
 
-    def button_start(self):
-        self.threadpool.start(workers.Control(self, "start", self.scripts))
-        logging.debug("Start Pressed")
+    def post_status(self, status, channel):
+        channel.elements[-1].setText(status)
 
-    def button_pause(self):
-        self.threadpool.start(workers.Control(self, "pause", self.scripts))
-        logging.debug("Pause Pressed")
-
-    def button_resume(self):
-        self.threadpool.start(workers.Control(self, "resume", self.scripts))
-        logging.debug("Resume Pressed")
-
-    def button_stop(self):
-        self.threadpool.start(workers.Control(self, "stop", self.scripts))
-        logging.debug("Stop Pressed")
+    def post_feedback(self, status, channel):
+        channel.elements[-1].setText(status)
 
     # Begin Attribute Assignment Definitions
 

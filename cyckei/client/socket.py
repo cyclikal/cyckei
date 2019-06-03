@@ -25,14 +25,6 @@ class Socket(object):
         logging.debug("Received: {}".format(response))
         return response
 
-    def ping_server(self):
-        """Sends ping to server to check if connection functions"""
-        ping_response = self.ping()
-        msg = QMessageBox()
-        msg.setText("Ping response: {}".format(ping_response))
-        msg.setWindowTitle("Ping")
-        msg.exec_()
-
     def get_server_time(self):
         """Gets time since server began listening for commands"""
         script = json.loads('{"function": "time", "kwargs": ""}')

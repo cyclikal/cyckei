@@ -10,7 +10,7 @@ from PySide2.QtCore import QThreadPool
 from cyckei.client.channel_tab import ChannelTab
 from cyckei.client.script_tab import ScriptEditor
 from cyckei.client.log_tab import LogViewer
-from workers import Ping
+import workers
 from scripts import Scripts
 
 
@@ -139,7 +139,14 @@ class MainWindow(QMainWindow):
         return menu_bar
 
     def ping_server(self):
-        self.threadpool.start(Ping())
+        worker = workers.Ping()
+        worker.signals.alert.connect(self.post_message)
+        self.threadpool.start(worker)
+
+    def post_message(self, status):
+        msg = QMessageBox()
+        msg.setText(status)
+        msg.exec_()
 
     def save_batch(self):
         """Saves id and log information to file"""

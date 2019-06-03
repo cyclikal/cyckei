@@ -63,17 +63,22 @@ def prepare_json(channel, function, scripts):
 
 
 class Signals(QObject):
-    finished = Signal(object)
+    alert = Signal(object)
+    status = Signal(object, object)
 
 
 class Ping(QRunnable):
     def __init__(self):
         super(Ping, self).__init__()
+        self.signals = Signals()
 
     @Slot()
     def run(self):
         # TODO: Load info from config
-        Socket("tcp://localhost", 5556).ping_server()
+        socket = Socket("tcp://localhost", 5556)
+        response = socket.ping()
+        self.signals.alert.emit(response)
+        socket.socket.close()
 
 
 class UpdateStatus(QRunnable):
@@ -81,6 +86,7 @@ class UpdateStatus(QRunnable):
     def __init__(self, channel):
         super(UpdateStatus, self).__init__()
         self.channel = channel
+        self.signals = Signals()
 
     @Slot()
     def run(self):
@@ -100,7 +106,7 @@ class UpdateStatus(QRunnable):
                 status = info_channel
             logging.debug("Updating channel {} with satus {}".format(
                 self.channel.attributes["channel"], status))
-            self.channel.elements[15].setText(status)
+            self.signals.status.emit(status, self.channel)
             sleep(2)
 
 
@@ -149,7 +155,7 @@ class Read(QRunnable):
         socket.send(package)
 
         socket.socket.close()
-        self.signals.finished.emit(status)
+        self.signals.alert.emit(status)
 
 
 class Control(QRunnable):
@@ -159,6 +165,7 @@ class Control(QRunnable):
         self.channel = channel
         self.command = command
         self.scripts = scripts
+        self.signals = Signals()
 
     @Slot()
     def run(self):
@@ -169,7 +176,7 @@ class Control(QRunnable):
                 return
 
         response = send(prepare_json(self.channel, self.command, self.scripts))
-        self.channel.elements[-1].setText(response)
+        self.signals.status.emit(response, self.channel)
 
 
 class Check(QRunnable):
