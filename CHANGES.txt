@@ -1,4 +1,0 @@
-0.0.1.dev1, 05/26/2019 -- Initial Vayu release
-0.0.1.dev2, 05/30/2019 -- Adjust layout and switch to PySide2
-0.0.1.dev3, 05/31/2019 -- Create threaded workers for each action
-0.0.1.dev4, 06/02/2019 -- All primary buttons execute as separate thread
