@@ -1,6 +1,6 @@
 # Cyckei Changelog and Roadmap
 
-## 0.0 - 08/16/2019
+## 0.0 - 08/16/2018
 Original version of Cyckei developed by Vincent Chevrier and Gabriel Ewig for the Lithium-ion Battery Lab at 3M.
 
 ## 0.1 Vayu
