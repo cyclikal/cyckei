@@ -63,7 +63,9 @@ class ChannelTab(QWidget):
         layout.addWidget(area)
         area.setWidget(contents)
         area.setWidgetResizable(True)
+        # TODO: See if these can be set with CSS
         layout.setContentsMargins(0, 0, 0, 0)
+        rows.setContentsMargins(0, 0, 0, 0)
 
         self.channels = []
         for channel in config["channels"]:
