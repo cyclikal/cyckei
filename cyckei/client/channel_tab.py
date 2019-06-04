@@ -56,15 +56,14 @@ class ChannelTab(QWidget):
         """Setup each channel widget and place in QVBoxlayout"""
         QWidget.__init__(self)
 
-        layout = QHBoxLayout(self)
-
-        scroll_area = QScrollArea()
-        layout.addWidget(scroll_area)
-        scroll_area.setWidgetResizable(True)
-        scroll_contents = QWidget()
-        scroll_area.setWidget(scroll_contents)
-        rows = QVBoxLayout(scroll_contents)
-        rows.setSpacing(0)
+        area = QScrollArea(self)
+        contents = QWidget(area)
+        rows = QVBoxLayout(contents)
+        layout = QVBoxLayout(self)
+        layout.addWidget(area)
+        area.setWidget(contents)
+        area.setWidgetResizable(True)
+        layout.setContentsMargins(0, 0, 0, 0)
 
         self.channels = []
         for channel in config["channels"]:
