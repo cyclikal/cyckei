@@ -2,7 +2,8 @@
 
 import logging
 
-from PySide2.QtWidgets import QWidget, QMainWindow, QAction, qApp, QTabWidget,\
+import sys
+from PySide2.QtWidgets import QWidget, QMainWindow, QAction, QTabWidget,\
     QMessageBox
 from PySide2.QtGui import QIcon
 from PySide2.QtCore import QThreadPool
@@ -97,7 +98,7 @@ class MainWindow(QMainWindow):
 
         menu_options.append(QAction("&Exit", self))
         menu_options[-1].setStatusTip("Exit Client Application")
-        menu_options[-1].triggered.connect(qApp.quit)
+        menu_options[-1].triggered.connect(self.exit_client)
 
         menu_options.append(QAction("&Ping", self))
         menu_options[-1].setStatusTip("Ping Server for Response")
@@ -137,6 +138,9 @@ class MainWindow(QMainWindow):
         batch.addAction(menu_options[7])
 
         return menu_bar
+
+    def exit_client(self):
+        sys.exit()
 
     def ping_server(self):
         worker = workers.Ping()
