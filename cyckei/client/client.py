@@ -28,6 +28,7 @@ def main():
     logging.info("--- Client started.")
 
     app = QApplication(sys.argv)
+    app.setStyle("fusion")
     window = MainWindow(config)
     window.show()
 

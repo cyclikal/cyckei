@@ -24,7 +24,6 @@ def not_none(value):
 def new_button_element(text, status, connect):
     """Creates a button with given information"""
     button = QPushButton()
-    button.setMinimumSize(70, 25)
     button.setText(text)
     button.setStatusTip(status)
     button.clicked.connect(connect)
@@ -34,7 +33,6 @@ def new_button_element(text, status, connect):
 def new_combo_element(items, status, connect):
     """Creates a combo box with given information"""
     box = QComboBox()
-    box.setMinimumSize(80, 25)
     box.addItems(items)
     box.setStatusTip(status)
     box.activated[str].connect(connect)
@@ -221,7 +219,6 @@ class ChannelWidget(QWidget):
             "Read Voltage of Connected Cell",
             self.button_read
         ))
-        self.elements[-1].setMinimumSize(80, 25)
 
         # 11 - Start button
         self.elements.append(new_button_element(
