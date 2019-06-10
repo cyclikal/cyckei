@@ -1,8 +1,9 @@
 """Main window for the cyckei client."""
 
 import logging
-
 import sys
+
+from pkg_resources import require, DistributionNotFound
 from PySide2.QtWidgets import QWidget, QMainWindow, QAction, QTabWidget,\
     QMessageBox
 from PySide2.QtGui import QIcon
@@ -30,13 +31,19 @@ the cyckei install location, or online on our GitLab page.
 
 def about():
     """Display basic information about cyckei"""
+    try:
+        version = require("cyckei")[0].version
+    except DistributionNotFound:
+        version = "(unpackaged)"
+
+    print("Welcome to Cyckei Vayu version {}.".format(version))
     msg = QMessageBox()
     msg.setIcon(QMessageBox.Information)
     msg.setText(
-        """Cyckei is developed by Gabriel Ewig and Vincent
-Chevrier at Cyclikal, LLC.\n\nUpdates and source code can be found on
-GitLab at gitlab.com/cyclikal/cyckei.\n\nFor information about
-Cyclikal, visit cyclikal.com."""
+        """Cyckei version {}\n\n
+Cyckei is developed by Gabriel Ewig and Vincent Chevrier at Cyclikal, LLC.\n\n
+Updates and source code can be found on GitLab at gitlab.com/cyclikal/cyckei.
+\n\nFor information about Cyclikal, visit cyclikal.com.""".format(version)
     )
     msg.setWindowTitle("About")
     msg.exec_()
