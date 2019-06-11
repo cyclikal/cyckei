@@ -16,7 +16,7 @@ def source_from_gpib(gpib_address, channel):
 class Keithley2602(object):
     """Represents a single keithley Interface"""
 
-    # TODO something in the startup script screws up CC discahrge.
+    # TODO something in the startup script screws up CC discharge.
     # It does constant V discharge instead
     script_startup = open("resources/startup.script").read()
 

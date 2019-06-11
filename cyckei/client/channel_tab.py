@@ -56,12 +56,12 @@ class ChannelTab(QWidget):
 
         area = QScrollArea(self)
         contents = QWidget(area)
+        contents.setObjectName("scrollContents")
         rows = QVBoxLayout(contents)
         layout = QVBoxLayout(self)
         layout.addWidget(area)
         area.setWidget(contents)
         area.setWidgetResizable(True)
-        # TODO: See if these can be set with CSS
         layout.setContentsMargins(0, 0, 0, 0)
         rows.setContentsMargins(0, 0, 0, 0)
 
