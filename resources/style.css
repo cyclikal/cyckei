@@ -1,31 +1,15 @@
-ScriptEditor, LogViewer, QMainWindow {
-  background-color: #F2F2F2;
-}
+* { selection-background-color: #f05f40; }
 
-ChannelWidget#even {
-  background-color: #F2F2F2;
-}
-ChannelWidget#odd {
-  background-color: #D9D9D9;
-}
+* ScriptEditor, * LogViewer, * QMainWindow { background-color: #F2F2F2; }
 
-QLabel#id_label {
-  font-weight: bold;
-  color: #f05f40;
-}
+* ChannelWidget#even { background-color: #F2F2F2; }
 
-QPushButton:pressed {
-  background-color: #f05f40;
-}
+* ChannelWidget#odd { background-color: #D9D9D9; }
 
-QPlainTextEdit:focus, QListWidget:focus {
-  border: 1px solid #f05f40;
-}
+* QLabel#id_label { font-weight: bold; color: #f05f40; }
 
-QMainWindow, QWidget#scrollContents {
-  background-color: #A6A6A6;
-}
+* QPushButton:pressed { background-color: #f05f40; }
 
-* {
-  selection-background-color: #f05f40;
-}
+* QPlainTextEdit:focus, * QListWidget:focus { border: 1px solid #f05f40; }
+
+* QMainWindow, * QWidget#scrollContents { background-color: #A6A6A6; }
