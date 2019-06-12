@@ -9,12 +9,20 @@ import logging
 
 from PySide2.QtWidgets import QApplication
 from os.path import expanduser
+from pkg_resources import require, DistributionNotFound
 
 from cyckei.client.window import MainWindow
 
 
 def main():
     """Initializes server and window"""
+
+    try:
+        version = require("cyckei")[0].version
+    except DistributionNotFound:
+        version = "(unpackaged)"
+
+    print("Welcome to Cyckei Client version {}.".format(version))
 
     # Load configuration
     record_dir = expanduser("~") + "/cyckei"

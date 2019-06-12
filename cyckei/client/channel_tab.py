@@ -12,8 +12,9 @@ from PySide2.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QComboBox, \
     QStyle, QMessageBox
 from PySide2.QtCore import QMetaObject
 from PySide2.QtGui import QPainter
+from pkg_resources import resource_filename
 
-import workers
+from cyckei.client import workers
 
 
 def not_none(value):
@@ -122,7 +123,8 @@ class ChannelWidget(QWidget):
             self.setObjectName("odd")
 
         # Load default JSON
-        self.json = json.load(open("resources/defaultJSON.json"))
+        self.json = json.load(open(
+            resource_filename("cyckei.client", "res/defaultJSON.json")))
 
         # Update status
         worker = workers.UpdateStatus(self)

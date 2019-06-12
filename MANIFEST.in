@@ -2,5 +2,9 @@
 include *.md
 include *.txt
 
-# Include additional resource
-recursive-include resources *
+# Include all resources
+recursive-include cyckei/server/res *
+recursive-include cyckei/client/res *
+
+# Remove build files
+prune *.egg-info

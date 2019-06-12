@@ -7,12 +7,13 @@ from pkg_resources import require, DistributionNotFound
 from PySide2.QtWidgets import QWidget, QMainWindow, QAction, QTabWidget,\
     QMessageBox
 from PySide2.QtCore import QThreadPool
+from pkg_resources import resource_filename
 
 from cyckei.client.channel_tab import ChannelTab
 from cyckei.client.script_tab import ScriptEditor
 from cyckei.client.log_tab import LogViewer
-import workers
-from scripts import Scripts
+from cyckei.client import workers
+from cyckei.client.scripts import Scripts
 
 
 def help():
@@ -86,7 +87,8 @@ class MainWindow(QMainWindow):
         )
         self.tab_widget.addTab(LogViewer(self.config), "Logs")
 
-        self.setStyleSheet(open("resources/style.css", "r").read())
+        self.setStyleSheet(
+            open(resource_filename("cyckei.client", "res/style.css"), "r").read())
 
     def create_menu(self):
         """Setup menu bar"""
@@ -108,13 +110,13 @@ class MainWindow(QMainWindow):
         menu_options[-1].setStatusTip("Ping Server for Response")
         menu_options[-1].triggered.connect(self.ping_server)
 
-        menu_options.append(QAction("&Save", self))
-        menu_options[-1].setStatusTip("Save Batch of IDs and Log Files")
-        menu_options[-1].triggered.connect(self.save_batch)
+        # menu_options.append(QAction("&Save", self))
+        # menu_options[-1].setStatusTip("Save Batch of IDs and Log Files")
+        # menu_options[-1].triggered.connect(self.save_batch)
 
-        menu_options.append(QAction("&Load", self))
-        menu_options[-1].setStatusTip("Load Batch of IDs and Log Files")
-        menu_options[-1].triggered.connect(self.load_batch)
+        # menu_options.append(QAction("&Load", self))
+        # menu_options[-1].setStatusTip("Load Batch of IDs and Log Files")
+        # menu_options[-1].triggered.connect(self.load_batch)
 
         menu_options.append(QAction("&Fill All", self))
         menu_options[-1].setStatusTip("Auto Fill All Log Files in Batch")
@@ -138,8 +140,8 @@ class MainWindow(QMainWindow):
         batch = menu_bar.addMenu("&Batch")
         batch.addAction(menu_options[4])
         batch.addAction(menu_options[5])
-        batch.addAction(menu_options[6])
-        batch.addAction(menu_options[7])
+        # batch.addAction(menu_options[6])
+        # batch.addAction(menu_options[7])
 
         return menu_bar
 

@@ -7,8 +7,9 @@ from os.path import exists
 from os import makedirs
 from datetime import date
 from time import sleep
+from pkg_resources import resource_filename
 
-from socket import Socket
+from cyckei.client.socket import Socket
 
 
 def not_none(value):
@@ -30,7 +31,8 @@ def prepare_json(channel, function, scripts):
     """Sets the channel's json script to current values"""
     protocol = scripts.get_script_by_title(
         channel.attributes["script_title"]).content
-    json_packet = json.load(open("resources/defaultJSON.json"))
+    json_packet = json.load(open(
+        resource_filename("cyckei.client", "res/defaultJSON.json")))
 
     json_packet["function"] = function
     json_packet["kwargs"]["channel"] = channel.attributes["channel"]
@@ -107,7 +109,7 @@ class UpdateStatus(QRunnable):
             logging.debug("Updating channel {} with satus {}".format(
                 self.channel.attributes["channel"], status))
             self.signals.status.emit(status, self.channel)
-            sleep(2)
+            sleep(5)
 
 
 class AutoFill(QRunnable):
@@ -133,7 +135,8 @@ class Read(QRunnable):
     @Slot()
     def run(self):
         socket = Socket("tcp://localhost", 5556)
-        package = json.load(open("resources/defaultJSON.json"))
+        package = json.load(open(
+            resource_filename("cyckei.client", "res/defaultJSON.json")))
         package["function"] = "start"
         package["kwargs"]["channel"] = self.channel.attributes["channel"]
         package["kwargs"]["meta"]["path"] = (
@@ -243,7 +246,8 @@ class Check(QRunnable):
 
     def prepare_json(self, protocol):
         """create json to send to server"""
-        json_packet = json.load(open("resources/defaultJSON.json"))
+        json_packet = json.load(open(
+            resource_filename("cyckei.client", "res/defaultJSON.json")))
 
         json_packet["function"] = "test"
         json_packet["kwargs"]["protocol"] = protocol

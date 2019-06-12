@@ -9,8 +9,8 @@ from os.path import isfile
 import zmq
 from visa import VisaIOError
 
-from .models import Keithley2602
-from .protocols import CellRunner, STATUS
+from cyckei.server.models import Keithley2602
+from cyckei.server.protocols import CellRunner, STATUS
 
 
 def main(config):
