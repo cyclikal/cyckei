@@ -54,9 +54,8 @@ class ChannelTab(QWidget):
         """Setup each channel widget and place in QVBoxlayout"""
         QWidget.__init__(self)
 
-        area = QScrollArea(self)
-        contents = QWidget(area)
-        contents.setObjectName("scroll")
+        area = QScrollArea()
+        contents = QWidget()
         rows = QVBoxLayout(contents)
         layout = QVBoxLayout(self)
         layout.addWidget(area)
