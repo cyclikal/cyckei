@@ -28,7 +28,7 @@ Various attributes of the cycle must be set in order to start a cycle. All of th
 
 The available buttons can be used to Start, Stop, Pause, or Resume the protocol.
 Note that the program will overwrite any existing output files if an identical log file is specified.
-The *Fill* button allows you to automatically create a log file name based on the entered cell ID. This takes the format of [id]A.pyb where the "A" designates which log file within a series.
+The *Fill* button allows you to automatically create a log file name based on the entered cell ID. This takes the format of \[id\]A.pyb where the "A" designates which log file within a series.
 
 ## Creating Scripts
 Scripts can be created in the scripts tab of the client.

@@ -2,8 +2,8 @@
 
 from os import listdir, path
 import subprocess
-from PySide2.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel, QPlainTextEdit,\
-    QPushButton, QListWidget, QListWidgetItem, QWidget, QStyleOption, QStyle
+from PySide2.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel, QStyleOption,\
+    QPushButton, QListWidget, QListWidgetItem, QWidget, QPlainTextEdit, QStyle
 from PySide2.QtGui import QPainter
 
 

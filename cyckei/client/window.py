@@ -6,7 +6,6 @@ import sys
 from pkg_resources import require, DistributionNotFound
 from PySide2.QtWidgets import QWidget, QMainWindow, QAction, QTabWidget,\
     QMessageBox
-from PySide2.QtGui import QIcon
 from PySide2.QtCore import QThreadPool
 
 from cyckei.client.channel_tab import ChannelTab
