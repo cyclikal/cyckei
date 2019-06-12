@@ -7,6 +7,7 @@ import logging
 from os.path import isfile
 
 import zmq
+from visa import VisaIOError
 
 from .models import Keithley2602
 from .protocols import CellRunner, STATUS
@@ -32,7 +33,7 @@ def main(config):
         if keithley is None:
             try:
                 keithley = Keithley2602(gpib_addr)
-            except ValueError as e:
+            except (ValueError, VisaIOError) as e:
                 logging.error("Could not esablish connection: "
                               "Channel {}, GPIB {}.".format(
                                 chd["channel"],
