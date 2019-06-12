@@ -57,8 +57,6 @@ class MainWindow(QMainWindow):
         # Set basic window properties
         self.setWindowTitle("Cyckei")
         self.config = config
-        # Allows icon to show in Windows Taskbar
-        self.setWindowIcon(QIcon("resources/icon.png"))
         self.resize(1100, 600)
 
         # Setup ThreadPool
