@@ -18,6 +18,7 @@ Intended to significantly improve the performance and responsiveness of the appl
 *   0.1.dev3, 05/31/2019 -- Create threaded workers for each action
 *   0.1.dev4, 06/02/2019 -- All primary buttons execute as separate thread
 *   0.1.dev5, 06/03/2019 -- Messsage Boxes and status updates are sent through signal/slot pattern
+*   0.1.dev6, 06/12/2019 -- Overhaul visual appearance for simplicity
 
 ## 0.2
 Small update focused on simplifying the code to aid in further development.
