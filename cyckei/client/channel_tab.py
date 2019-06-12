@@ -56,7 +56,7 @@ class ChannelTab(QWidget):
 
         area = QScrollArea(self)
         contents = QWidget(area)
-        contents.setObjectName("scrollContents")
+        contents.setObjectName("scroll")
         rows = QVBoxLayout(contents)
         layout = QVBoxLayout(self)
         layout.addWidget(area)
@@ -64,6 +64,7 @@ class ChannelTab(QWidget):
         area.setWidgetResizable(True)
         layout.setContentsMargins(0, 0, 0, 0)
         rows.setContentsMargins(0, 0, 0, 0)
+        rows.setSpacing(0)
 
         self.channels = []
         for channel in config["channels"]:
