@@ -10,7 +10,7 @@ import logging
 from PySide2.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QComboBox, \
     QLineEdit, QPushButton, QLabel, QScrollArea, QStyleOption, \
     QStyle, QMessageBox
-from PySide2.QtCore import QMetaObject
+from PySide2.QtCore import QMetaObject, QTimer
 from PySide2.QtGui import QPainter
 from pkg_resources import resource_filename
 
@@ -76,19 +76,12 @@ class ChannelTab(QWidget):
             ))
             rows.addWidget(self.channels[-1])
 
-        updater = workers.UpdateStatus(self.channels)
-        updater.signals.status.connect(self.post_status)
-        threadpool.start(updater)
-
     def paintEvent(self, event):
         style_option = QStyleOption()
         style_option.initFrom(self)
         painter = QPainter(self)
         style = self.style()
         style.drawPrimitive(QStyle.PE_Widget, style_option, painter, self)
-
-    def post_status(self, status, channel):
-        channel.elements[-1].setText(status)
 
 
 class ChannelWidget(QWidget):
@@ -132,6 +125,12 @@ class ChannelWidget(QWidget):
         # Load default JSON
         self.json = json.load(open(
             resource_filename("cyckei.client", "res/defaultJSON.json")))
+
+        # Set initial status and set status timer
+        self.update_status()
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.update_status)
+        self.timer.start(5000)
 
     def setup_ui(self):
         """Creates all UI elements and adds them to self.elements list"""
@@ -300,6 +299,9 @@ class ChannelWidget(QWidget):
         msg.setText(status)
         msg.exec_()
 
+    def post_status(self, status, channel):
+        channel.elements[-1].setText(status)
+
     def post_feedback(self, status, channel):
         channel.elements[-1].setText(status)
 
@@ -347,3 +349,8 @@ class ChannelWidget(QWidget):
         painter = QPainter(self)
         style = self.style()
         style.drawPrimitive(QStyle.PE_Widget, style_option, painter, self)
+
+    def update_status(self):
+        updater = workers.UpdateStatus(self)
+        updater.signals.status.connect(self.post_status)
+        self.threadpool.start(updater)
