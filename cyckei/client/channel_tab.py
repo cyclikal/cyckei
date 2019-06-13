@@ -351,6 +351,7 @@ class ChannelWidget(QWidget):
         style.drawPrimitive(QStyle.PE_Widget, style_option, painter, self)
 
     def update_status(self):
+        # TODO: Prevent hang on no server communication
         updater = workers.UpdateStatus(self)
         updater.signals.status.connect(self.post_status)
         self.threadpool.start(updater)
