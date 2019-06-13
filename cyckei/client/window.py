@@ -1,12 +1,12 @@
 """Main window for the cyckei client."""
 
 import logging
-import sys
 
 from pkg_resources import require, DistributionNotFound
 from PySide2.QtWidgets import QWidget, QMainWindow, QAction, QTabWidget,\
     QMessageBox
 from PySide2.QtCore import QThreadPool
+from PySide2.QtGui import QApplication
 from pkg_resources import resource_filename
 
 from cyckei.client.channel_tab import ChannelTab
@@ -88,7 +88,9 @@ class MainWindow(QMainWindow):
         self.tab_widget.addTab(LogViewer(self.config), "Logs")
 
         self.setStyleSheet(
-            open(resource_filename("cyckei.client", "res/style.css"), "r").read())
+            open(resource_filename(
+                    "cyckei.client",
+                    "res/style.css"), "r").read())
 
     def create_menu(self):
         """Setup menu bar"""
@@ -146,7 +148,7 @@ class MainWindow(QMainWindow):
         return menu_bar
 
     def exit_client(self):
-        sys.exit()
+        QApplication.quit()
 
     def ping_server(self):
         worker = workers.Ping()
