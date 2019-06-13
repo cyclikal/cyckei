@@ -76,12 +76,19 @@ class ChannelTab(QWidget):
             ))
             rows.addWidget(self.channels[-1])
 
+        updater = workers.UpdateStatus(self.channels)
+        updater.signals.status.connect(self.post_status)
+        threadpool.start(updater)
+
     def paintEvent(self, event):
         style_option = QStyleOption()
         style_option.initFrom(self)
         painter = QPainter(self)
         style = self.style()
         style.drawPrimitive(QStyle.PE_Widget, style_option, painter, self)
+
+    def post_status(self, status, channel):
+        channel.elements[-1].setText(status)
 
 
 class ChannelWidget(QWidget):
@@ -125,11 +132,6 @@ class ChannelWidget(QWidget):
         # Load default JSON
         self.json = json.load(open(
             resource_filename("cyckei.client", "res/defaultJSON.json")))
-
-        # Update status
-        worker = workers.UpdateStatus(self)
-        worker.signals.status.connect(self.post_status)
-        self.threadpool.start(worker)
 
     def setup_ui(self):
         """Creates all UI elements and adds them to self.elements list"""
@@ -297,9 +299,6 @@ class ChannelWidget(QWidget):
         msg = QMessageBox()
         msg.setText(status)
         msg.exec_()
-
-    def post_status(self, status, channel):
-        channel.elements[-1].setText(status)
 
     def post_feedback(self, status, channel):
         channel.elements[-1].setText(status)

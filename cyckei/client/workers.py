@@ -85,9 +85,9 @@ class Ping(QRunnable):
 
 class UpdateStatus(QRunnable):
     """Update status shown below controls by contacting server"""
-    def __init__(self, channel):
+    def __init__(self, channels):
         super(UpdateStatus, self).__init__()
-        self.channel = channel
+        self.channels = channels
         self.signals = Signals()
 
     @Slot()
@@ -95,21 +95,23 @@ class UpdateStatus(QRunnable):
         # TODO: Utilize configuration
         socket = Socket("tcp://localhost", 5556)
         while True:
-            info_channel = socket.info_channel(
-                self.channel.attributes["channel"])["response"]
-            channel_status = socket.channel_status(
-                self.channel.attributes["channel"])["response"]
-            try:
-                status = (channel_status
-                          + " - " + not_none(info_channel["state"])
-                          + " | C: " + not_none(info_channel["current"])
-                          + ", V: " + not_none(info_channel["voltage"]))
-            except TypeError:
-                status = info_channel
-            logging.debug("Updating channel {} with satus {}".format(
-                self.channel.attributes["channel"], status))
-            self.signals.status.emit(status, self.channel)
-            sleep(5)
+            for channel in self.channels:
+                info_channel = socket.info_channel(
+                    channel.attributes["channel"])["response"]
+                channel_status = socket.channel_status(
+                    channel.attributes["channel"])["response"]
+                try:
+                    status = (channel_status
+                              + " - " + not_none(info_channel["state"])
+                              + " | C: " + not_none(info_channel["current"])
+                              + ", V: " + not_none(info_channel["voltage"]))
+                except TypeError:
+                    status = info_channel
+                logging.debug("Updating channel {} with satus {}".format(
+                    channel.attributes["channel"], status))
+                self.signals.status.emit(status, channel)
+                sleep(1)
+            logging.info("Updated all channels")
 
 
 class AutoFill(QRunnable):

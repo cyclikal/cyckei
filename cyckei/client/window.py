@@ -4,9 +4,8 @@ import logging
 
 from pkg_resources import require, DistributionNotFound
 from PySide2.QtWidgets import QWidget, QMainWindow, QAction, QTabWidget,\
-    QMessageBox
+    QMessageBox, QApplication
 from PySide2.QtCore import QThreadPool
-from PySide2.QtGui import QApplication
 from pkg_resources import resource_filename
 
 from cyckei.client.channel_tab import ChannelTab
@@ -36,7 +35,6 @@ def about():
     except DistributionNotFound:
         version = "(unpackaged)"
 
-    print("Welcome to Cyckei Vayu version {}.".format(version))
     msg = QMessageBox()
     msg.setIcon(QMessageBox.Information)
     msg.setText(
