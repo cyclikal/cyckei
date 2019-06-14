@@ -6,7 +6,6 @@ from PySide2.QtWidgets import QMessageBox
 from os.path import exists
 from os import makedirs
 from datetime import date
-from time import sleep
 from pkg_resources import resource_filename
 
 from cyckei.client.socket import Socket
@@ -81,6 +80,7 @@ class Ping(QRunnable):
         response = socket.ping()
         self.signals.alert.emit(response)
         socket.socket.close()
+# TODO: Separate status and feedback
 
 
 class UpdateStatus(QRunnable):

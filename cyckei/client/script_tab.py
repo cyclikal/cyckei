@@ -37,6 +37,7 @@ class ScriptEditor(QWidget):
         controls = QHBoxLayout()
         edit_rows.addLayout(controls)
 
+        # TODO: Fix execution of check
         # Create control buttons
         buttons = []
         buttons.append(QPushButton())

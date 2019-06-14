@@ -43,6 +43,8 @@ def main():
     # Start server
     server.main(config)
 
+    return
+
 
 def file_structure(path):
     """Checks for existing folder structure and sets up if missing"""
