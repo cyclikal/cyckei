@@ -1,6 +1,6 @@
 import logging
 
-from pkg_resources import require, DistributionNotFound, resource_filename
+from pkg_resources import resource_filename
 from json import load
 from os.path import expanduser, exists
 from os import makedirs
@@ -14,14 +14,6 @@ def main():
         This is the main entrypoint and routine of Cyckei Vayu.
         Vayu aims to make cyckei more efficient in many aspects.
     """
-    print("\n")
-
-    try:
-        version = require("cyckei")[0].version
-    except DistributionNotFound:
-        version = "(unpackaged)"
-
-    print("Welcome to Cyckei Server version {}.".format(version))
 
     # Setup recording direcory if unavailable
     print("Checking for recording directory...")
@@ -43,7 +35,7 @@ def main():
     # Start server
     server.main(config)
 
-    return
+    return None
 
 
 def file_structure(path):

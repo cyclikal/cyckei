@@ -61,7 +61,7 @@ class Socket(object):
 
         if reply == QMessageBox.Yes:
             script = json.loads('{"function": "kill_server"}')
-            print(self.send(script))
+            self.send(script)
             self.close_socket()
         else:
             pass

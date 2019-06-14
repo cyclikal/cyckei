@@ -1,6 +1,18 @@
+from subprocess import Popen, run
+from pkg_resources import require, DistributionNotFound
+
+
 def main():
-    print("\nCyckei is not currently executable.")
-    print("Please use cyckei-server and cyckei-client independently.")
+
+    try:
+        version = require("cyckei")[0].version
+    except DistributionNotFound:
+        version = "(unpackaged)"
+
+    print("\nWelcome to Cyckei {}!".format(version))
+    print("Starting client...")
+    Popen(["cyckei-client"])
+    run(["cyckei-server"])
 
 
 if __name__ == "__main__":
