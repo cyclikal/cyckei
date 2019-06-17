@@ -7,6 +7,7 @@ from pkg_resources import require, DistributionNotFound
 from PySide2.QtWidgets import QWidget, QMainWindow, QAction, QTabWidget,\
     QMessageBox
 from PySide2.QtCore import QThreadPool
+from PySide2.QtGui import QIcon
 from pkg_resources import resource_filename
 
 from cyckei.client.channel_tab import ChannelTab
@@ -55,6 +56,9 @@ class MainWindow(QMainWindow):
         super().__init__()
         # Set basic window properties
         self.setWindowTitle("Cyckei")
+        self.setWindowIcon(QIcon(resource_filename(
+                "cyckei.client",
+                "res/icon.png")))
         self.config = config
         self.resize(1100, 600)
 
