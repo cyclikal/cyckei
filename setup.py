@@ -39,7 +39,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "cyckei = cyckei.__main__:main",
+            "cyckei = cyckei.cyckei:main",
             "cyckei-server = cyckei.server.__main__:main",
         ],
         "gui_scripts": [
