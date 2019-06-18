@@ -5,8 +5,8 @@ from PySide2.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel,\
     QWidget, QStyleOption, QStyle
 from PySide2.QtCore import Qt
 from PySide2.QtGui import QPainter
-from cyckei.client import scripts
-from cyckei.client.workers import Check
+from . import scripts
+from .workers import Check
 
 
 class ScriptEditor(QWidget):

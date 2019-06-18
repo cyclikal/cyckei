@@ -3,3 +3,5 @@ __pycache__
 dist
 cyckei.egg-info
 build
+venv
+.vscode

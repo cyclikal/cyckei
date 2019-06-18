@@ -6,7 +6,7 @@ from os.path import expanduser, exists
 from os import makedirs
 from shutil import copy
 
-from cyckei.server import server
+from . import server
 
 
 def main():
