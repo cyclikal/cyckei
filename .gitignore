@@ -4,3 +4,4 @@ dist
 cyckei.egg-info
 build
 venv
+.vscode
