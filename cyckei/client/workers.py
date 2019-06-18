@@ -8,7 +8,7 @@ from os import makedirs
 from datetime import date
 from pkg_resources import resource_filename
 
-from cyckei.client.socket import Socket
+from .socket import Socket
 
 
 def not_none(value):

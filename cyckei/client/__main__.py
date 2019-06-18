@@ -10,7 +10,7 @@ import logging
 from PySide2.QtWidgets import QApplication
 from os.path import expanduser
 
-from cyckei.client.window import MainWindow
+from .window import MainWindow
 
 
 def main():

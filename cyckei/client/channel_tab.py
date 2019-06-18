@@ -14,7 +14,7 @@ from PySide2.QtCore import QMetaObject, QTimer
 from PySide2.QtGui import QPainter
 from pkg_resources import resource_filename
 
-from cyckei.client import workers
+from . import workers
 
 
 def not_none(value):

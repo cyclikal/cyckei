@@ -10,11 +10,11 @@ from PySide2.QtCore import QThreadPool
 from PySide2.QtGui import QIcon
 from pkg_resources import resource_filename
 
-from cyckei.client.channel_tab import ChannelTab
-from cyckei.client.script_tab import ScriptEditor
-from cyckei.client.log_tab import LogViewer
-from cyckei.client import workers
-from cyckei.client.scripts import Scripts
+from .channel_tab import ChannelTab
+from .script_tab import ScriptEditor
+from .log_tab import LogViewer
+from . import workers
+from .scripts import Scripts
 
 
 def help():
