@@ -15,7 +15,7 @@ def main():
     tray = QSystemTrayIcon()
     tray.setIcon(QIcon(resource_filename(
             "cyckei.server",
-            "res/icon.png")))
+            "res/bolt.png")))
     tray.setVisible(True)
 
     # Create the menu
