@@ -35,9 +35,7 @@ def main():
     server_thread = Thread(target=server.main, args=(config,), daemon=True)
     server_thread.start()
 
-    applet.main()
-
-    return None
+    return applet.main()
 
 
 def file_structure(path):

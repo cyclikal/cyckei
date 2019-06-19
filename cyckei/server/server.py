@@ -11,6 +11,7 @@ from visa import VisaIOError
 
 from .models import Keithley2602
 from .protocols import CellRunner, STATUS
+# TODO: Preven duplicate server starts
 
 
 def main(config):
