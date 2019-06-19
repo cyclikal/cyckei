@@ -10,9 +10,8 @@ def main():
         version = "(unpackaged)"
 
     print("\nWelcome to Cyckei {}!".format(version))
-    print("Starting client...")
     Popen(["cyckei-client"])
-    run(["cyckei-server"])
+    Popen(["cyckei-server"])
 
 
 if __name__ == "cyckei":

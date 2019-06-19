@@ -32,11 +32,10 @@ def main():
                         format='%(asctime)s %(message)s')
     logging.info("--- Server started.")
 
-    app_thread = Thread(target=applet.main(), args=(), daemon=True)
-    app_thread.start()
+    server_thread = Thread(target=server.main, args=(config,), daemon=True)
+    server_thread.start()
 
-    # Start server
-    server.main(config)
+    applet.main()
 
     return None
 

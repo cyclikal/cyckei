@@ -38,11 +38,9 @@ setup(
         "PySide2",
     ],
     entry_points={
-        "console_scripts": [
+        "gui_scripts": [
             "cyckei = cyckei.cyckei:main",
             "cyckei-server = cyckei.server.__main__:main",
-        ],
-        "gui_scripts": [
             "cyckei-client = cyckei.client.__main__:main"
         ]
     },
