@@ -2,6 +2,7 @@
 
 import logging
 import sys
+import ctypes
 
 from pkg_resources import require, DistributionNotFound
 from PySide2.QtWidgets import QWidget, QMainWindow, QAction, QTabWidget,\
@@ -61,6 +62,13 @@ class MainWindow(QMainWindow):
                 "res/cyckei.png")))
         self.config = config
         self.resize(1100, 600)
+
+        # Set icon for windows
+        try:
+            id = u"com.cyclikal.cyckei"
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(id)
+        except AttributeError:
+            pass
 
         # Setup ThreadPool
         self.threadpool = QThreadPool()
