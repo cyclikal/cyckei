@@ -1,5 +1,6 @@
 import logging
 
+from threading import Thread
 from pkg_resources import resource_filename
 from json import load
 from os.path import expanduser, exists
@@ -7,6 +8,7 @@ from os import makedirs
 from shutil import copy
 
 from . import server
+from . import applet
 
 
 def main():
@@ -14,23 +16,24 @@ def main():
         This is the main entrypoint and routine of Cyckei Vayu.
         Vayu aims to make cyckei more efficient in many aspects.
     """
+    print("Sarting Server.")
 
     # Setup recording direcory if unavailable
-    print("Checking for recording directory...")
     record_dir = expanduser("~") + "/cyckei"
     file_structure(record_dir)
 
     # Load configuration
-    print("Loading configuration...")
     config = load(open(record_dir + "/config.json", "r"))
     config["path"] = record_dir
 
     # Start logging
     log_file = "{}/server.log".format(record_dir)
-    print("Starting log...")
     logging.basicConfig(filename=log_file, level=config["verbosity"],
                         format='%(asctime)s %(message)s')
     logging.info("--- Server started.")
+
+    app_thread = Thread(target=applet.main(), args=(), daemon=True)
+    app_thread.start()
 
     # Start server
     server.main(config)

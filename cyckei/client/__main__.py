@@ -15,7 +15,8 @@ from .window import MainWindow
 
 def main():
     """Initializes server and window"""
-
+    print("Starting Client.")
+    
     # Load configuration
     record_dir = expanduser("~") + "/cyckei"
     config = json.load(open(record_dir + "/config.json", "r"))
