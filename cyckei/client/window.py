@@ -108,50 +108,50 @@ class MainWindow(QMainWindow):
         """Setup menu bar"""
         menu_options = []
 
-        menu_options.append(QAction("&About", self))
+        menu_options.append(QAction("About", self))
         menu_options[-1].setStatusTip("About Cyckei")
         menu_options[-1].triggered.connect(about)
 
-        menu_options.append(QAction("&Help", self))
+        menu_options.append(QAction("Help", self))
         menu_options[-1].setStatusTip("View Help File")
         menu_options[-1].triggered.connect(help)
 
-        menu_options.append(QAction("&Exit", self))
+        menu_options.append(QAction("Exit", self))
         menu_options[-1].setStatusTip("Exit Client Application")
         menu_options[-1].triggered.connect(self.exit_client)
 
-        menu_options.append(QAction("&Ping", self))
+        menu_options.append(QAction("Ping", self))
         menu_options[-1].setStatusTip("Ping Server for Response")
         menu_options[-1].triggered.connect(self.ping_server)
 
-        # menu_options.append(QAction("&Save", self))
+        # menu_options.append(QAction("Save", self))
         # menu_options[-1].setStatusTip("Save Batch of IDs and Log Files")
         # menu_options[-1].triggered.connect(self.save_batch)
 
-        # menu_options.append(QAction("&Load", self))
+        # menu_options.append(QAction("Load", self))
         # menu_options[-1].setStatusTip("Load Batch of IDs and Log Files")
         # menu_options[-1].triggered.connect(self.load_batch)
 
-        menu_options.append(QAction("&Fill All", self))
+        menu_options.append(QAction("Fill All", self))
         menu_options[-1].setStatusTip("Auto Fill All Log Files in Batch")
         menu_options[-1].triggered.connect(self.fill_batch)
 
-        menu_options.append(QAction("&Increment", self))
+        menu_options.append(QAction("Increment", self))
         menu_options[-1].setStatusTip("Increment Batch")
         menu_options[-1].triggered.connect(self.increment_batch)
 
         menu_bar = self.menuBar()
         menu_bar.setNativeMenuBar(False)
 
-        menu = menu_bar.addMenu("&Menu")
+        menu = menu_bar.addMenu("Menu")
         menu.addAction(menu_options[0])
         menu.addAction(menu_options[1])
         menu.addAction(menu_options[2])
 
-        server = menu_bar.addMenu("&Server")
+        server = menu_bar.addMenu("Server")
         server.addAction(menu_options[3])
 
-        batch = menu_bar.addMenu("&Batch")
+        batch = menu_bar.addMenu("Batch")
         batch.addAction(menu_options[4])
         batch.addAction(menu_options[5])
         # batch.addAction(menu_options[6])
