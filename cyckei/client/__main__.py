@@ -8,6 +8,9 @@ import json
 import sys
 import logging
 
+from pkg_resources import resource_filename
+
+from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import QApplication
 from os.path import expanduser
 
@@ -33,6 +36,9 @@ def main():
     app.setStyle("fusion")
     window = MainWindow(config)
     window.show()
+    app.setWindowIcon(QIcon(resource_filename(
+            "cyckei.client",
+            "res/cyckei.png")))
 
     return app.exec_()
 
