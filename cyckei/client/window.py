@@ -89,7 +89,7 @@ class MainWindow(QMainWindow):
             "Scripts"
         )
         # TODO: Recreate log tab with folder support and better spacing
-        # self.tab_widget.addTab(LogViewer(self.config), "Logs")
+        self.tab_widget.addTab(LogViewer(self.config, self.threadpool), "Logs")
 
         self.setStyleSheet(
             open(resource_filename(

@@ -1,17 +1,20 @@
 """Controls log tab, which displays logs as they are being recorded"""
 
-from os import listdir, path
+from os import path
+from glob import glob
 import subprocess
 from PySide2.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel, QStyleOption,\
     QPushButton, QListWidget, QListWidgetItem, QWidget, QPlainTextEdit, QStyle
 from PySide2.QtGui import QPainter
+from PySide2.QtCore import Slot, QRunnable
 
 
 class LogViewer(QWidget):
     """Object of log tab"""
-    def __init__(self, config):
+    def __init__(self, config, threadpool):
         QWidget.__init__(self)
         self.path = config["path"] + "/tests"
+        self.threadpool = threadpool
 
         self.file_list = QListWidget()
         self.file_list.itemClicked.connect(self.list_clicked)
@@ -49,21 +52,8 @@ class LogViewer(QWidget):
         self.reload()
 
     def reload(self):
-        """Reload list and contents of logs from specified logging folder"""
-        self.file_list.clear()
-        self.editor.clear()
-        logs = []
-
-        files = listdir(self.path)
-        if files is not None:
-            for file in files:
-                if path.isdir(path.join(self.path, file)):
-                    pass
-                else:
-                    logs.append(Log(file, self.path))
-
-        for log in logs:
-            self.file_list.addItem(log)
+        worker = Reload(self)
+        self.threadpool.start(worker)
 
     def open_explorer(self):
         """Open logging folder in explorer"""
@@ -83,8 +73,30 @@ class LogViewer(QWidget):
 
 class Log(QListWidgetItem):
     """Object of log, stores title and content of file for quick access"""
-    def __init__(self, title, file_path):
+    def __init__(self, file):
         super().__init__()
-        self.title = title
-        self.setText(self.title)
-        self.content = open(file_path + "/" + self.title, "r").read()
+        self.file = file
+        self.setText(self.file)
+        with open(file) as file:
+            self.content = file.read()
+
+
+class Reload(QRunnable):
+    def __init__(self, widget):
+        super(Reload, self).__init__()
+        self.widget = widget
+
+    @Slot()
+    def run(self):
+        self.widget.file_list.clear()
+        self.widget.editor.clear()
+        logs = []
+        files = glob("{}/*".format(self.widget.path))
+        for file in files:
+            if path.isdir(file):
+                pass
+            else:
+                logs.append(Log(file))
+
+        for log in logs:
+            self.widget.file_list.addItem(log)
