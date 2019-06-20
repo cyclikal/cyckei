@@ -4,7 +4,7 @@ from subprocess import Popen, DEVNULL
 
 from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import QApplication, QAction, QMenu, QSystemTrayIcon,\
-    QMessageBox, QWidget
+    QMessageBox
 from pkg_resources import require, DistributionNotFound, resource_filename
 
 
@@ -12,6 +12,7 @@ def main():
     app = QApplication(sys.argv)
     app.setStyle("fusion")
     app.setQuitOnLastWindowClosed(False)
+    # TODO: Hide Dock icon Mac
 
     # Create the tray
     tray = QSystemTrayIcon(QIcon(resource_filename("cyckei.server",
