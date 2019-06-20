@@ -1,5 +1,7 @@
 import sys
 
+from subprocess import Popen, DEVNULL
+
 from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import QApplication, QAction, QMenu, QSystemTrayIcon,\
     QMessageBox
@@ -9,6 +11,7 @@ from pkg_resources import require, DistributionNotFound, resource_filename
 def main():
     app = QApplication(sys.argv)
     app.setStyle("fusion")
+    app.setQuitOnLastWindowClosed(False)
 
     # Create the tray
     tray = QSystemTrayIcon(QIcon(resource_filename("cyckei.server",
@@ -18,10 +21,6 @@ def main():
 
     controls.append(QAction("Cyckei Server"))
     controls[-1].triggered.connect(about)
-    menu.addAction(controls[-1])
-
-    controls.append(QAction("Check Status"))
-    controls[-1].triggered.connect(status)
     menu.addAction(controls[-1])
 
     menu.addSeparator()
@@ -41,9 +40,9 @@ def main():
     app.exec_()
 
 
-def post_message(status):
+def post_message(text):
     msg = QMessageBox()
-    msg.setText(status)
+    msg.setText(text)
     msg.exec_()
 
 
@@ -61,12 +60,8 @@ def about():
     post_message(text)
 
 
-def status():
-    pass
-
-
 def client():
-    pass
+    Popen(["cyckei-client"], stdout=DEVNULL)
 
 
 def stop():

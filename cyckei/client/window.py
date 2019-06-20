@@ -8,7 +8,6 @@ from pkg_resources import require, DistributionNotFound
 from PySide2.QtWidgets import QWidget, QMainWindow, QAction, QTabWidget,\
     QMessageBox
 from PySide2.QtCore import QThreadPool
-from PySide2.QtGui import QIcon
 from pkg_resources import resource_filename
 
 from .channel_tab import ChannelTab
