@@ -57,9 +57,6 @@ class MainWindow(QMainWindow):
         super().__init__()
         # Set basic window properties
         self.setWindowTitle("Cyckei")
-        self.setWindowIcon(QIcon(resource_filename(
-                "cyckei.client",
-                "res/cyckei.png")))
         self.config = config
         self.resize(1100, 600)
 
