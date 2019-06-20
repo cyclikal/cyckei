@@ -1,4 +1,4 @@
-from sys import exit
+import sys
 
 from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import QApplication, QAction, QMenu, QSystemTrayIcon,\
@@ -7,18 +7,12 @@ from pkg_resources import require, DistributionNotFound, resource_filename
 
 
 def main():
-    app = QApplication([])
-    app.setQuitOnLastWindowClosed(False)
+    app = QApplication(sys.argv)
     app.setStyle("fusion")
 
     # Create the tray
-    tray = QSystemTrayIcon()
-    tray.setIcon(QIcon(resource_filename(
-            "cyckei.server",
-            "res/bolt.png")))
-    tray.setVisible(True)
-
-    # Create the menu
+    tray = QSystemTrayIcon(QIcon(resource_filename("cyckei.server",
+                                                   "res/bolt.png")))
     menu = QMenu()
     controls = []
 
@@ -42,6 +36,7 @@ def main():
 
     # Add the menu to the tray
     tray.setContextMenu(menu)
+    tray.show()
 
     app.exec_()
 
@@ -75,4 +70,4 @@ def client():
 
 
 def stop():
-    exit()
+    sys.exit()
