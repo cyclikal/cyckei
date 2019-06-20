@@ -4,7 +4,7 @@ from subprocess import Popen, DEVNULL
 
 from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import QApplication, QAction, QMenu, QSystemTrayIcon,\
-    QMessageBox
+    QMessageBox, QWidget
 from pkg_resources import require, DistributionNotFound, resource_filename
 
 
@@ -65,4 +65,14 @@ def client():
 
 
 def stop():
-    sys.exit()
+    msg = ("Are you sure you want to close Cyckei Server?\n\n"
+           "This will stop any current cycles and "
+           "release control of all channels.")
+    confirmation = QMessageBox()
+    confirmation.setText(msg)
+    confirmation.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+
+    response = confirmation.exec_()
+
+    if response == QMessageBox.Yes:
+        sys.exit()
