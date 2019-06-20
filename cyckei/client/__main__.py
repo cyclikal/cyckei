@@ -34,11 +34,12 @@ def main():
 
     app = QApplication(sys.argv)
     app.setStyle("fusion")
-    window = MainWindow(config)
-    window.show()
     app.setWindowIcon(QIcon(resource_filename(
             "cyckei.client",
             "res/cyckei.png")))
+
+    window = MainWindow(config)
+    window.show()
 
     return app.exec_()
 
