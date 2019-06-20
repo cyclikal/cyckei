@@ -1,9 +1,9 @@
 from sys import exit
 
 from PySide2.QtGui import QIcon
-from PySide2.QtWidgets import QApplication, QAction,\
-    QMenu, QSystemTrayIcon
-from pkg_resources import resource_filename
+from PySide2.QtWidgets import QApplication, QAction, QMenu, QSystemTrayIcon,\
+    QMessageBox
+from pkg_resources import require, DistributionNotFound, resource_filename
 
 
 def main():
@@ -22,20 +22,23 @@ def main():
     menu = QMenu()
     controls = []
 
-    controls.append(QAction("Status"))
-    controls[-1].triggered.connect(status)
-
-    controls.append(QAction("Log"))
-    controls[-1].triggered.connect(log)
-
-    controls.append(QAction("About"))
+    controls.append(QAction("Cyckei Server"))
     controls[-1].triggered.connect(about)
+    menu.addAction(controls[-1])
+
+    controls.append(QAction("Check Status"))
+    controls[-1].triggered.connect(status)
+    menu.addAction(controls[-1])
+
+    menu.addSeparator()
+
+    controls.append(QAction("Launch client"))
+    controls[-1].triggered.connect(client)
+    menu.addAction(controls[-1])
 
     controls.append(QAction("Stop Server"))
     controls[-1].triggered.connect(stop)
-
-    for action in controls:
-        menu.addAction(action)
+    menu.addAction(controls[-1])
 
     # Add the menu to the tray
     tray.setContextMenu(menu)
@@ -43,15 +46,31 @@ def main():
     app.exec_()
 
 
+def post_message(status):
+    msg = QMessageBox()
+    msg.setText(status)
+    msg.exec_()
+
+
+def about():
+    try:
+        version = require("cyckei")[0].version
+    except DistributionNotFound:
+        version = "(unpackaged)"
+
+    text = ("Cyckei Server version {}\n\n"
+            "Updates and source code can be found on "
+            "GitLab at gitlab.com/cyclikal/cyckei."
+            ).format(version)
+
+    post_message(text)
+
+
 def status():
     pass
 
 
-def log():
-    pass
-
-
-def about():
+def client():
     pass
 
 
