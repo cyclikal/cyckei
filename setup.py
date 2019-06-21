@@ -46,4 +46,5 @@ setup(
             "cyckei-client = cyckei.client.__main__:main"
         ]
     },
+    test_suite='cyckei.tests',
 )
