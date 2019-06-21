@@ -6,7 +6,7 @@ import ctypes
 
 from pkg_resources import require, DistributionNotFound
 from PySide2.QtWidgets import QWidget, QMainWindow, QAction, QTabWidget,\
-    QMessageBox
+    QMessageBox, QMenuBar
 from PySide2.QtCore import QThreadPool
 from pkg_resources import resource_filename
 
@@ -93,70 +93,47 @@ class MainWindow(QMainWindow):
             "Scripts"
         )
         # TODO: Recreate log tab with folder support and better spacing
-        # self.tab_widget.addTab(LogViewer(self.config), "Logs")
+        self.tab_widget.addTab(LogViewer(self.config, self.threadpool), "Logs")
 
         self.setStyleSheet(
             open(resource_filename(
                     "cyckei.client",
                     "res/style.css"), "r").read())
 
+    def action(self, title, tip, connect):
+        temp = QAction(title, self)
+        temp.setStatusTip(tip)
+        temp.triggered.connect(connect)
+        return temp
+
     def create_menu(self):
         """Setup menu bar"""
-        menu_options = []
+        bar = QMenuBar()
 
-        menu_options.append(QAction("About", self))
-        menu_options[-1].setStatusTip("About Cyckei")
-        menu_options[-1].triggered.connect(about)
+        client = bar.addMenu("Client")
+        client.addAction(self.action("&Info", "About Cyckei", about))
+        client.addAction(self.action("&Help", "Help Using Cyckei", help))
+        client.addAction(self.action("&Close", "Exit Client Application",
+                                     sys.exit))
 
-        menu_options.append(QAction("Help", self))
-        menu_options[-1].setStatusTip("View Help File")
-        menu_options[-1].triggered.connect(help)
+        server = bar.addMenu("Server")
+        server.addAction(self.action("&Ping", "Test Connection to Server",
+                                     self.ping_server))
 
-        menu_options.append(QAction("Exit", self))
-        menu_options[-1].setStatusTip("Exit Client Application")
-        menu_options[-1].triggered.connect(self.exit_client)
+        batch = bar.addMenu("Batch")
+        batch.addAction(self.action("&Fill All",
+                                    "Auto Fill All Log Files in Batch",
+                                    self.fill_batch))
+        batch.addAction(self.action("&Increment",
+                                    "Increment Last Letter for Entire Batch",
+                                    self.increment_batch))
+        batch.addSeparator()
+        batch.addAction(self.action("&Save", "Save Batch as File",
+                                    self.save_batch))
+        batch.addAction(self.action("&Load", "Load Batch from File",
+                                    self.load_batch))
 
-        menu_options.append(QAction("Ping", self))
-        menu_options[-1].setStatusTip("Ping Server for Response")
-        menu_options[-1].triggered.connect(self.ping_server)
-
-        # menu_options.append(QAction("Save", self))
-        # menu_options[-1].setStatusTip("Save Batch of IDs and Log Files")
-        # menu_options[-1].triggered.connect(self.save_batch)
-
-        # menu_options.append(QAction("Load", self))
-        # menu_options[-1].setStatusTip("Load Batch of IDs and Log Files")
-        # menu_options[-1].triggered.connect(self.load_batch)
-
-        menu_options.append(QAction("Fill All", self))
-        menu_options[-1].setStatusTip("Auto Fill All Log Files in Batch")
-        menu_options[-1].triggered.connect(self.fill_batch)
-
-        menu_options.append(QAction("Increment", self))
-        menu_options[-1].setStatusTip("Increment Batch")
-        menu_options[-1].triggered.connect(self.increment_batch)
-
-        menu_bar = self.menuBar()
-        menu_bar.setNativeMenuBar(False)
-
-        menu = menu_bar.addMenu("Menu")
-        menu.addAction(menu_options[0])
-        menu.addAction(menu_options[1])
-        menu.addAction(menu_options[2])
-
-        server = menu_bar.addMenu("Server")
-        server.addAction(menu_options[3])
-
-        batch = menu_bar.addMenu("Batch")
-        batch.addAction(menu_options[4])
-        batch.addAction(menu_options[5])
-        # batch.addAction(menu_options[6])
-        # batch.addAction(menu_options[7])
-
-        return menu_bar
-
-    def exit_client(self):
-        sys.exit()
+        return bar
 
     def ping_server(self):
         worker = workers.Ping()
