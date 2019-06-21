@@ -1,4 +1,4 @@
-from subprocess import Popen, run
+from subprocess import Popen, DEVNULL
 from pkg_resources import require, DistributionNotFound
 
 
@@ -10,9 +10,8 @@ def main():
         version = "(unpackaged)"
 
     print("\nWelcome to Cyckei {}!".format(version))
-    print("Starting client...")
-    Popen(["cyckei-client"])
-    run(["cyckei-server"])
+    Popen(["cyckei-client"], stdout=DEVNULL)
+    Popen(["cyckei-server"], stdout=DEVNULL)
 
 
 if __name__ == "cyckei":

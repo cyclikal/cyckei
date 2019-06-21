@@ -1,3 +1,4 @@
+
 """
 Methods that controls the cykei client.
 Controls communication and initializes the MainWindow.
@@ -7,6 +8,9 @@ import json
 import sys
 import logging
 
+from pkg_resources import resource_filename
+
+from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import QApplication
 from os.path import expanduser
 
@@ -15,6 +19,7 @@ from .window import MainWindow
 
 def main():
     """Initializes server and window"""
+    print("Starting Client.")
 
     # Load configuration
     record_dir = expanduser("~") + "/cyckei"
@@ -29,6 +34,10 @@ def main():
 
     app = QApplication(sys.argv)
     app.setStyle("fusion")
+    app.setWindowIcon(QIcon(resource_filename(
+            "cyckei.client",
+            "res/cyckei.png")))
+
     window = MainWindow(config)
     window.show()
 
