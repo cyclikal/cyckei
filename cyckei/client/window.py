@@ -12,7 +12,7 @@ from pkg_resources import resource_filename
 
 from .channel_tab import ChannelTab
 from .script_tab import ScriptEditor
-# from .log_tab import LogViewer
+from .log_tab import LogViewer
 from . import workers
 from .scripts import Scripts
 

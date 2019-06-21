@@ -6,9 +6,13 @@ from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import QApplication, QAction, QMenu, QSystemTrayIcon,\
     QMessageBox
 from pkg_resources import require, DistributionNotFound, resource_filename
+from AppKit import NSBundle
 
 
 def main():
+    info = NSBundle.mainBundle().infoDictionary()
+    info["LSBackgroundOnly"] = "1"
+
     app = QApplication(sys.argv)
     app.setStyle("fusion")
     app.setQuitOnLastWindowClosed(False)

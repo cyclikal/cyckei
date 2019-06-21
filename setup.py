@@ -35,7 +35,9 @@ setup(
     install_requires=[
         "zmq",
         "pyvisa",
+        "pyvisa-py",
         "PySide2",
+        "pyobjc-framework-Cocoa"
     ],
     entry_points={
         "gui_scripts": [
