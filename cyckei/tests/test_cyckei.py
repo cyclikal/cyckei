@@ -1,22 +1,30 @@
 import unittest
 
 
-class TestStringMethods(unittest.TestCase):
+class PyVISA(unittest.TestCase):
+    def setUp(self):
+        import visa
+        rm = visa.ResourceManager()
+        self.resources = rm.list_resources()
 
-    def test_upper(self):
-        self.assertEqual('foo'.upper(), 'FOO')
+    def test_keithley_gpib(self):
+        gpib_exists = False
+        for resource in self.resources:
+            if "GPIB" in resource:
+                gpib_exists = True
+        self.assertTrue(gpib_exists,
+                        "PyVISA did not detect any GPIB instruments.")
 
-    def test_isupper(self):
-        self.assertTrue('FOO'.isupper())
-        self.assertFalse('Foo'.isupper())
-
-    def test_split(self):
-        s = 'hello world'
-        self.assertEqual(s.split(), ['hello', 'world'])
-        # check that s.split fails when the separator is not a string
-        with self.assertRaises(TypeError):
-            s.split(2)
+# TODO: Create more rigorous tests
+class Server(unittest.TestCase):
+    def test_placeholder(self):
+        self.assertTrue(True, "Placeholder")
 
 
-if __name__ == '__main__':
+class Client(unittest.TestCase):
+    def test_placeholder(self):
+        self.assertTrue(True, "Placeholder")
+
+
+if __name__ == "__main__":
     unittest.main()
