@@ -55,6 +55,8 @@ class LogViewer(QWidget):
         open_folder.setText("Open Folder")
         open_folder.clicked.connect(self.open_explorer)
         controls.addWidget(open_folder)
+        # TODO: Make cross platform
+        open_folder.setEnabled(False)
 
         self.reload()
 
