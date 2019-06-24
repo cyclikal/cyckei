@@ -14,5 +14,5 @@ def main():
     Popen(["cyckei-server"], stdout=DEVNULL)
 
 
-if __name__ == "cyckei":
+if __name__ == "__main__":
     main()
