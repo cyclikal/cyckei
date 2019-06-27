@@ -1,7 +1,18 @@
 from setuptools import setup
+import platform
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
+
+dependencies = [
+    "zmq",
+    "pyvisa",
+    "pyvisa-py",
+    "PySide2"
+]
+
+if platform.system() == "Darwin":
+    dependencies.append("pyobjc-framework-Cocoa")
 
 setup(
     name="cyckei",
@@ -32,13 +43,7 @@ setup(
         "Operating System :: OS Independent",
         "Topic :: Scientific/Engineering",
     ],
-    install_requires=[
-        "zmq",
-        "pyvisa",
-        "pyvisa-py",
-        "PySide2",
-        "pyobjc-framework-Cocoa"
-    ],
+    install_requires=dependencies,
     entry_points={
         "gui_scripts": [
             "cyckei = cyckei.cyckei:main",
