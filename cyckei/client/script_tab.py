@@ -66,10 +66,10 @@ class ScriptEditor(QWidget):
         for script in self.scripts.script_list:
             self.file_list.addItem(script)
 
-    def list_clicked(self, item):
+    def list_clicked(self):
         """Display contents of script when clicked"""
         self.title_bar.setText(self.file_list.currentItem().path)
-        self.editor.setPlainText(item.content)
+        self.editor.setPlainText(self.file_list.currentItem().content)
 
     def text_modified(self):
         """Update content of script and update status to show if edited"""
@@ -87,14 +87,17 @@ class ScriptEditor(QWidget):
 
     def remove(self):
         """Remove script from list and channel selector"""
-        self.scripts.script_list.remove(list_script)
+        self.scripts.script_list.pop(self.file_list.currentRow())
         for channel in self.channels:
             channel.elements[1].removeItem(channel.elements[1].findText(
                     self.file_list.currentItem().title,
                     Qt.MatchFixedString
                 ))
         self.file_list.takeItem(self.file_list.currentRow())
-        self.editor.clear()
+        try:
+            self.list_clicked()
+        except AttributeError:
+            pass
 
     def new(self):
         """Create new file and add to list as script"""
@@ -110,9 +113,7 @@ class ScriptEditor(QWidget):
 
     def check(self):
         """Run check protocol to verify validity"""
-        if self.threadpool.start(
-            Check(self.scripts.get_script_by_title(
-                self.channel.attributes["script_title"]).content)):
+        if self.threadpool.start(Check(self.file_list.currentItem().content)):
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Information)
             msg.setText("Passed!")
