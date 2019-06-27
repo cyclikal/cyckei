@@ -70,6 +70,7 @@ class LogViewer(QWidget):
 
     def log_clicked(self, item):
         """Display text of clicked file in text box"""
+        self.title_bar.setText(item.path)
         self.editor.setPlainText(item.content)
 
     def folder_clicked(self, item):
