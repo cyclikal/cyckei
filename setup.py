@@ -3,16 +3,9 @@ from setuptools import setup
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-dependencies = [
-    "zmq",
-    "pyvisa",
-    "pyvisa-py",
-    "PySide2"
-]
-
 setup(
     name="cyckei",
-    version="0.1.dev9",
+    version="0.1.dev10",
     author="Gabriel Ewig",
     author_email="gabriel@cyclikal.com",
     description="Keithley Battery Cycler for Python3",
