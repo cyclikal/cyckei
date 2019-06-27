@@ -1,4 +1,5 @@
 import unittest
+# TODO: Create more rigorous tests
 
 
 class PyVISA(unittest.TestCase):
@@ -16,7 +17,6 @@ class PyVISA(unittest.TestCase):
                         "PyVISA did not detect any GPIB instruments.")
 
 
-# TODO: Create more rigorous tests
 class Server(unittest.TestCase):
     def test_placeholder(self):
         self.assertTrue(True, "Placeholder")
