@@ -171,9 +171,10 @@ class Control(QRunnable):
     @Slot()
     def run(self):
         if self.command == "start":
-            script_ok = Check(self.scripts.get_script_by_title(
+            script_ok, msg = Check(self.scripts.get_script_by_title(
                     self.channel.attributes["script_title"]).content).run()
             if script_ok is False:
+                self.signals.alert.emit("Script Check Failed")
                 return
 
         response = send(prepare_json(self.channel, self.command, self.scripts))
@@ -184,17 +185,18 @@ class Check(QRunnable):
     def __init__(self, protocol):
         super(Check, self).__init__()
         self.protocol = protocol
+        self.signals = Signals()
 
     @Slot()
     def run(self):
         """Initiates checking tests"""
         passed, msg = self.legal_test(self.protocol)
         if not passed:
-            return self.end_false(msg)
+            self.signals.status.emit(passed, msg)
+            return passed, msg
         passed, msg = self.run_test(self.protocol)
-        if not passed:
-            return self.end_false(msg)
-        return True
+        self.signals.status.emit(passed, msg)
+        return passed, msg
 
     def legal_test(self, protocol):
         """Checks if script only contains valid commands"""
@@ -230,17 +232,6 @@ class Check(QRunnable):
             return True, "Passed"
         return (False,
                 "Server failed to run script. Error: \"{}\".".format(response))
-
-    def end_false(self, reason):
-        """Show message box with error statement and return false"""
-        msg = QMessageBox()
-        msg.setIcon(QMessageBox.Warning)
-        msg.setText("Failed!")
-        msg.setInformativeText("Script did not pass the check.")
-        msg.setWindowTitle("Check Failed")
-        msg.setDetailedText(reason)
-        msg.exec_()
-        return False
 
     def prepare_json(self, protocol):
         """create json to send to server"""

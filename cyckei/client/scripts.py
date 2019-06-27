@@ -5,7 +5,7 @@ from os import listdir
 from PySide2.QtWidgets import QListWidgetItem
 
 
-class Scripts(object):
+class ScriptList(object):
     def __init__(self):
         self.script_list = []
 

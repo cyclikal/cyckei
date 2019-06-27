@@ -11,10 +11,11 @@ from .workers import Check
 
 class ScriptEditor(QWidget):
     """Main object of script tab"""
-    def __init__(self, channels, scripts):
+    def __init__(self, channels, scripts, threadpool):
         QWidget.__init__(self)
         self.channels = channels
         self.scripts = scripts
+        self.threadpool = threadpool
 
         # Create overall layout
         columns = QHBoxLayout(self)
@@ -65,15 +66,16 @@ class ScriptEditor(QWidget):
         for script in self.scripts.script_list:
             self.file_list.addItem(script)
 
-    def list_clicked(self, item):
+    def list_clicked(self):
         """Display contents of script when clicked"""
         self.title_bar.setText(self.file_list.currentItem().path)
-        self.editor.setPlainText(item.content)
+        self.editor.setPlainText(self.file_list.currentItem().content)
 
     def text_modified(self):
         """Update content of script and update status to show if edited"""
-        self.file_list.currentItem().content = self.editor.toPlainText()
-        self.file_list.currentItem().update_status()
+        if self.file_list.currentItem() is not None:
+            self.file_list.currentItem().content = self.editor.toPlainText()
+            self.file_list.currentItem().update_status()
 
     def open(self):
         """Open new file and add as script"""
@@ -84,14 +86,18 @@ class ScriptEditor(QWidget):
             self.add(script_file)
 
     def remove(self):
-        """Remove script from lisr and channel selector"""
-        self.scripts.scripts_list.remove(self.file_list.currentItem())
+        """Remove script from list and channel selector"""
+        self.scripts.script_list.pop(self.file_list.currentRow())
         for channel in self.channels:
             channel.elements[1].removeItem(channel.elements[1].findText(
                     self.file_list.currentItem().title,
                     Qt.MatchFixedString
                 ))
         self.file_list.takeItem(self.file_list.currentRow())
+        try:
+            self.list_clicked()
+        except AttributeError:
+            pass
 
     def new(self):
         """Create new file and add to list as script"""
@@ -107,15 +113,25 @@ class ScriptEditor(QWidget):
 
     def check(self):
         """Run check protocol to verify validity"""
-        if self.threadpool.start(
-            Check(scripts.get_script_by_title(
-                self.channel.attributes["script_title"]).content)):
-            msg = QMessageBox()
-            msg.setIcon(QMessageBox.Information)
+        worker = Check(self.file_list.currentItem().content)
+        self.threadpool.start(worker)
+        worker.signals.status.connect(self.post_message)
+
+    def post_message(self, result, message):
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Information)
+        if result:
             msg.setText("Passed!")
             msg.setInformativeText("Script is good to go.")
             msg.setWindowTitle("Check Passed")
             msg.exec_()
+        else:
+            msg.setText("Failed!")
+            msg.setInformativeText("Script did not pass the check.")
+            msg.setWindowTitle("Check Failed")
+            msg.setDetailedText(message)
+            msg.exec_()
+            return False
 
     def add(self, file):
         """Add new script to list to make available"""
