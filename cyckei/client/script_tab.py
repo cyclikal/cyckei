@@ -113,13 +113,25 @@ class ScriptEditor(QWidget):
 
     def check(self):
         """Run check protocol to verify validity"""
-        if self.threadpool.start(Check(self.file_list.currentItem().content)):
-            msg = QMessageBox()
-            msg.setIcon(QMessageBox.Information)
+        worker = Check(self.file_list.currentItem().content)
+        self.threadpool.start(worker)
+        worker.signals.status.connect(self.post_message)
+
+    def post_message(self, result, message):
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Information)
+        if result:
             msg.setText("Passed!")
             msg.setInformativeText("Script is good to go.")
             msg.setWindowTitle("Check Passed")
             msg.exec_()
+        else:
+            msg.setText("Failed!")
+            msg.setInformativeText("Script did not pass the check.")
+            msg.setWindowTitle("Check Failed")
+            msg.setDetailedText(message)
+            msg.exec_()
+            return False
 
     def add(self, file):
         """Add new script to list to make available"""

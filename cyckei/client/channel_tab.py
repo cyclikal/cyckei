@@ -272,6 +272,7 @@ class ChannelWidget(QWidget):
         logging.debug("Start Pressed")
         worker = workers.Control(self, "start", self.scripts)
         worker.signals.status.connect(self.post_feedback)
+        worker.signals.alert.connect(self.post_message)
         self.threadpool.start(worker)
 
     def button_pause(self):
