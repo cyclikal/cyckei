@@ -9,13 +9,6 @@ from pkg_resources import require, DistributionNotFound, resource_filename
 
 
 def main():
-    try:
-        from AppKit import NSBundle
-        info = NSBundle.mainBundle().infoDictionary()
-        info["LSBackgroundOnly"] = "1"
-    except ModuleNotFoundError:
-        pass
-
     app = QApplication(sys.argv)
     app.setStyle("fusion")
     app.setQuitOnLastWindowClosed(False)

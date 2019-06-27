@@ -18,6 +18,13 @@ def main():
     """
     print("Sarting Server.")
 
+    try:
+        from AppKit import NSBundle
+        info = NSBundle.mainBundle().infoDictionary()
+        info["LSBackgroundOnly"] = "1"
+    except ModuleNotFoundError:
+        pass
+
     # Setup recording direcory if unavailable
     record_dir = expanduser("~") + "/cyckei"
     file_structure(record_dir)
