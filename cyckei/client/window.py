@@ -14,7 +14,7 @@ from .channel_tab import ChannelTab
 from .script_tab import ScriptEditor
 from .log_tab import LogViewer
 from . import workers
-from .scripts import Scripts
+from .scripts import ScriptList
 
 
 def help():
@@ -73,7 +73,7 @@ class MainWindow(QMainWindow):
         ))
 
         # Load scripts
-        scripts = Scripts()
+        scripts = ScriptList()
         scripts.load_default_scripts(config["path"] + "/scripts")
 
         # Create menu and status bar
@@ -89,7 +89,7 @@ class MainWindow(QMainWindow):
         )
         self.channels = self.tab_widget.widget(0).channels
         self.tab_widget.addTab(
-            ScriptEditor(self.channels, scripts),
+            ScriptEditor(self.channels, scripts, self.threadpool),
             "Scripts"
         )
         # TODO: Recreate log tab with folder support and better spacing

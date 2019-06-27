@@ -11,10 +11,11 @@ from .workers import Check
 
 class ScriptEditor(QWidget):
     """Main object of script tab"""
-    def __init__(self, channels, scripts):
+    def __init__(self, channels, scripts, threadpool):
         QWidget.__init__(self)
         self.channels = channels
         self.scripts = scripts
+        self.threadpool = threadpool
 
         # Create overall layout
         columns = QHBoxLayout(self)
@@ -72,8 +73,9 @@ class ScriptEditor(QWidget):
 
     def text_modified(self):
         """Update content of script and update status to show if edited"""
-        self.file_list.currentItem().content = self.editor.toPlainText()
-        self.file_list.currentItem().update_status()
+        if self.file_list.currentItem() is not None:
+            self.file_list.currentItem().content = self.editor.toPlainText()
+            self.file_list.currentItem().update_status()
 
     def open(self):
         """Open new file and add as script"""
@@ -84,14 +86,15 @@ class ScriptEditor(QWidget):
             self.add(script_file)
 
     def remove(self):
-        """Remove script from lisr and channel selector"""
-        self.scripts.scripts_list.remove(self.file_list.currentItem())
+        """Remove script from list and channel selector"""
+        self.scripts.script_list.remove(list_script)
         for channel in self.channels:
             channel.elements[1].removeItem(channel.elements[1].findText(
                     self.file_list.currentItem().title,
                     Qt.MatchFixedString
                 ))
         self.file_list.takeItem(self.file_list.currentRow())
+        self.editor.clear()
 
     def new(self):
         """Create new file and add to list as script"""
@@ -108,7 +111,7 @@ class ScriptEditor(QWidget):
     def check(self):
         """Run check protocol to verify validity"""
         if self.threadpool.start(
-            Check(scripts.get_script_by_title(
+            Check(self.scripts.get_script_by_title(
                 self.channel.attributes["script_title"]).content)):
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Information)
