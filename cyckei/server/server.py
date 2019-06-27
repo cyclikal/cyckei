@@ -11,10 +11,9 @@ from visa import VisaIOError
 
 from .models import Keithley2602
 from .protocols import CellRunner, STATUS
-# TODO: Preven duplicate server starts
 
 
-def main(config):
+def main(config, socket):
     """Main start method and loop for server application"""
     # Initialize the channels from a config file
     logging.info("cyckei.server.server.main: Initializing...")
@@ -53,8 +52,6 @@ def main(config):
 
     # Initialize socket
     runners = []
-    socket = initialize_socket(config["zmq"]["port"],
-                               config["zmq"]["server"]["address"])
 
     logging.info(
         "Socket bound to port {}. Entering main loop.".format(
@@ -118,14 +115,6 @@ def main(config):
 
         # mod it by a large value to avoid ever overflowing
         counter = counter % max_counter + 1
-
-
-def initialize_socket(port, address):
-    """Initialize zmq socket"""
-    context = zmq.Context(1)
-    socket = context.socket(zmq.REP)
-    socket.bind("{}:{}".format(address, port))
-    return socket
 
 
 def process_socket(socket, runners, sources, server_time):

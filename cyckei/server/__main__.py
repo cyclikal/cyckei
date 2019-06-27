@@ -1,5 +1,7 @@
 import logging
 
+import zmq
+
 from threading import Thread
 from pkg_resources import resource_filename
 from json import load
@@ -32,10 +34,27 @@ def main():
                         format='%(asctime)s %(message)s')
     logging.info("--- Server started.")
 
-    server_thread = Thread(target=server.main, args=(config,), daemon=True)
+    try:
+        socket = initialize_socket(config["zmq"]["port"],
+                                   config["zmq"]["server"]["address"])
+    except zmq.error.ZMQError as error:
+        logging.critical(
+            "It appears that the server is already running: ".format(error))
+        return
+
+    server_thread = Thread(target=server.main,
+                           args=(config, socket), daemon=True)
     server_thread.start()
 
     return applet.main()
+
+
+def initialize_socket(port, address):
+    """Initialize zmq socket"""
+    context = zmq.Context(1)
+    socket = context.socket(zmq.REP)
+    socket.bind("{}:{}".format(address, port))
+    return socket
 
 
 def file_structure(path):
