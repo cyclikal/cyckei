@@ -15,14 +15,22 @@ class Socket(object):
         self.port = port
         self.socket = zmq.Context().socket(zmq.REQ)
         self.socket.connect("{}:{}".format(self.address, self.port))
+        self.socket.setsockopt(zmq.LINGER, 0)
 
     def send(self, to_send):
         """Sends packet to server"""
         logging.debug("Sending: {}".format(to_send["function"]))
 
         self.socket.send_json(to_send)
-        response = self.socket.recv_json()
+        poller = zmq.Poller()
+        poller.register(self.socket, zmq.POLLIN)
+        if poller.poll(TIMEOUT*1000):
+            response = self.socket.recv_json()
+        else:
+            response = (
+                json.loads('{"response": "No Connection", "message": ""}'))
         logging.debug("Received: {}".format(response))
+        self.socket.close()
         return response
 
     def get_server_time(self):

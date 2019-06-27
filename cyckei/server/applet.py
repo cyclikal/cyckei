@@ -12,7 +12,6 @@ def main():
     app = QApplication(sys.argv)
     app.setStyle("fusion")
     app.setQuitOnLastWindowClosed(False)
-    # TODO: Hide Dock icon Mac
 
     # Create the tray
     tray = QSystemTrayIcon(QIcon(resource_filename("cyckei.server",

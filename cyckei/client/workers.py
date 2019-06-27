@@ -19,10 +19,8 @@ def not_none(value):
 def send(json):
     """Sends json to server and updates status with response"""
     # TODO: Load info from config
-    socket = Socket("tcp://localhost", 5556)
-    resp = socket.send(json)["response"]
+    resp = Socket("tcp://localhost", 5556).send(json)["response"]
     logging.info(resp)
-    socket.socket.close()
     return resp
 
 
@@ -76,10 +74,8 @@ class Ping(QRunnable):
     @Slot()
     def run(self):
         # TODO: Load info from config
-        socket = Socket("tcp://localhost", 5556)
-        response = socket.ping()
+        response = Socket("tcp://localhost", 5556).ping()
         self.signals.alert.emit(response)
-        socket.socket.close()
 # TODO: Separate status and feedback
 
 
@@ -93,10 +89,9 @@ class UpdateStatus(QRunnable):
     @Slot()
     def run(self):
         # TODO: Utilize configuration
-        socket = Socket("tcp://localhost", 5556)
-        info_channel = socket.info_channel(
+        info_channel = Socket("tcp://localhost", 5556).info_channel(
             self.channel.attributes["channel"])["response"]
-        channel_status = socket.channel_status(
+        channel_status = Socket("tcp://localhost", 5556).channel_status(
             self.channel.attributes["channel"])["response"]
         try:
             status = (channel_status
@@ -132,7 +127,6 @@ class Read(QRunnable):
 
     @Slot()
     def run(self):
-        socket = Socket("tcp://localhost", 5556)
         package = json.load(open(
             resource_filename("cyckei.client", "res/defaultJSON.json")))
         package["function"] = "start"
@@ -142,9 +136,9 @@ class Read(QRunnable):
             + "/{}.temp".format(self.channel.attributes["channel"])
         )
         package["kwargs"]["protocol"] = """Rest()"""
-        socket.send(package)
+        Socket("tcp://localhost", 5556).send(package)
 
-        info_channel = socket.info_channel(
+        info_channel = Socket("tcp://localhost", 5556).info_channel(
             self.channel.attributes["channel"])["response"]
         try:
             status = ("Voltage of cell: "
@@ -153,9 +147,8 @@ class Read(QRunnable):
             status = "Could not read cell voltage."
 
         package["function"] = "stop"
-        socket.send(package)
+        Socket("tcp://localhost", 5556).send(package)
 
-        socket.socket.close()
         self.signals.alert.emit(status)
 
 
