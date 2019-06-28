@@ -22,6 +22,7 @@ Intended to significantly improve the performance and responsiveness of the appl
 *   0.1.dev7, 06/12/2019 -- Separate client and server packages for proper file access during distribution
 *   0.1.dev8, 06/13/2019 -- Fix over-threading and application exit
 *   0.1.dev9, 06/27/2019 -- Move server to applet and improve OS integration
+*   0.1.dev10, 06/27/2019 -- A bunch of script tab fixes and separated status and feedback on the channel tab
 
 ## 0.2
 Small update focused on simplifying the code to aid in further development.
