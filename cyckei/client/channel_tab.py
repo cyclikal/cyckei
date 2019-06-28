@@ -131,10 +131,10 @@ class ChannelWidget(QWidget):
             settings.addWidget(element)
 
         # Status
-        status = QLabel()
-        status.setStatusTip("Current Cell Status")
-        status.setText("Loading Status...")
-        left.addWidget(status)
+        self.status = QLabel()
+        self.status.setStatusTip("Current Cell Status")
+        self.status.setText("Loading Status...")
+        left.addWidget(self.status)
 
         # Controls
         controls = QHBoxLayout()
@@ -143,11 +143,11 @@ class ChannelWidget(QWidget):
             controls.addWidget(element)
 
         # Feedback
-        feedback = QLabel()
-        feedback.setStatusTip("Server Response")
-        feedback.setText("Awaiting Server Response...")
-        feedback.setAlignment(Qt.AlignCenter)
-        right.addWidget(feedback)
+        self.feedback = QLabel()
+        self.feedback.setStatusTip("Server Response")
+        self.feedback.setText("Awaiting Server Response...")
+        self.feedback.setAlignment(Qt.AlignCenter)
+        right.addWidget(self.feedback)
 
         if (int(self.attributes["channel"]) % 2 == 0):
             self.setObjectName("even")
@@ -297,31 +297,35 @@ class ChannelWidget(QWidget):
 
     def button_read(self):
         logging.debug("Read Pressed")
+        self.post_feedback("Reading...", self)
         worker = workers.Read(self)
-        worker.signals.alert.connect(self.post_message)
+        worker.signals.status.connect(self.post_feedback)
         self.threadpool.start(worker)
 
     def button_start(self):
         logging.debug("Start Pressed")
+        self.post_feedback("Starting...", self)
         worker = workers.Control(self, "start", self.scripts)
         worker.signals.status.connect(self.post_feedback)
-        worker.signals.alert.connect(self.post_message)
         self.threadpool.start(worker)
 
     def button_pause(self):
         logging.debug("Pause Pressed")
+        self.post_feedback("Pausing...", self)
         worker = workers.Control(self, "pause", self.scripts)
         worker.signals.status.connect(self.post_feedback)
         self.threadpool.start(worker)
 
     def button_resume(self):
         logging.debug("Resume Pressed")
+        self.post_feedback("Resuming...", self)
         worker = workers.Control(self, "resume", self.scripts)
         worker.signals.status.connect(self.post_feedback)
         self.threadpool.start(worker)
 
     def button_stop(self):
         logging.debug("Stop Pressed")
+        self.post_feedback("Stopping...", self)
         worker = workers.Control(self, "stop", self.scripts)
         worker.signals.status.connect(self.post_feedback)
         self.threadpool.start(worker)
@@ -334,10 +338,10 @@ class ChannelWidget(QWidget):
         msg.exec_()
 
     def post_status(self, status, channel):
-        channel.elements[-1].setText(status)
+        channel.status.setText(status)
 
     def post_feedback(self, status, channel):
-        channel.elements[-1].setText(status)
+        channel.feedback.setText(status)
 
     # Begin Attribute Assignment Definitions
 
