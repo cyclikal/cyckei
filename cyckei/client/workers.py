@@ -2,7 +2,6 @@ import json
 import logging
 
 from PySide2.QtCore import QRunnable, Slot, Signal, QObject
-from PySide2.QtWidgets import QMessageBox
 from os.path import exists
 from os import makedirs
 from datetime import date
@@ -62,6 +61,7 @@ def prepare_json(channel, function, scripts):
 
 
 class Signals(QObject):
+    # TODO: Standardize signals and alerts
     alert = Signal(object)
     status = Signal(object, object)
 
@@ -76,7 +76,6 @@ class Ping(QRunnable):
         # TODO: Load info from config
         response = Socket("tcp://localhost", 5556).ping()
         self.signals.alert.emit(response)
-# TODO: Separate status and feedback
 
 
 class UpdateStatus(QRunnable):
@@ -149,7 +148,7 @@ class Read(QRunnable):
         package["function"] = "stop"
         Socket("tcp://localhost", 5556).send(package)
 
-        self.signals.alert.emit(status)
+        self.signals.status.emit(status, self.channel)
 
 
 class Control(QRunnable):
@@ -167,7 +166,7 @@ class Control(QRunnable):
             script_ok, msg = Check(self.scripts.get_script_by_title(
                     self.channel.attributes["script_title"]).content).run()
             if script_ok is False:
-                self.signals.alert.emit("Script Check Failed")
+                self.signals.status.emit("Script Check Failed", self.channel)
                 return
 
         response = send(prepare_json(self.channel, self.command, self.scripts))
