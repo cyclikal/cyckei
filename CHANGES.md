@@ -4,7 +4,7 @@
 Original version of Cyckei developed by Vincent Chevrier and Gabriel Ewig for the Lithium-ion Battery Lab at 3M.
 
 ## 0.1 Vayu
-Intended to significantly improve the performance and responsiveness of the application by improving the execution pattern and introducing threading to the Qt interface.
+Intended to significantly improve the performance and responsiveness of the application by improving the execution pattern and introducing threading to the Qt interface. Also overhauls the UI and brings many components up to date.
 
 #### Notable Changes
 *   Run client communication functions as QRunnable
@@ -25,4 +25,4 @@ Intended to significantly improve the performance and responsiveness of the appl
 *   0.1.dev10, 06/27/2019 -- A bunch of script tab fixes and separated status and feedback on the channel tab
 
 ## 0.2
-Small update focused on simplifying the code to aid in further development.
+Focused on simplifying the code to aid in further development. This includes unifying as many commonly used functions as possible, and adding code documentation.
