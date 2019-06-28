@@ -1,2 +1,3 @@
 python setup.py sdist
 pip install dist/cyckei-0.1.dev10.tar.gz
+cyckei

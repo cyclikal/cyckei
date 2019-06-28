@@ -30,7 +30,10 @@ class Script(QListWidgetItem):
         super().__init__()
         self.title = title
         self.path = path
-        self.content = open(self.path + "/" + self.title, "r").read()
+        try:
+            self.content = open(self.path + "/" + self.title, "r").read()
+        except UnicodeDecodeError as error:
+            self.content = "Could not read file: {}".format(error)
         self.setText(self.title)
 
     def save(self):
