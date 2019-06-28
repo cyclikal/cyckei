@@ -2,7 +2,6 @@ import json
 import logging
 
 from PySide2.QtCore import QRunnable, Slot, Signal, QObject
-from PySide2.QtWidgets import QMessageBox
 from os.path import exists
 from os import makedirs
 from datetime import date
@@ -62,6 +61,7 @@ def prepare_json(channel, function, scripts):
 
 
 class Signals(QObject):
+    # TODO: Standardize signals and alerts
     alert = Signal(object)
     status = Signal(object, object)
 

@@ -10,7 +10,7 @@ import logging
 from PySide2.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QComboBox, \
     QLineEdit, QPushButton, QLabel, QScrollArea, QStyleOption, \
     QStyle, QMessageBox
-from PySide2.QtCore import QMetaObject, QTimer
+from PySide2.QtCore import QTimer, Qt
 from PySide2.QtGui import QPainter
 from pkg_resources import resource_filename
 
@@ -108,15 +108,47 @@ class ChannelWidget(QWidget):
 
         self.setMinimumSize(1050, 110)
 
-        # Setup UI
-        rows = QVBoxLayout(self)
-        settings = QHBoxLayout()
-        rows.addLayout(settings)
-        self.setup_ui()
+        # General UI
+        sides = QHBoxLayout(self)
+        left = QVBoxLayout()
+        sides.addLayout(left)
+        middle = QVBoxLayout()
+        sides.addLayout(middle)
+        right = QVBoxLayout()
+        sides.addLayout(right)
 
-        for element in self.elements:
+        # Divider
+        divider = QWidget()
+        divider.setObjectName("off")
+        divider.setMinimumWidth(2)
+        divider.setMaximumWidth(2)
+        middle.addWidget(divider)
+
+        # Settings
+        settings = QHBoxLayout()
+        left.addLayout(settings)
+        for element in self.get_settings():
             settings.addWidget(element)
-        rows.addWidget(self.elements[-1])
+
+        # Status
+        status = QLabel()
+        status.setStatusTip("Current Cell Status")
+        status.setText("Loading Status...")
+        left.addWidget(status)
+
+        # Controls
+        controls = QHBoxLayout()
+        right.addLayout(controls)
+        for element in self.get_controls():
+            controls.addWidget(element)
+
+        # Feedback
+        feedback = QLabel()
+        feedback.setStatusTip("Server Response")
+        feedback.setText("Awaiting Server Response...")
+        feedback.setAlignment(Qt.AlignCenter)
+        right.addWidget(feedback)
+
         if (int(self.attributes["channel"]) % 2 == 0):
             self.setObjectName("even")
         else:
@@ -132,20 +164,20 @@ class ChannelWidget(QWidget):
         self.timer.timeout.connect(self.update_status)
         self.timer.start(5000)
 
-    def setup_ui(self):
-        """Creates all UI elements and adds them to self.elements list"""
-        self.elements = []
+    def get_settings(self):
+        """Creates all UI elements and adds them to elements list"""
+        elements = []
 
         # 0 - Cell channel label
-        self.elements.append(QLabel())
-        self.elements[-1].setStatusTip(
+        elements.append(QLabel())
+        elements[-1].setStatusTip(
             "Channel {}".format(self.attributes["channel"])
         )
-        self.elements[-1].setText(
+        elements[-1].setText(
             "{}:".format(self.attributes["channel"])
         )
-        self.elements[-1].setObjectName("id_label")
-        self.elements[-1].setMinimumSize(25, 25)
+        elements[-1].setObjectName("id_label")
+        elements[-1].setMinimumSize(25, 25)
 
         # 1 - Script selection box
         available_scripts = []
@@ -153,47 +185,47 @@ class ChannelWidget(QWidget):
             self.attributes["script_title"] = self.scripts.script_list[0].title
             for script in self.scripts.script_list:
                 available_scripts.append(script.title)
-        self.elements.append(new_combo_element(available_scripts,
-                                               "Select scripts to run",
-                                               self.script_box_activated))
+        elements.append(new_combo_element(available_scripts,
+                                          "Select scripts to run",
+                                          self.script_box_activated))
 
         # 2 - Cell identification number
-        self.elements.append(new_text_element("Cell ID",
-                                              "Cell identification",
-                                              self.set_id))
+        elements.append(new_text_element("Cell ID",
+                                         "Cell identification",
+                                         self.set_id))
 
         # 3 - Path to log file
-        self.elements.append(new_text_element(
+        elements.append(new_text_element(
             "Log file",
             "File to log to, placed in specified logs folder",
             self.set_path
         ))
 
         # 4 - auto_fill Button
-        self.elements.append(new_button_element(
+        elements.append(new_button_element(
             "AutoFill",
             "Fill log file from cell identification, defaults to [id]A.log",
             self.button_auto_fill
         ))
 
         # 5 - Mass
-        self.elements.append(new_text_element("Mass",
-                                              "Mass of Cell",
-                                              self.set_mass))
+        elements.append(new_text_element("Mass",
+                                         "Mass of Cell",
+                                         self.set_mass))
 
         # 6 - Comment
-        self.elements.append(new_text_element("Comment",
-                                              "Unparsed Comment",
-                                              self.set_comment))
+        elements.append(new_text_element("Comment",
+                                         "Unparsed Comment",
+                                         self.set_comment))
 
         # 7 - Package
         package_types = ["Pouch",
                          "Coin",
                          "Cylindrical",
                          "Unknown"]
-        self.elements.append(new_combo_element(package_types,
-                                               "Package Type",
-                                               self.package_box_activated))
+        elements.append(new_combo_element(package_types,
+                                          "Package Type",
+                                          self.package_box_activated))
 
         # 8 - Cell type
         cell_types = ["Full",
@@ -203,59 +235,60 @@ class ChannelWidget(QWidget):
                       "LithiumLithium",
                       "Symmetric",
                       "Unknown"]
-        self.elements.append(new_combo_element(cell_types,
-                                               "Cell Type",
-                                               self.cell_box_activated))
+        elements.append(new_combo_element(cell_types,
+                                          "Cell Type",
+                                          self.cell_box_activated))
 
         # 9 - Requester selection box
         requestor_options = ["Unspecified",
                              "VC",
                              "GE",
                              "LK"]
-        self.elements.append(new_combo_element(requestor_options,
-                                               "Person starting cycle",
-                                               self.requestor_box_activated))
+        elements.append(new_combo_element(requestor_options,
+                                          "Person starting cycle",
+                                          self.requestor_box_activated))
+
+        return elements
+
+    def get_controls(self):
+        elements = []
 
         # 10 - Read button
-        self.elements.append(new_button_element(
+        elements.append(new_button_element(
             "Read Cell",
             "Read Voltage of Connected Cell",
             self.button_read
         ))
 
         # 11 - Start button
-        self.elements.append(new_button_element(
+        elements.append(new_button_element(
             "Start",
             "Start Cycle",
             self.button_start
         ))
 
         # 12 - Pause button
-        self.elements.append(new_button_element(
+        elements.append(new_button_element(
             "Pause",
             "Pause Cycle",
             self.button_pause
         ))
 
         # 13 - Resume button
-        self.elements.append(new_button_element(
+        elements.append(new_button_element(
             "Resume",
             "Resume Cycle",
             self.button_resume
         ))
 
         # 14 - Stop button
-        self.elements.append(new_button_element(
+        elements.append(new_button_element(
             "Stop",
             "Stop Cycle",
             self.button_stop
         ))
 
-        # 15 Cell Status
-        self.elements.append(QLabel())
-        self.elements[-1].setStatusTip("Cell status")
-
-        QMetaObject.connectSlotsByName(self)
+        return elements
 
     # Begin Button Press Definitions
     def button_auto_fill(self):
