@@ -117,6 +117,7 @@ class ChannelWidget(QWidget):
         right = QVBoxLayout()
         sides.addLayout(right)
 
+        # TODO: make divider change color if running
         # Divider
         divider = QWidget()
         divider.setObjectName("off")
