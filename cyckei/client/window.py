@@ -5,7 +5,7 @@ import sys
 
 from pkg_resources import require, DistributionNotFound
 from PySide2.QtWidgets import QWidget, QMainWindow, QAction, QTabWidget,\
-    QMessageBox, QMenuBar
+    QMessageBox
 from PySide2.QtCore import QThreadPool
 from pkg_resources import resource_filename
 
