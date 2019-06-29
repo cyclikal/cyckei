@@ -107,7 +107,7 @@ class MainWindow(QMainWindow):
 
     def create_menu(self):
         """Setup menu bar"""
-        bar = QMenuBar()
+        bar = self.menuBar()
 
         client = bar.addMenu("Client")
         client.addAction(self.action("&Info", "About Cyckei", about))
