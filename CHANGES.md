@@ -24,5 +24,10 @@ Intended to significantly improve the performance and responsiveness of the appl
 *   0.1.dev9, 06/27/2019 -- Move server to applet and improve OS integration
 *   0.1.dev10, 06/27/2019 -- A bunch of script tab fixes and separated status and feedback on the channel tab
 
+#### Bug Tracker
+*   No Menu Bar on Windows
+*   Cannot AutoFill
+*   Log errors to log
+
 ## 0.2
 Focused on simplifying the code to aid in further development. This includes unifying as many commonly used functions as possible, and adding code documentation.
