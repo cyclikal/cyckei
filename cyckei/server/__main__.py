@@ -1,6 +1,8 @@
 import logging
 
 import zmq
+import traceback
+import sys
 
 from threading import Thread
 from pkg_resources import resource_filename
@@ -39,6 +41,7 @@ def main():
     log_file = "{}/server.log".format(record_dir)
     logging.basicConfig(filename=log_file, level=config["verbosity"],
                         format='%(asctime)s %(message)s')
+    sys.excepthook = handler
     logging.info("--- Server started.")
 
     try:
@@ -54,6 +57,10 @@ def main():
     server_thread.start()
 
     return applet.main()
+
+
+def handler(type, value, tb):
+    logging.exception(traceback.format_exception(type, value, tb))
 
 
 def initialize_socket(port, address):

@@ -7,6 +7,7 @@ Controls communication and initializes the MainWindow.
 import json
 import sys
 import logging
+import traceback
 
 from pkg_resources import resource_filename
 
@@ -30,6 +31,7 @@ def main():
     log_file = "{}/client.log".format(record_dir)
     logging.basicConfig(filename=log_file, level=config["verbosity"],
                         format='%(asctime)s %(message)s')
+    sys.excepthook = handler
     logging.info("--- Client started.")
 
     app = QApplication(sys.argv)
@@ -42,6 +44,10 @@ def main():
     window.show()
 
     return app.exec_()
+
+
+def handler(type, value, tb):
+    logging.exception(traceback.format_exception(type, value, tb))
 
 
 if __name__ == "__main__":
