@@ -128,7 +128,8 @@ class ChannelWidget(QWidget):
         # Settings
         settings = QHBoxLayout()
         left.addLayout(settings)
-        for element in self.get_settings():
+        self.settings = self.get_settings()
+        for element in self.settings:
             settings.addWidget(element)
 
         # Status
@@ -293,8 +294,8 @@ class ChannelWidget(QWidget):
 
     # Begin Button Press Definitions
     def button_auto_fill(self):
-        self.threadpool.start(workers.AutoFill(self))
         logging.debug("AutoFill Pressed")
+        self.threadpool.start(workers.AutoFill(self))
 
     def button_read(self):
         logging.debug("Read Pressed")

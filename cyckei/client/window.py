@@ -182,8 +182,8 @@ class MainWindow(QMainWindow):
                     channel = self.channels[index]
                     values = line.split(",")
                     if len(values) > 1:
-                        channel.elements[2].setText(values[0])
-                        channel.elements[3].setText(values[1])
+                        channel.settings[2].setText(values[0])
+                        channel.settings[3].setText(values[1])
 
     def fill_batch(self):
         """Executes autofill for each channel"""
@@ -193,14 +193,14 @@ class MainWindow(QMainWindow):
     def increment_batch(self):
         """Increments last letter of batch by char number"""
         for channel in self.channels:
-            working_list = list(channel.elements[3].text())
+            working_list = list(channel.settings[3].text())
             if working_list:
                 try:
                     current_letter = ord(working_list[-5])
                     next_letter = chr(current_letter + 1)
                     working_list[-5] = next_letter
 
-                    channel.elements[3].setText("".join(working_list))
+                    channel.settings[3].setText("".join(working_list))
                 except Exception as exception:
                     msg = QMessageBox()
                     msg.setText(

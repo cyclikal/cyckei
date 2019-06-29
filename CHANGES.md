@@ -26,8 +26,8 @@ Intended to significantly improve the performance and responsiveness of the appl
 
 #### Bug Tracker
 *   No Menu Bar on Windows
-*   Cannot AutoFill
 *   Log errors to log
+*   Open raises UTF-8 errors
 
 ## 0.2
 Focused on simplifying the code to aid in further development. This includes unifying as many commonly used functions as possible, and adding code documentation.

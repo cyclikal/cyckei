@@ -87,7 +87,7 @@ class ScriptEditor(QWidget):
         """Remove script from list and channel selector"""
         self.scripts.script_list.pop(self.file_list.currentRow())
         for channel in self.channels:
-            channel.elements[1].removeItem(channel.elements[1].findText(
+            channel.settings[1].removeItem(channel.settings[1].findText(
                     self.file_list.currentItem().title,
                     Qt.MatchFixedString
                 ))
@@ -136,7 +136,7 @@ class ScriptEditor(QWidget):
         self.scripts.script_list.append(scripts.Script(file[1], file[0]))
         self.file_list.addItem(self.scripts.script_list[-1])
         for channel in self.channels:
-            channel.elements[1].addItem(self.scripts.script_list[-1].title)
+            channel.settings[1].addItem(self.scripts.script_list[-1].title)
 
     def paintEvent(self, event):
         style_option = QStyleOption()

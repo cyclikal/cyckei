@@ -112,9 +112,9 @@ class AutoFill(QRunnable):
 
     @Slot()
     def run(self):
-        if self.channel.elements[2].text():
-            self.channel.elements[3].setText(
-                "{}A.pyb".format(self.channel.elements[2].text()))
+        if self.channel.settings[2].text():
+            self.channel.settings[3].setText(
+                "{}A.pyb".format(self.channel.settings[2].text()))
 
 
 class Read(QRunnable):
