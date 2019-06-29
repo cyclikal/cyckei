@@ -44,7 +44,12 @@ class Script(QListWidgetItem):
 
     def update_status(self):
         """Updates title with '*' if script has been edited"""
-        if self.content == open(self.path + "/" + self.title, "r").read():
+        try:
+            file_content = open(self.path + "/" + self.title, "r").read()
+        except UnicodeDecodeError as error:
+            file_content = "Could not decode: {}".format(error)
+
+        if self.content == file_content:
             self.setText(self.title)
         else:
             self.setText("* " + self.title)
