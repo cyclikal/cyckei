@@ -3,7 +3,7 @@ loadandrunscript startupscript()
     beeper.enable = beeper.OFF
     --
     display.clear()
-    -- Restore Series 2600A defaults on ChA and ChB
+    -- Restore Series 2602A defaults on ChA and ChB
     -- Changed 9/15/16 by Jon Frost to recall setup 1 instead
     errorqueue.clear()
     -- Select Channel A and Channel B display formats.
