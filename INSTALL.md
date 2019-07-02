@@ -20,7 +20,7 @@ Like NI-VISA, NI-488.2 is National Instruments' GPIB driver. It is simple to ins
 Linux-GPIB is a GPL licensed GPIB support package for Linux. In addition to the C API, it includes bindings for multiple languages including Python. Linux-GPIB must be compiled for your OS and requires some configuration, but works fine with PyVISA. To learn more about Linux-GPIB and download the source code visit <https://linux-gpib.sourceforge.io/>.
 
 ## Installation
-Cyckei expects to packaged and installed with setuptools. The easiest method of installation is to install Cyckei with `pip`. It is recommended to do so within a virtual environment in order to prevent conflicting dependencies.
+Cyckei expects to packaged and installed with `setuptools`. The easiest method of installation is to install Cyckei with `pip`. It is recommended to do so within a virtual environment in order to prevent conflicting dependencies.
 
     pip install cyckei
 
