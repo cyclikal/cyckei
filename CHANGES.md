@@ -3,7 +3,7 @@
 ## 0.0 - 08/16/2018
 Original version of Cyckei developed by Vincent Chevrier and Gabriel Ewig for the Lithium-ion Battery Lab at 3M.
 
-## 0.1 Vayu
+## 0.1 Vayu - 07/2/2019
 Intended to significantly improve the performance and responsiveness of the application by improving the execution pattern and introducing threading to the Qt interface. Also overhauls the UI and brings many components up to date.
 
 #### Notable Changes
@@ -11,7 +11,7 @@ Intended to significantly improve the performance and responsiveness of the appl
 *   Switch GUI from PyQt5 to PySide2
 *   Improve layout and scaling of UI elements
 
-#### Development Releases (Formerly 0.0.1.devX)
+#### Development Releases
 
 *   0.1.dev1, 05/26/2019 -- Initial Vayu release
 *   0.1.dev2, 05/30/2019 -- Adjust layout and switch to PySide2
