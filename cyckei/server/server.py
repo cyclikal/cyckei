@@ -7,17 +7,114 @@ import logging
 from os.path import isfile
 
 import zmq
+from visa import VisaIOError
 
 from .models import Keithley2602
 from .protocols import CellRunner, STATUS
 
 
-def initialize_socket(port, address):
-    """Initialize zmq socket"""
-    context = zmq.Context(1)
-    socket = context.socket(zmq.REP)
-    socket.bind("{}:{}".format(address, port))
-    return socket
+def main(config, socket):
+    """Main start method and loop for server application"""
+    # Initialize the channels from a config file
+    logging.info("cyckei.server.server.main: Initializing...")
+
+    # Create list of sources (outputs)
+    keithleys = []
+    sources = []
+
+    # Initialize sources
+    logging.info("Attemping {} channels.".format(len(config["channels"])))
+    for chd in config["channels"]:
+        gpib_addr = chd["gpib_address"]
+        keithley = None
+        for k in keithleys:
+            if gpib_addr == k.gpib_addr:
+                keithley = k
+        if keithley is None:
+            try:
+                keithley = Keithley2602(gpib_addr)
+            except (ValueError, VisaIOError) as e:
+                logging.error("Could not esablish connection: "
+                              "Channel {}, GPIB {}.".format(
+                                chd["channel"],
+                                chd["gpib_address"])
+                              )
+                logging.error(e)
+                continue
+
+            keithleys.append(keithley)
+
+        source = keithley.get_source(chd["keithley_channel"],
+                                     channel=chd["channel"])
+        sources.append(source)
+
+    logging.info("Connected {} channels.".format(len(sources)))
+
+    # Initialize socket
+    runners = []
+
+    logging.info(
+        "Socket bound to port {}. Entering main loop.".format(
+            config["zmq"]["port"])
+    )
+
+    max_counter = 1e9
+    counter = 0
+    initial_time = time.time()
+    while True:
+        current_time = '{0:02.0f}.{1:02.0f}'.format(
+            *divmod((time.time() - initial_time) * 60, 60)
+        )
+
+        # check messages on the socket and execute necessary tasks
+        # ideally this would happen on a separate thread
+        # but it might not be necessary
+        # TODO verify this is fast enough to be blocking
+        # main loop without problem
+        logging.debug("cyckei.server.server.main: Processing socket messages")
+        process_socket(socket, runners, sources, current_time)
+
+        # execute runners or sleep if none
+        if runners:
+            logging.debug("cyckei.server.server.main: Looping over runners")
+            # Sort runners from most urgent to least urgent
+            runners = sorted(runners, key=lambda x: x.next_time)
+
+            channels_message = ""
+            timing_message = ""
+            for runner in runners:
+
+                if runner.status == STATUS.pending:
+                    runner.run()
+                elif runner.status == STATUS.started:
+                    # Don't bother with runners more than 1 second out
+                    relative_next_time = runner.next_time - time.time()
+                    channels_message = channels_message + "/" + runner.channel
+                    timing_message = (timing_message
+                                      + "/"
+                                      + str(relative_next_time)[:5])
+
+                    if relative_next_time <= 0.0:
+                        runner.run()
+            logging.debug(
+                "cyckei.server.server.main: "
+                + "channel {} will be checked in approx {} seconds...".format(
+                    channels_message[1:], timing_message[1:]
+                )
+            )
+
+            ipop = sorted(
+                [i for i, p in enumerate(runners)
+                    if p.status == STATUS.completed],
+                reverse=True
+            )
+            for i in ipop:
+                runners.pop(i)
+
+        time.sleep(0.1)
+
+        # mod it by a large value to avoid ever overflowing
+        counter = counter % max_counter + 1
 
 
 def process_socket(socket, runners, sources, server_time):
@@ -34,21 +131,15 @@ def process_socket(socket, runners, sources, server_time):
         None
 
     """
-    logging.debug("cyckei.server.server.process_socket: entered")
 
-    try:
-        # check for a message, this will not block
-        # it returns a python object already rebuilt from the json
-        msg = socket.recv_json(flags=zmq.NOBLOCK)
-        logging.debug("cyckei.server.server.process_socket: Request received")
-    except zmq.error.Again:
-        msg = None
+    msg = socket.recv_json()
 
     if msg is not None:
         response = {"response": None, "message": None}
         try:
             # a message has been received
             fun = msg["function"]
+            logging.info("Packet request received: {}".format(fun))
             kwargs = msg.get("kwargs", None)
             # response = {"version": __version__, "response": None}
             resp = "Unknown function"
@@ -56,7 +147,7 @@ def process_socket(socket, runners, sources, server_time):
                 try:
                     resp = start(kwargs["channel"], kwargs["meta"],
                                  kwargs["protocol"], runners, sources)
-                except Exception as exception:
+                except Exception:
                     resp = "Error occured when running script."
                     logging.warning("Error occured when running script.")
 
@@ -239,95 +330,3 @@ def get_runner_by_channel(channel, runners, status=None):
                 return runner
 
     return None
-
-
-def main(config):
-    """Main start method and loop for server application"""
-    # Initialize the channels from a config file
-    logging.info("cyckei.server.server: Initializing...")
-
-    # Create list of sources (outputs)
-    keithleys = []
-    sources = []
-
-    for chd in config["channels"]:
-        gpib_addr = chd["gpib_address"]
-        keithley = None
-        for k in keithleys:
-            if gpib_addr == k.gpib_addr:
-                keithley = k
-        if keithley is None:
-            keithley = Keithley2602(gpib_addr)
-            keithleys.append(keithley)
-
-        source = keithley.get_source(chd["keithley_channel"],
-                                     channel=chd["channel"])
-        sources.append(source)
-
-    # Initialize socket
-    runners = []
-    socket = initialize_socket(config["zmq"]["port"],
-                               config["zmq"]["server"]["address"])
-
-    logging.info(
-        "Socket bound to port {}. Entering main loop...".format(
-            config["zmq"]["port"])
-    )
-
-    max_counter = 1e9
-    counter = 0
-    initial_time = time.time()
-    while True:
-        current_time = '{0:02.0f}.{1:02.0f}'.format(
-            *divmod((time.time() - initial_time) * 60, 60)
-        )
-
-        # check messages on the socket and execute necessary tasks
-        # ideally this would happen on a separate thread
-        # but it might not be necessary
-        # TODO verify this is fast enough to be blocking
-        # main loop without problem
-        logging.debug("cyckei.server.server.main: Processing socket messages")
-        process_socket(socket, runners, sources, current_time)
-
-        # execute runners or sleep if none
-        if runners:
-            logging.debug("cyckei.server.server.main: Looping over runners")
-            # Sort runners from most urgent to least urgent
-            runners = sorted(runners, key=lambda x: x.next_time)
-
-            channels_message = ""
-            timing_message = ""
-            for runner in runners:
-
-                if runner.status == STATUS.pending:
-                    runner.run()
-                elif runner.status == STATUS.started:
-                    # Don't bother with runners more than 1 second out
-                    relative_next_time = runner.next_time - time.time()
-                    channels_message = channels_message + "/" + runner.channel
-                    timing_message = (timing_message
-                                      + "/"
-                                      + str(relative_next_time)[:5])
-
-                    if relative_next_time <= 0.0:
-                        runner.run()
-            logging.debug(
-                "cyckei.server.server.main: "
-                + "channel {} will be checked in approx {} seconds...".format(
-                    channels_message[1:], timing_message[1:]
-                )
-            )
-
-            ipop = sorted(
-                [i for i, p in enumerate(runners)
-                    if p.status == STATUS.completed],
-                reverse=True
-            )
-            for i in ipop:
-                runners.pop(i)
-
-        time.sleep(0.1)
-
-        # mod it by a large value to avoid ever overflowing
-        counter = counter % max_counter + 1

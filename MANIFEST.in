@@ -1,0 +1,10 @@
+# Include the README, HELP, and LICENSE files
+include *.md
+include *.txt
+
+# Include all resources
+recursive-include cyckei/server/res *
+recursive-include cyckei/client/res *
+
+# Remove build files
+prune *.egg-info

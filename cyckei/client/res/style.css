@@ -1,0 +1,21 @@
+* { selection-background-color: #f05f40; font-size: 16px; }
+
+* ScriptEditor, * LogViewer, * QMainWindow { background-color: #F2F2F2; }
+
+* ChannelWidget#even { background-color: #F2F2F2; }
+
+* ChannelWidget#odd { background-color: #D9D9D9; }
+
+* QWidget#off { background-color: #A6A6A6; }
+
+* QWidget#on { background-color: #f05f40; }
+
+* ChannelWidget { border-bottom: 1px solid #f05f40; }
+
+* QLabel#id_label { font-weight: bold; color: #f05f40; }
+
+* QPushButton:pressed { background-color: #f05f40; }
+
+* QPlainTextEdit:focus, * QListWidget:focus { border: 1px solid #f05f40; }
+
+* QMainWindow { background-color: #A6A6A6; }

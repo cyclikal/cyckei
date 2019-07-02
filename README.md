@@ -4,10 +4,17 @@
 
 ## About
 Cyckei is a battery cycling application designed to interface with the Keithley 2602A/B SourceMeter.
-Two applications, a server and a client, are used to issue commands to the Keithley and make measurements.
 The application uses a simple scripting format in order to write cycles that are carried out on cells.
 
 Cyckei is currently developed and maintained by Cyclikal, LLC.
+
+## Vayu
+Cyckei Vayu is currently being developed as a more efficient and distributable version of Cyckei. It can be installed using a package manager, and executed as a normal python application assuming python executables are in the system path.
+
+    pip install cyckei
+    cyckei
+
+This version is currently under development, and most documentation only applies to the main cyckei branch.
 
 ## How-To
 Before the first launch, be sure to create the config.json file as described in the HELP.md file. The file default.config.json can be renamed and edited so that further updates do not overwrite your configuration.
@@ -19,15 +26,6 @@ The "-s" flag can be used to start the server independently, but this is not nec
 For more details on using the application, refer to the HELP.md file or go to Menu > Help from within the client.
 
 ## Dependencies
-Cyckei is currently developed and tested on the latest version of Vanilla Python 3, but should work on most installations including Anaconda. We use Windows 10 for both development and deployment.
+Cyckei is currently developed and tested on the latest version of Python 3, but should work on most installations including Anaconda. We use Windows 10 for both development and deployment.
 
-The following additional modules are required, and should be installed with pip.
-*   pyvisa
-*   PyQt5
-*   zmq
-
-The following command should install these.
-
-    pip install pyvisa PyQt5 zmq
-
-In addition, there may be additional drivers necessary depending on how you interface with the Keithley SourceMeter. We use the National Instruments GPIB-USB-HS adaptors which require NI's 488.2 driver and NI-VISA. There is a python based visa library included with py-visa, but this has not been tested with Cyckei.
+In addition various python packages, there may be additional drivers necessary depending on how you interface with the Keithley SourceMeter. We use the National Instruments GPIB-USB-HS adaptors which require NI's 488.2 driver and NI-VISA. There is a python based visa library included with py-visa, but this has not been tested with Cyckei.

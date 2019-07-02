@@ -71,8 +71,6 @@ class CellRunner(object):
     }
 
     def __init__(self, **meta):
-        # import pdb
-        # pdb.set_trace()
         self.meta = self.META.copy()
         for k in self.meta.keys():
             self.meta[k] = meta.get(k, None)
@@ -1115,7 +1113,7 @@ def extrapolate_time(data, target, index):
                      / (d1[index] - d0[index])
                      * (d1[0] - d0[0]) + d1[0])
 
-    except (NameError, IndexError, ZeroDivisionError) as e:
+    except (NameError, IndexError, ZeroDivisionError):
         next_time = time.time()
 
     logging.debug(
