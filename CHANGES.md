@@ -12,7 +12,6 @@ Intended to significantly improve the performance and responsiveness of the appl
 *   Improve layout and scaling of UI elements
 
 #### Development Releases
-
 *   0.1.dev1, 05/26/2019 -- Initial Vayu release
 *   0.1.dev2, 05/30/2019 -- Adjust layout and switch to PySide2
 *   0.1.dev3, 05/31/2019 -- Create threaded workers for each action
@@ -25,7 +24,6 @@ Intended to significantly improve the performance and responsiveness of the appl
 *   0.1.dev10, 06/27/2019 -- A bunch of script tab fixes and separated status and feedback on the channel tab
 
 #### Release Candidates
-
 *   0.1rc1, 06/28/2019 -- Initial Release Candidate
 *   0.1rc2, 06/29/2019 -- Fixed some bugs, enable MenuBar on Windows, and added exception logging
 
@@ -37,11 +35,9 @@ Focused on simplifying the code to aid in further development. This includes uni
 *   TBD
 
 #### Development Releases
-
 *   0.2.dev1, 00/00/0000 -- Improve Documentation
 
 #### Release Candidates
-
 *   0.2rc1, 00/00/0000 -- TBD
 
 #### Bug Tracker

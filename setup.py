@@ -35,7 +35,6 @@ setup(
     install_requires=[
         "zmq",
         "pyvisa",
-        "pyvisa-py",
         "PySide2",
         "pyobjc-framework-Cocoa; platform_system == 'Darwin'"
     ],

@@ -1,15 +1,13 @@
-# Cyckei Client Help
+# Cyckei Help
 #### A battery cycler written in Python 3
 ---
 
 ## Controlling the Server
 Cyckei uses a server background process to interface directly with Keithley instruments.
 This allows cycles to continue running even if the client is closed abruptly or becomes slow.
-The server is started automatically with the client, or can be started directly with the following command:
+Running `cyckei` will start both the server and the client, but they can be run independently with `cyckei-server` and `cyckei-client`.
 
-    python cyckei.pyw -s
-
-The server can be controlled from the "Server" menu of the client application.
+The server can be controlled from a taskbar applet created upon server start.
 
 
 ## Starting a cycle
@@ -91,8 +89,8 @@ Editing the configuration file is crucial for the client to function properly. A
     -   *gpib_address (int)* - Hardware address of GPIB interface. Can be found with a NI VISA application or the following python code:
 
         import visa
-        resource_manager = visa.ResourceManager()
-        print(resource_manager.list_resources())
+        rm = visa.ResourceManager()
+        print(rm.list_resources())
     -   *keithley_model (string)* - Model number of keithley being used.
     -   *keithley_channel (string)* - Particular channel on said keithley (a or b).
 
