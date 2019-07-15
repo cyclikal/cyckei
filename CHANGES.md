@@ -29,13 +29,13 @@ Intended to significantly improve the performance and responsiveness of the appl
 
 
 ## 0.2 Alviss
-Focused on simplifying the code to aid in further development. This includes unifying as many commonly used functions as possible, and adding code documentation.
+Focused on simplifying the code to aid in further development. This includes unifying as many commonly used functions as possible, and adding code documentation. Also adds single file executables because they're fun.
 
 #### Notable Changes
 *   TBD
 
 #### Development Releases
-*   0.2.dev1, 00/00/0000 -- Improve Documentation
+*   0.2.dev1, 7/15/2019 -- Improve Documentation
 
 #### Release Candidates
 *   0.2rc1, 00/00/0000 -- TBD
