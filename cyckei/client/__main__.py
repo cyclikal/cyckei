@@ -9,16 +9,16 @@ import sys
 import logging
 import traceback
 
-from pkg_resources import resource_filename
-
-from PySide2.QtGui import QIcon
+from PySide2.QtCore import QThread
 from PySide2.QtWidgets import QApplication
+from PySide2.QtGui import QIcon
+
 from os.path import expanduser
 
 from .window import MainWindow
 
 
-def main():
+def main(app):
     """Initializes server and window"""
     print("Starting Client.")
 
@@ -34,21 +34,11 @@ def main():
     sys.excepthook = handler
     logging.info("--- Client started.")
 
-    app = QApplication(sys.argv)
-    app.setStyle("fusion")
-    app.setWindowIcon(QIcon(resource_filename(
-            "cyckei.client",
-            "res/cyckei.png")))
-
     window = MainWindow(config)
     window.show()
 
-    return app.exec_()
+    sys.exit(app.exec_())
 
 
 def handler(type, value, tb):
     logging.exception(traceback.format_exception(type, value, tb))
-
-
-if __name__ == "__main__":
-    main()

@@ -12,7 +12,6 @@ from PySide2.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QComboBox, \
     QStyle, QMessageBox
 from PySide2.QtCore import QTimer, Qt
 from PySide2.QtGui import QPainter
-from pkg_resources import resource_filename
 
 from . import workers
 
@@ -157,8 +156,7 @@ class ChannelWidget(QWidget):
             self.setObjectName("odd")
 
         # Load default JSON
-        self.json = json.load(open(
-            resource_filename("cyckei.client", "res/defaultJSON.json")))
+        self.json = json.load(open("client/res/defaultJSON.json"))
 
         # Set initial status and set status timer
         self.update_status()

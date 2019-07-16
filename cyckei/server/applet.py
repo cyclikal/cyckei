@@ -3,26 +3,18 @@ import sys
 from subprocess import Popen, DEVNULL
 
 from PySide2.QtGui import QIcon
-from PySide2.QtWidgets import QApplication, QAction, QMenu, QSystemTrayIcon,\
-    QMessageBox
-from pkg_resources import require, DistributionNotFound, resource_filename
+from PySide2.QtWidgets import QAction, QMenu, QSystemTrayIcon,\
+    QMessageBox, QApplication
 
 
 def main():
-    app = QApplication(sys.argv)
-    app.setStyle("fusion")
-    app.setQuitOnLastWindowClosed(False)
-
     # Create the tray
-    tray = QSystemTrayIcon(QIcon(resource_filename("cyckei.server",
-                                                   "res/bolt.png")))
+    tray = QSystemTrayIcon(QIcon("server/res/bolt.png"))
     menu = QMenu()
     controls = []
 
-    try:
-        version = require("cyckei")[0].version
-    except DistributionNotFound:
-        version = "(unpackaged)"
+    # TODO: Pass version number
+    version = "dev"
 
     controls.append(QAction("Cyckei Server {}".format(version)))
     controls[-1].setDisabled(True)
@@ -41,8 +33,6 @@ def main():
     # Add the menu to the tray
     tray.setContextMenu(menu)
     tray.show()
-
-    app.exec_()
 
 
 def post_message(text):

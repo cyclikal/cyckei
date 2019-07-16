@@ -3,11 +3,9 @@
 import logging
 import sys
 
-from pkg_resources import require, DistributionNotFound
 from PySide2.QtWidgets import QWidget, QMainWindow, QAction, QTabWidget,\
     QMessageBox
 from PySide2.QtCore import QThreadPool
-from pkg_resources import resource_filename
 
 from .channel_tab import ChannelTab
 from .script_tab import ScriptEditor
@@ -31,10 +29,8 @@ the cyckei install location, or online on our GitLab page.
 
 def about():
     """Display basic information about cyckei"""
-    try:
-        version = require("cyckei")[0].version
-    except DistributionNotFound:
-        version = "(unpackaged)"
+    # TODO: Pass version number
+    version = "dev"
 
     msg = QMessageBox()
     msg.setIcon(QMessageBox.Information)
@@ -95,9 +91,7 @@ class MainWindow(QMainWindow):
         self.tab_widget.addTab(LogViewer(self.config, self.threadpool), "Logs")
 
         self.setStyleSheet(
-            open(resource_filename(
-                    "cyckei.client",
-                    "res/style.css"), "r").read())
+            open("client/res/style.css", "r").read())
 
     def action(self, title, tip, connect):
         temp = QAction(title, self)

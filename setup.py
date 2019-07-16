@@ -41,8 +41,8 @@ setup(
     entry_points={
         "gui_scripts": [
             "cyckei = cyckei.cyckei:main",
-            "cyckei-server = cyckei.server.__main__:main",
-            "cyckei-client = cyckei.client.__main__:main"
+            "cyckei-server = cyckei.server.cyckei-server:main",
+            "cyckei-client = cyckei.client.cyckei-client:main"
         ]
     },
     test_suite='cyckei.tests',

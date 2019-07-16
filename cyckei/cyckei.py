@@ -1,17 +1,29 @@
-from subprocess import Popen, DEVNULL
-from pkg_resources import require, DistributionNotFound
+# from subprocess import Popen, DEVNULL
+from threading import Thread
+import sys
+
+from PySide2.QtWidgets import QApplication
+from PySide2.QtGui import QIcon
+
+from client import __main__ as client
+from server import __main__ as server
 
 
 def main():
-
-    try:
-        version = require("cyckei")[0].version
-    except DistributionNotFound:
-        version = "(unpackaged)"
+    # TODO: Pass version number
+    version = "dev"
 
     print("\nWelcome to Cyckei {}!".format(version))
-    Popen(["cyckei-client"], stdout=DEVNULL)
-    Popen(["cyckei-server"], stdout=DEVNULL)
+
+    app = QApplication(sys.argv)
+    app.setStyle("fusion")
+    app.setQuitOnLastWindowClosed(False)
+    app.setWindowIcon(QIcon("client/res/cyckei.png"))
+
+    server.main()
+    client.main(app)
+
+    sys.exit(app.exec_())
 
 
 if __name__ == "__main__":

@@ -5,11 +5,12 @@ import traceback
 import sys
 
 from threading import Thread
-from pkg_resources import resource_filename
 from json import load
 from os.path import expanduser, exists
 from os import makedirs
 from shutil import copy
+
+from PySide2.QtCore import QThread
 
 from . import server
 from . import applet
@@ -49,7 +50,7 @@ def main():
                                    config["zmq"]["server"]["address"])
     except zmq.error.ZMQError as error:
         logging.critical(
-            "It appears that the server is already running: ".format(error))
+            "It appears the server is already running: ".format(error))
         return
 
     server_thread = Thread(target=server.main,
@@ -79,16 +80,10 @@ def file_structure(path):
     if not exists(path + "/tests"):
         makedirs(path + "/tests")
     if not exists(path + "/config.json"):
-        copy(resource_filename("cyckei.server", "res/default.config.json"),
+        copy("server/res/default.config.json",
              path + "/config.json")
     if not exists(path + "/batch.txt"):
-        copy(resource_filename("cyckei.server", "res/batch.txt"),
-             path + "/batch.txt")
+        copy("server/res/batch.txt", path + "/batch.txt")
     if not exists(path + "/scripts"):
         makedirs(path + "/scripts")
-        copy(resource_filename("cyckei.server", "res/example-script"),
-             path + "/scripts/example")
-
-
-if __name__ == "__main__":
-    main()
+        copy("server/res/example-script", path + "/scripts/example")
