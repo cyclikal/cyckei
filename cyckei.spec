@@ -11,6 +11,7 @@ def rand_string(length=10):
     return "".join(random.choice(string.printable) for i in range(length))
 
 
+# TODO: Standardize versioning
 name = "Cyckei"
 identifier = "com.cyclikal.cyckei"
 block_cipher = pyi_crypto.PyiBlockCipher(key=rand_string())
