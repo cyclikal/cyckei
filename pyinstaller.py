@@ -13,7 +13,7 @@ name = "cyckei"
 identifier = "com.cyclikal.cyckei"
 key = rand_string()
 icon = os.path.join("assets", "cyckei.icns")
-data = os.path.join("assets", "*") + ":data"
+data = os.path.join("assets", "*") + ":assets"
 
 
 PyInstaller.__main__.run([

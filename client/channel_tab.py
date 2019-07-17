@@ -14,6 +14,7 @@ from PySide2.QtCore import QTimer, Qt
 from PySide2.QtGui import QPainter
 
 from . import workers
+import functions as func
 
 
 def not_none(value):
@@ -156,7 +157,7 @@ class ChannelWidget(QWidget):
             self.setObjectName("odd")
 
         # Load default JSON
-        self.json = json.load(open("assets/defaultJSON.json"))
+        self.json = json.load(open(func.find_path("assets/defaultJSON.json")))
 
         # Set initial status and set status timer
         self.update_status()

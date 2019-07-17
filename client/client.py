@@ -12,6 +12,7 @@ from .script_tab import ScriptEditor
 from .log_tab import LogViewer
 from . import workers
 from .scripts import ScriptList
+import functions as func
 
 
 def help():
@@ -83,7 +84,7 @@ class MainWindow(QMainWindow):
         self.tab_widget.addTab(LogViewer(self.config, self.threadpool), "Logs")
 
         self.setStyleSheet(
-            open("assets/style.css", "r").read())
+            open(func.find_path("assets/style.css"), "r").read())
 
     def action(self, title, tip, connect):
         temp = QAction(title, self)

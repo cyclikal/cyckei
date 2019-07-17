@@ -7,6 +7,7 @@ from os import makedirs
 from datetime import date
 
 from .socket import Socket
+import functions as func
 
 
 def not_none(value):
@@ -26,7 +27,7 @@ def prepare_json(channel, function, scripts):
     """Sets the channel's json script to current values"""
     protocol = scripts.get_script_by_title(
         channel.attributes["script_title"]).content
-    json_packet = json.load(open("assets/defaultJSON.json"))
+    json_packet = json.load(open(func.find_path("assets/defaultJSON.json")))
 
     json_packet["function"] = function
     json_packet["kwargs"]["channel"] = channel.attributes["channel"]
@@ -124,7 +125,7 @@ class Read(QRunnable):
 
     @Slot()
     def run(self):
-        package = json.load(open("assets/defaultJSON.json"))
+        package = json.load(open(func.find_path("assets/defaultJSON.json")))
         package["function"] = "start"
         package["kwargs"]["channel"] = self.channel.attributes["channel"]
         package["kwargs"]["meta"]["path"] = (
@@ -224,7 +225,7 @@ class Check(QRunnable):
 
     def prepare_json(self, protocol):
         """create json to send to server"""
-        json_packet = json.load(open("assets/defaultJSON.json"))
+        json_packet = json.load(open(func.find_path("assets/defaultJSON.json")))
 
         json_packet["function"] = "test"
         json_packet["kwargs"]["protocol"] = protocol

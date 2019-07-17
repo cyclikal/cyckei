@@ -13,6 +13,7 @@ from PySide2.QtGui import QIcon
 from server import server
 from client import client
 from applet import applet
+import functions as func
 
 VERSION = "0.2.dev2"
 
@@ -41,7 +42,7 @@ def main():
     app = QApplication(sys.argv)
     app.setStyle("fusion")
     app.setQuitOnLastWindowClosed(False)
-    app.setWindowIcon(QIcon("assets/cyckei.png"))
+    app.setWindowIcon(QIcon(func.find_path("assets/cyckei.png")))
 
     # Set icon for windows
     try:
@@ -80,12 +81,12 @@ def file_structure(path):
     if not os.path.exists(path + "/tests"):
         os.makedirs(path + "/tests")
     if not os.path.exists(path + "/config.json"):
-        shutil.copy("assets/default.config.json", path + "/config.json")
+        shutil.copy(func.find_path("assets/default.config.json"), path + "/config.json")
     if not os.path.exists(path + "/batch.txt"):
-        shutil.copy("assets/batch.txt", path + "/batch.txt")
+        shutil.copy(func.find_path("assets/batch.txt"), path + "/batch.txt")
     if not os.path.exists(path + "/scripts"):
         os.makedirs(path + "/scripts")
-        shutil.copy("assets/example-script", path + "/scripts/example")
+        shutil.copy(func.find_path("assets/example-script"), path + "/scripts/example")
 
 
 def handler(type, value, tb):

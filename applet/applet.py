@@ -5,12 +5,13 @@ from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import QAction, QMenu, QSystemTrayIcon, QMessageBox
 
 from client import client
+import functions as func
 
 
 class Icon(QSystemTrayIcon):
     def __init__(self, config):
         """Create tray applet and self.controls"""
-        super().__init__(QIcon("assets/bolt.png"))
+        super().__init__(QIcon(func.find_path("assets/bolt.png")))
 
         self.config = config
         self.menu = QMenu()
