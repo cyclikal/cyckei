@@ -10,7 +10,7 @@ from client import client
 class Icon(QSystemTrayIcon):
     def __init__(self, config):
         """Create tray applet and self.controls"""
-        super().__init__(QIcon("resources/bolt.png"))
+        super().__init__(QIcon("assets/bolt.png"))
 
         self.config = config
         self.menu = QMenu()
