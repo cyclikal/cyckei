@@ -42,7 +42,7 @@ def main():
     app = QApplication(sys.argv)
     app.setStyle("fusion")
     app.setQuitOnLastWindowClosed(False)
-    #app.setWindowIcon(QIcon("resources/cyckei.png"))
+    app.setWindowIcon(QIcon("resources/cyckei.png"))
 
     # Set icon for windows
     try:
@@ -67,8 +67,8 @@ def main():
 
     # Create Client
     logging.debug("cyckei.main: Creating Initial Client")
-    #main_window = client.MainWindow(config)
-    #main_window.show()
+    main_window = client.MainWindow(config)
+    main_window.show()
 
     sys.exit(app.exec_())
 
