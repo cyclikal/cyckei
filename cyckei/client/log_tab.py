@@ -12,7 +12,7 @@ class LogViewer(QWidget):
     """Object of log tab"""
     def __init__(self, config, threadpool):
         QWidget.__init__(self)
-        self.path = config["path"] + "/tests"
+        self.path = config["record_dir"] + "/tests"
         self.threadpool = threadpool
 
         self.log_list = QListWidget()

@@ -9,11 +9,11 @@ import threading
 
 from PySide2.QtWidgets import QApplication
 from PySide2.QtGui import QIcon
-from PySide2.QtWidgets import QSystemTrayIcon
+from PySide2.QtWidgets import QSystemTrayIcon, QWidget
 
 from server import server
 from client import client
-from applet.applet import Applet
+from applet import applet
 
 VERSION = "0.2.dev2"
 
@@ -42,21 +42,33 @@ def main():
     app = QApplication(sys.argv)
     app.setStyle("fusion")
     app.setQuitOnLastWindowClosed(False)
-    app.setWindowIcon(QIcon("resources/cyckei.png"))
+    #app.setWindowIcon(QIcon("resources/cyckei.png"))
+
+    # Set icon for windows
+    try:
+        import ctypes
+        id = u"com.cyclikal.cyckei"
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(id)
+    except AttributeError:
+        logging.warning("cyckei.main: Could not set windows-specific icon")
+        pass
 
     # Start Server
     logging.debug("cyckei.main: Starting Server")
-    server_thread = threading.Thread(target=server.main, args=(config))
+    server_thread = threading.Thread(target=server.main,
+                                     args=(config,),
+                                     daemon=True)
     server_thread.start()
 
     # Create Applet
     logging.debug("cyckei.main: Creating Applet")
-    applet_object = Applet(config)
+    applet_object = applet.Icon(config)
     applet_object.show()
-
 
     # Create Client
     logging.debug("cyckei.main: Creating Initial Client")
+    #main_window = client.MainWindow(config)
+    #main_window.show()
 
     sys.exit(app.exec_())
 
@@ -79,7 +91,8 @@ def file_structure(path):
 
 def handler(type, value, tb):
     """Handler which writes exceptions to log and terminal"""
-    text = traceback.format_exception(type, value, tb)
+    list = traceback.format_exception(type, value, tb)
+    text = "".join(str(l) for l in list)
     logging.exception(text)
     print(text)
 

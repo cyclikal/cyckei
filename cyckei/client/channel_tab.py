@@ -69,7 +69,7 @@ class ChannelTab(QWidget):
         for channel in config["channels"]:
             self.channels.append(ChannelWidget(
                 channel["channel"],
-                config["path"] + "/tests",
+                config["record_dir"] + "/tests",
                 threadpool,
                 scripts
             ))
