@@ -156,7 +156,7 @@ class ChannelWidget(QWidget):
             self.setObjectName("odd")
 
         # Load default JSON
-        self.json = json.load(open("client/res/defaultJSON.json"))
+        self.json = json.load(open("resources/defaultJSON.json"))
 
         # Set initial status and set status timer
         self.update_status()

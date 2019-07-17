@@ -13,10 +13,22 @@ from .models import Keithley2602
 from .protocols import CellRunner, STATUS
 
 
-def main(config, socket):
+def main(config):
     """Main start method and loop for server application"""
-    # Initialize the channels from a config file
-    logging.info("cyckei.server.server.main: Initializing...")
+    logging.info("cyckei.server.server.main: Starting server")
+
+    # Create ZMQ Socket
+    logging.debug("cyckei.server.server.main: Binding socket")
+    try:
+        context = zmq.Context(1)
+        socket = context.socket(zmq.REP)
+        socket.bind("{}:{}".format(config["zmq"]["server"]["address"],
+                                   config["zmq"]["port"]))
+    except zmq.error.ZMQError as error:
+        logging.error(
+            "It appears the server is already running: ".format(error))
+        return
+    logging.debug("cyckei.server.server.main: Socket bound successfully")
 
     # Create list of sources (outputs)
     keithleys = []

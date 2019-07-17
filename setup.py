@@ -21,8 +21,8 @@ setup(
         "cyckei.client": "cyckei/client"
     },
     package_data={
-        "cyckei.server": ["cyckei/server/res"],
-        "cyckei.client": ["cyckei/client/res"],
+        "cyckei.server": ["cyckei/resources"],
+        "cyckei.client": ["cyckei/resources"],
     },
     include_package_data=True,
 

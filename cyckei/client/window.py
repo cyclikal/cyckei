@@ -91,7 +91,7 @@ class MainWindow(QMainWindow):
         self.tab_widget.addTab(LogViewer(self.config, self.threadpool), "Logs")
 
         self.setStyleSheet(
-            open("client/res/style.css", "r").read())
+            open("resources/style.css", "r").read())
 
     def action(self, title, tip, connect):
         temp = QAction(title, self)

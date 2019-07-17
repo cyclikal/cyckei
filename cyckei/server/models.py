@@ -18,7 +18,7 @@ class Keithley2602(object):
 
     # TODO something in the startup script screws up CC discharge.
     # It does constant V discharge instead
-    script_startup = open("server/res/startup.lua").read()
+    script_startup = open("resources/startup.lua").read()
     current_ranges = [100 * 1e-9, 1e-6, 10e-6,
                       100e-6, 1e-3, 0.01,
                       0.1, 1.0, 3.0]
