@@ -9,7 +9,7 @@ def rand_string(length=10):
     return "".join(random.choice(string.printable) for i in range(length))
 
 
-name = "cyckei"
+name = "Cyckei"
 identifier = "com.cyclikal.cyckei"
 key = rand_string()
 icon = os.path.join("assets", "cyckei.icns")

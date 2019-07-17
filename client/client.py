@@ -51,7 +51,7 @@ class MainWindow(QMainWindow):
     def __init__(self, config):
         super().__init__()
         # Set basic window properties
-        self.setWindowTitle("Cyckei")
+        self.setWindowTitle("Cyckei Client")
         self.config = config
         self.resize(1100, 600)
 

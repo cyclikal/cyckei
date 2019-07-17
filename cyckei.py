@@ -81,12 +81,14 @@ def file_structure(path):
     if not os.path.exists(path + "/tests"):
         os.makedirs(path + "/tests")
     if not os.path.exists(path + "/config.json"):
-        shutil.copy(func.find_path("assets/default.config.json"), path + "/config.json")
+        shutil.copy(func.find_path("assets/default.config.json"),
+                    path + "/config.json")
     if not os.path.exists(path + "/batch.txt"):
         shutil.copy(func.find_path("assets/batch.txt"), path + "/batch.txt")
     if not os.path.exists(path + "/scripts"):
         os.makedirs(path + "/scripts")
-        shutil.copy(func.find_path("assets/example-script"), path + "/scripts/example")
+        shutil.copy(func.find_path("assets/example-script"),
+                    path + "/scripts/example")
 
 
 def handler(type, value, tb):
