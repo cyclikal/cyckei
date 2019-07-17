@@ -49,5 +49,5 @@ class Icon(QSystemTrayIcon):
         response = confirmation.exec_()
 
         if response == QMessageBox.Yes:
-            logging.warning("applet.applet.Icon.stop: Shutting down")
+            logging.warning("applet.applet.Icon.stop: Shutting down\n")
             sys.exit()

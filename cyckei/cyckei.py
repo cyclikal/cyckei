@@ -9,7 +9,6 @@ import threading
 
 from PySide2.QtWidgets import QApplication
 from PySide2.QtGui import QIcon
-from PySide2.QtWidgets import QSystemTrayIcon, QWidget
 
 from server import server
 from client import client
