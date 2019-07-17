@@ -33,7 +33,7 @@ a = Analysis(["cyckei.py"],
              cipher=block_cipher,
              noarchive=False)
 pyz = PYZ(a.pure, a.zipped_data,
-             cipher=block_cipher)
+          cipher=block_cipher)
 exe = EXE(pyz,
           a.scripts,
           a.binaries,
@@ -46,15 +46,12 @@ exe = EXE(pyz,
           strip=False,
           upx=True,
           runtime_tmpdir=None,
-          console=False ,
-          icon=win_icon
-         )
+          console=False,
+          icon=win_icon)
 app = BUNDLE(exe,
              name="{}.app".format(name),
              icon=mac_icon,
              bundle_identifier=identifier,
              info_plist={
                 'NSPrincipalClass': 'NSApplication',
-                'NSAppleScriptEnabled': False,
-             },
-            )
+             })
