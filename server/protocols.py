@@ -377,7 +377,7 @@ class ProtocolStep(object):
         """
         # the parent is the CellRunner
         if cellrunner_parent is None:
-            self.parent = parent
+            self.parent = parent  # noqa: F821
         else:
             self.parent = cellrunner_parent
 
@@ -717,7 +717,7 @@ class CVCharge(VoltageStep):
                          reports=reports, ends=ends,
                          wait_time=wait_time)
         self.state_str = "charge_constant_voltage"
-        if parent.isTest:
+        if parent.isTest:  # noqa: F821
             pass
         else:
             self.guess_i_limit()
@@ -732,7 +732,7 @@ class CVDischarge(VoltageStep):
                          reports=reports, ends=ends,
                          wait_time=wait_time)
         self.state_str = "discharge_constant_voltage"
-        if parent.isTest:
+        if parent.isTest:  # noqa: F821
             pass
         else:
             self.guess_i_limit()
