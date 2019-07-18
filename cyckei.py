@@ -15,7 +15,7 @@ from client import client
 from applet import applet
 import functions as func
 
-VERSION = "0.2.dev2"
+VERSION = "0.2.dev3"
 
 
 def main():
