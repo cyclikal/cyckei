@@ -3,7 +3,7 @@
 import logging
 import sys
 
-from PySide2.QtWidgets import QWidget, QMainWindow, QAction, QTabWidget
+from PySide2.QtWidgets import QMainWindow, QAction, QTabWidget
 from PySide2.QtCore import QThreadPool
 
 from .channel_tab import ChannelTab
@@ -157,7 +157,7 @@ class MainWindow(QMainWindow):
     def fill_batch(self):
         """Executes autofill for each channel"""
         for channel in self.channels:
-            channel.button_auto_fill()
+            self.threadpool.start(workers.AutoFill(channel))
 
     def increment_batch(self):
         """Increments last letter of batch by char number"""
@@ -173,7 +173,7 @@ class MainWindow(QMainWindow):
                 except Exception as exception:
                     msg = {
                         "text": "Could not increment channel {}.\n".format(
-                            channel.channel
+                            channel["channel"]
                         ) + str(exception),
                         "icon": func.Icon().Warning
                     }
