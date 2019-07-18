@@ -1,10 +1,10 @@
 import json
 import logging
-
-from PySide2.QtCore import QRunnable, Slot, Signal, QObject
 from os.path import exists
 from os import makedirs
 from datetime import date
+
+from PySide2.QtCore import QRunnable, Slot, Signal, QObject
 
 from .socket import Socket
 import functions as func

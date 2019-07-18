@@ -1,7 +1,8 @@
 """Controls log tab, which displays logs as they are being recorded"""
 
-from os import path, listdir
 import subprocess
+from os import path, listdir
+
 from PySide2.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel, QStyleOption,\
     QPushButton, QListWidget, QListWidgetItem, QWidget, QPlainTextEdit, QStyle
 from PySide2.QtGui import QPainter

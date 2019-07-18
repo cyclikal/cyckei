@@ -4,8 +4,6 @@ Listed in the channel tab of the main window.
 """
 
 import json
-import logging
-
 
 from PySide2.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, \
      QScrollArea, QStyleOption, QStyle
