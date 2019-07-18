@@ -2,7 +2,7 @@ import sys
 import logging
 
 from PySide2.QtGui import QIcon
-from PySide2.QtWidgets import QAction, QMenu, QSystemTrayIcon, QMessageBox
+from PySide2.QtWidgets import QAction, QMenu, QSystemTrayIcon
 
 from client import client
 import functions as func
@@ -49,6 +49,6 @@ class Icon(QSystemTrayIcon):
             "confirm": True
         }
 
-        if func.message(**msg) == QMessageBox.Yes:
+        if func.message(**msg) == func.QMessageBox.Yes:
             logging.warning("applet.applet.Icon.stop: Shutting down\n")
             sys.exit()

@@ -19,7 +19,7 @@ Cyckei relies on the PyVISA wrapper to communicate with any devices, and general
 For more information about installing system components, see the `INSTALL` file.
 
 ## Installation
-See `INSTALLATION` file for more information.
+See the `INSTALL` file for more information.
 
 ## How-To
 Upon first launch, Cyckei will create a `cyckei` directory in the user's home folder to hold scripts, test results, logs, and configuration. Before running tests, Cyckei must be configured to properly interface with any devices. Each channel should be setup in the `config.json` file with the correct GPIB address and any other relevant information. A default configuration is automatically generated, and instructions on further configuration can be found in the `HELP` file.

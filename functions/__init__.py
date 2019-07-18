@@ -1,7 +1,7 @@
 import os
 import sys
 
-from functions.gui import *
+from functions.gui import message  # noqa: F401
 
 
 def find_path(path):
