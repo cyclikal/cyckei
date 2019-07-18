@@ -1,12 +1,7 @@
-from PySide2.QtWidgets import QMessageBox
 import os
 import sys
 
-
-def post_message(text):
-    msg = QMessageBox()
-    msg.setText(text)
-    msg.exec_()
+from functions.gui import *
 
 
 def find_path(path):

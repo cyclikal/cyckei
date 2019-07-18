@@ -41,15 +41,14 @@ class Icon(QSystemTrayIcon):
         self.windows[-1].show()
 
     def stop(self):
-        msg = ("Are you sure you want to quit Cyckei?\n\n"
-               "This will stop any current cycles and "
-               "release control of all channels.")
-        confirmation = QMessageBox()
-        confirmation.setText(msg)
-        confirmation.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        msg = {
+            "text": "Are you sure you want to quit Cyckei?",
+            "info": "This will stop any current cycles and "
+                    "release control of all channels.",
+            "icon": func.QMessageBox.Warning,
+            "confirm": True
+        }
 
-        response = confirmation.exec_()
-
-        if response == QMessageBox.Yes:
+        if func.message(**msg) == QMessageBox.Yes:
             logging.warning("applet.applet.Icon.stop: Shutting down\n")
             sys.exit()
