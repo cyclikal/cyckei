@@ -7,47 +7,13 @@ import json
 import logging
 
 
-from PySide2.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QComboBox, \
-    QLineEdit, QPushButton, QLabel, QScrollArea, QStyleOption, \
-    QStyle, QMessageBox
+from PySide2.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, \
+     QScrollArea, QStyleOption, QStyle
 from PySide2.QtCore import QTimer, Qt
 from PySide2.QtGui import QPainter
 
 from . import workers
 import functions as func
-
-
-def not_none(value):
-    """Sets a None value to "None" string"""
-    return "None" if value is None else str(value)
-
-
-def new_button_element(text, status, connect):
-    """Creates a button with given information"""
-    button = QPushButton()
-    button.setText(text)
-    button.setStatusTip(status)
-    button.clicked.connect(connect)
-    return button
-
-
-def new_combo_element(items, status, connect):
-    """Creates a combo box with given information"""
-    box = QComboBox()
-    box.addItems(items)
-    box.setStatusTip(status)
-    box.activated[str].connect(connect)
-    return box
-
-
-def new_text_element(label, status, connect):
-    """Creates text edit field with given information"""
-    text = QLineEdit()
-    text.setMinimumSize(60, 20)
-    text.setPlaceholderText(label)
-    text.setStatusTip(status)
-    text.textChanged.connect(connect)
-    return text
 
 
 class ChannelTab(QWidget):
@@ -133,9 +99,11 @@ class ChannelWidget(QWidget):
             settings.addWidget(element)
 
         # Status
-        self.status = QLabel()
-        self.status.setStatusTip("Current Cell Status")
-        self.status.setText("Loading Status...")
+        args = [
+            "Loading Status...",
+            "Current Cell Status",
+        ]
+        self.status = func.label(*args)
         left.addWidget(self.status)
 
         # Controls
@@ -145,9 +113,11 @@ class ChannelWidget(QWidget):
             controls.addWidget(element)
 
         # Feedback
-        self.feedback = QLabel()
-        self.feedback.setStatusTip("Server Response")
-        self.feedback.setText("Awaiting Server Response...")
+        args = [
+            "Awaiting Server Response...",
+            "Server Response",
+        ]
+        self.feedback = func.label(*args)
         self.feedback.setAlignment(Qt.AlignCenter)
         right.addWidget(self.feedback)
 
@@ -170,14 +140,12 @@ class ChannelWidget(QWidget):
         elements = []
 
         # 0 - Cell channel label
-        elements.append(QLabel())
-        elements[-1].setStatusTip(
-            "Channel {}".format(self.attributes["channel"])
-        )
-        elements[-1].setText(
-            "{}:".format(self.attributes["channel"])
-        )
-        elements[-1].setObjectName("id_label")
+        args = [
+            "{}:".format(self.attributes["channel"]),
+            "Channel {}".format(self.attributes["channel"]),
+            "id_label"
+        ]
+        elements.append(func.label(*args))
         elements[-1].setMinimumSize(25, 25)
 
         # 1 - Script selection box
@@ -186,47 +154,47 @@ class ChannelWidget(QWidget):
             self.attributes["script_title"] = self.scripts.script_list[0].title
             for script in self.scripts.script_list:
                 available_scripts.append(script.title)
-        elements.append(new_combo_element(available_scripts,
-                                          "Select scripts to run",
-                                          self.script_box_activated))
+        elements.append(func.combo_box(available_scripts,
+                                       "Select scripts to run",
+                                       self.script_box_activated))
 
         # 2 - Cell identification number
-        elements.append(new_text_element("Cell ID",
-                                         "Cell identification",
-                                         self.set_id))
+        elements.append(func.line_edit("Cell ID",
+                                       "Cell identification",
+                                       self.set_id))
 
         # 3 - Path to log file
-        elements.append(new_text_element(
+        elements.append(func.line_edit(
             "Log file",
             "File to log to, placed in specified logs folder",
             self.set_path
         ))
 
         # 4 - auto_fill Button
-        elements.append(new_button_element(
+        elements.append(func.button(
             "AutoFill",
             "Fill log file from cell identification, defaults to [id]A.log",
             self.button_auto_fill
         ))
 
         # 5 - Mass
-        elements.append(new_text_element("Mass",
-                                         "Mass of Cell",
-                                         self.set_mass))
+        elements.append(func.line_edit("Mass",
+                                       "Mass of Cell",
+                                       self.set_mass))
 
         # 6 - Comment
-        elements.append(new_text_element("Comment",
-                                         "Unparsed Comment",
-                                         self.set_comment))
+        elements.append(func.line_edit("Comment",
+                                       "Unparsed Comment",
+                                       self.set_comment))
 
         # 7 - Package
         package_types = ["Pouch",
                          "Coin",
                          "Cylindrical",
                          "Unknown"]
-        elements.append(new_combo_element(package_types,
-                                          "Package Type",
-                                          self.package_box_activated))
+        elements.append(func.combo_box(package_types,
+                                       "Package Type",
+                                       self.package_box_activated))
 
         # 8 - Cell type
         cell_types = ["Full",
@@ -236,18 +204,18 @@ class ChannelWidget(QWidget):
                       "LithiumLithium",
                       "Symmetric",
                       "Unknown"]
-        elements.append(new_combo_element(cell_types,
-                                          "Cell Type",
-                                          self.cell_box_activated))
+        elements.append(func.combo_box(cell_types,
+                                       "Cell Type",
+                                       self.cell_box_activated))
 
         # 9 - Requester selection box
         requestor_options = ["Unspecified",
                              "VC",
                              "GE",
                              "LK"]
-        elements.append(new_combo_element(requestor_options,
-                                          "Person starting cycle",
-                                          self.requestor_box_activated))
+        elements.append(func.combo_box(requestor_options,
+                                       "Person starting cycle",
+                                       self.requestor_box_activated))
 
         return elements
 
@@ -255,35 +223,35 @@ class ChannelWidget(QWidget):
         elements = []
 
         # 10 - Read button
-        elements.append(new_button_element(
+        elements.append(func.button(
             "Read Cell",
             "Read Voltage of Connected Cell",
             self.button_read
         ))
 
         # 11 - Start button
-        elements.append(new_button_element(
+        elements.append(func.button(
             "Start",
             "Start Cycle",
             self.button_start
         ))
 
         # 12 - Pause button
-        elements.append(new_button_element(
+        elements.append(func.button(
             "Pause",
             "Pause Cycle",
             self.button_pause
         ))
 
         # 13 - Resume button
-        elements.append(new_button_element(
+        elements.append(func.button(
             "Resume",
             "Resume Cycle",
             self.button_resume
         ))
 
         # 14 - Stop button
-        elements.append(new_button_element(
+        elements.append(func.button(
             "Stop",
             "Stop Cycle",
             self.button_stop
@@ -298,51 +266,38 @@ class ChannelWidget(QWidget):
 
     def button_read(self):
         logging.debug("Read Pressed")
-        self.post_feedback("Reading...", self)
+        func.feedback("Reading...", self)
         worker = workers.Read(self)
-        worker.signals.status.connect(self.post_feedback)
+        worker.signals.status.connect(func.feedback)
         self.threadpool.start(worker)
 
     def button_start(self):
         logging.debug("Start Pressed")
-        self.post_feedback("Starting...", self)
+        func.feedback("Starting...", self)
         worker = workers.Control(self, "start", self.scripts)
-        worker.signals.status.connect(self.post_feedback)
+        worker.signals.status.connect(func.feedback)
         self.threadpool.start(worker)
 
     def button_pause(self):
         logging.debug("Pause Pressed")
-        self.post_feedback("Pausing...", self)
+        func.feedback("Pausing...", self)
         worker = workers.Control(self, "pause", self.scripts)
-        worker.signals.status.connect(self.post_feedback)
+        worker.signals.status.connect(func.feedback)
         self.threadpool.start(worker)
 
     def button_resume(self):
         logging.debug("Resume Pressed")
-        self.post_feedback("Resuming...", self)
+        func.feedback("Resuming...", self)
         worker = workers.Control(self, "resume", self.scripts)
-        worker.signals.status.connect(self.post_feedback)
+        worker.signals.status.connect(func.feedback)
         self.threadpool.start(worker)
 
     def button_stop(self):
         logging.debug("Stop Pressed")
-        self.post_feedback("Stopping...", self)
+        func.feedback("Stopping...", self)
         worker = workers.Control(self, "stop", self.scripts)
-        worker.signals.status.connect(self.post_feedback)
+        worker.signals.status.connect(func.feedback)
         self.threadpool.start(worker)
-
-    # Begin Signal Response Definitions
-
-    def post_message(self, status):
-        msg = QMessageBox()
-        msg.setText(status)
-        msg.exec_()
-
-    def post_status(self, status, channel):
-        channel.status.setText(status)
-
-    def post_feedback(self, status, channel):
-        channel.feedback.setText(status)
 
     # Begin Attribute Assignment Definitions
 
@@ -391,5 +346,5 @@ class ChannelWidget(QWidget):
 
     def update_status(self):
         updater = workers.UpdateStatus(self)
-        updater.signals.status.connect(self.post_status)
+        updater.signals.status.connect(func.status)
         self.threadpool.start(updater)

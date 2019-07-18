@@ -10,11 +10,6 @@ from .socket import Socket
 import functions as func
 
 
-def not_none(value):
-    """Sets a None value to "None" string"""
-    return "None" if value is None else str(value)
-
-
 def send(json):
     """Sends json to server and updates status with response"""
     # TODO: Load info from config
@@ -93,9 +88,9 @@ class UpdateStatus(QRunnable):
             self.channel.attributes["channel"])["response"]
         try:
             status = (channel_status
-                      + " - " + not_none(info_channel["state"])
-                      + " | C: " + not_none(info_channel["current"])
-                      + ", V: " + not_none(info_channel["voltage"]))
+                      + " - " + func.not_none(info_channel["state"])
+                      + " | C: " + func.not_none(info_channel["current"])
+                      + ", V: " + func.not_none(info_channel["voltage"]))
         except TypeError:
             status = info_channel
         logging.debug("Updating channel {} with satus {}".format(
@@ -139,7 +134,7 @@ class Read(QRunnable):
             self.channel.attributes["channel"])["response"]
         try:
             status = ("Voltage of cell: "
-                      + not_none(info_channel["voltage"]))
+                      + func.not_none(info_channel["voltage"]))
         except Exception:
             status = "Could not read cell voltage."
 
@@ -225,7 +220,8 @@ class Check(QRunnable):
 
     def prepare_json(self, protocol):
         """create json to send to server"""
-        json_packet = json.load(open(func.find_path("assets/defaultJSON.json")))
+        json_packet = json.load(
+            open(func.find_path("assets/defaultJSON.json")))
 
         json_packet["function"] = "test"
         json_packet["kwargs"]["protocol"] = protocol
