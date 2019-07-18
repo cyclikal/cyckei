@@ -1,4 +1,4 @@
-# Cyckei Install
+# Installing Cyckei
 #### A battery cycler written in Python 3
 ---
 
@@ -20,15 +20,16 @@ Like NI-VISA, NI-488.2 is National Instruments' GPIB driver. It is simple to ins
 Linux-GPIB is a GPL licensed GPIB support package for Linux. In addition to the C API, it includes bindings for multiple languages including Python. Linux-GPIB must be compiled for your OS and requires some configuration, but works fine with PyVISA. To learn more about Linux-GPIB and download the source code visit <https://linux-gpib.sourceforge.io/>.
 
 ## Installation
-Cyckei expects to packaged and installed with `setuptools`. The easiest method of installation is to install Cyckei with `pip`. It is recommended to do so within a virtual environment in order to prevent conflicting dependencies.
+#### For User
+Since version 0.2 (Alviss), Cyckei has been distributed using "frozen" executables generated with PyInstaller.
 
-    pip install cyckei
+Installation is as simple as downloading the correct executable from the GitLab releases page at <https://gitlab.com/cyclikal/cyckei/-/releases>.
 
-Cyckei can also be installed from source by cloning or downloading the git repository at <https://gitlab.com/cyclikal/cyckei>. To package and install Cyckei run the following from the `cyckei` directory.
+After downloading, simply double-click the executable to start Cyckei. A "cyckei" folder will automatically be created in the user's home directory to store scripts, configuration, and results.
 
-    python setup.py sdist
-    pip install dist/cyckei-X.X.tar.gz
+Frozen versions are only provided for major releases. For the latest (generally unstable) version see the developer section below.
 
-Cyckei is run by executing the `cyckei` command from a terminal. Alternatively, the server and client components can be started separately with `cyckei-server` and `cyckei-client`.
+#### For Developer
+Developers should clone the Cyckei Git repository to run and develop the latest versions. {TODO: write more and automate dependencies}
 
-After installing, refer to the `HELP` file to configure devices.
+For more information about editing cyckei see the `CONTRIBUING` file.

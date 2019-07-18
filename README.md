@@ -1,4 +1,4 @@
-# Cyckei ReadMe
+# About Cyckei
 #### A battery cycler written in Python 3
 ---
 
@@ -19,16 +19,7 @@ Cyckei relies on the PyVISA wrapper to communicate with any devices, and general
 For more information about installing system components, see the `INSTALL` file.
 
 ## Installation
-Cyckei expects to packaged and installed with setuptools. The easiest method of installation is to install Cyckei with `pip`. It is recommended to do so within a virtual environment in order to prevent conflicting dependencies.
-
-    pip install cyckei
-
-Cyckei can also be installed from source by cloning or downloading the git repository at <https://gitlab.com/cyclikal/cyckei>. To package and install Cyckei run the following from the `cyckei` directory.
-
-    python setup.py sdist
-    pip install dist/cyckei-X.X.tar.gz
-
-Cyckei is run by executing the `cyckei` command from a terminal. Alternatively, the server and client components can be started separately with `cyckei-server` and `cyckei-client`.
+See `INSTALLATION` file for more information.
 
 ## How-To
-Upon first launch, Cyckei will create a `cyckei` directory in the user's home folder to hold scripts, test results, logs, and configuration. Before running tests, Cyckei must be configured to properly interface with any devices. Each channel should be setup in the `config.json` file with the correct GPIB address and any other relevant information. A default configuration is automatically genreated, and instructions on further configuration can be found in the `HELP` file.
+Upon first launch, Cyckei will create a `cyckei` directory in the user's home folder to hold scripts, test results, logs, and configuration. Before running tests, Cyckei must be configured to properly interface with any devices. Each channel should be setup in the `config.json` file with the correct GPIB address and any other relevant information. A default configuration is automatically generated, and instructions on further configuration can be found in the `HELP` file.
