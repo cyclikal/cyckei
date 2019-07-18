@@ -1,4 +1,4 @@
-* { font-size: 16px; selection-background-color: #f05f40; }
+* { font: None; font-size: 16px; selection-background-color: #f05f40; }
 
 * ScriptEditor, * LogViewer, * QMainWindow { background-color: #f2f2f2; }
 
