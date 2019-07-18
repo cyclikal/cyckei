@@ -140,7 +140,7 @@ class ChannelWidget(QWidget):
         """Creates all UI elements and adds them to elements list"""
         elements = []
 
-        # 0 - Cell channel label
+        # Cell channel label
         args = [
             "{}:".format(self.attributes["channel"]),
             "Channel {}".format(self.attributes["channel"]),
@@ -149,7 +149,7 @@ class ChannelWidget(QWidget):
         elements.append(func.label(*args))
         elements[-1].setMinimumSize(25, 25)
 
-        # 1 - Script selection box
+        # Script selection box
         available_scripts = []
         if self.scripts.script_list:
             self.attributes["script_title"] = self.scripts.script_list[0].title
@@ -157,186 +157,61 @@ class ChannelWidget(QWidget):
                 available_scripts.append(script.title)
         elements.append(func.combo_box(available_scripts,
                                        "Select scripts to run",
-                                       self.script_box_activated))
+                                       "script_title",
+                                       self.set))
 
-        # 2 - Cell identification number
-        elements.append(func.line_edit("Cell ID",
-                                       "Cell identification",
-                                       self.set_id))
+        # Line Edits
+        editables = [
+            ["Cell ID", "Cell identification", "id"],
+            ["Log file", "File to log to, placed in specified logs folder",
+                "path"],
+            ["Mass", "Mass of Cell", "mass"],
+            ["Comment", "Unparsed Comment", "comment"],
+        ]
+        for line in editables:
+            elements.append(func.line_edit(*line, self.set))
 
-        # 3 - Path to log file
-        elements.append(func.line_edit(
-            "Log file",
-            "File to log to, placed in specified logs folder",
-            self.set_path
-        ))
-
-        # 4 - auto_fill Button
-        elements.append(func.button(
-            "AutoFill",
-            "Fill log file from cell identification, defaults to [id]A.log",
-            self.button_auto_fill
-        ))
-
-        # 5 - Mass
-        elements.append(func.line_edit("Mass",
-                                       "Mass of Cell",
-                                       self.set_mass))
-
-        # 6 - Comment
-        elements.append(func.line_edit("Comment",
-                                       "Unparsed Comment",
-                                       self.set_comment))
-
-        # 7 - Package
-        package_types = ["Pouch",
-                         "Coin",
-                         "Cylindrical",
-                         "Unknown"]
-        elements.append(func.combo_box(package_types,
-                                       "Package Type",
-                                       self.package_box_activated))
-
-        # 8 - Cell type
-        cell_types = ["Full",
-                      "Half",
-                      "AnodeHalf",
-                      "CathodeHalf",
-                      "LithiumLithium",
-                      "Symmetric",
-                      "Unknown"]
-        elements.append(func.combo_box(cell_types,
-                                       "Cell Type",
-                                       self.cell_box_activated))
-
-        # 9 - Requester selection box
-        requestor_options = ["Unspecified",
-                             "VC",
-                             "GE",
-                             "LK"]
-        elements.append(func.combo_box(requestor_options,
-                                       "Person starting cycle",
-                                       self.requestor_box_activated))
+        # Combo Boxes
+        selectables = [
+            [["Pouch", "Coin", "Cylindrical", "Unknown"],
+                "Package Type", "package"],
+            [["Full",  "Half", "AnodeHalf", "CathodeHalf", "LithiumLithium",
+                "Symmetric", "Unknown"],
+                "Package Type", "type"],
+            [["Unspecified", "VC", "GE", "LK"],
+                "Cell Type", "requestor"],
+        ]
+        for box in selectables:
+            elements.append(func.combo_box(*box, self.set))
 
         return elements
 
     def get_controls(self):
+        buttons = [
+            ["Read Cell", "Read Voltage of Connected Cell"],
+            ["Start", "Start Cycle"],
+            ["Pause", "Pause Cycle"],
+            ["Resume", "Resume Cycle"],
+            ["Stop", "Stop Cycle"],
+        ]
         elements = []
-
-        # 10 - Read button
-        elements.append(func.button(
-            "Read Cell",
-            "Read Voltage of Connected Cell",
-            self.button_read
-        ))
-
-        # 11 - Start button
-        elements.append(func.button(
-            "Start",
-            "Start Cycle",
-            self.button_start
-        ))
-
-        # 12 - Pause button
-        elements.append(func.button(
-            "Pause",
-            "Pause Cycle",
-            self.button_pause
-        ))
-
-        # 13 - Resume button
-        elements.append(func.button(
-            "Resume",
-            "Resume Cycle",
-            self.button_resume
-        ))
-
-        # 14 - Stop button
-        elements.append(func.button(
-            "Stop",
-            "Stop Cycle",
-            self.button_stop
-        ))
+        for but in buttons:
+            elements.append(func.button(*but, self.button))
 
         return elements
 
-    # Begin Button Press Definitions
-    def button_auto_fill(self):
-        logging.debug("AutoFill Pressed")
-        self.threadpool.start(workers.AutoFill(self))
-
-    def button_read(self):
-        logging.debug("Read Pressed")
-        func.feedback("Reading...", self)
-        worker = workers.Read(self)
+    def button(self, text):
+        func.feedback("{} in progress...".format(text), self)
+        if text == "Read Cell":
+            worker = workers.Read(self)
+        else:
+            worker = workers.Control(self, text.lower(), self.scripts)
         worker.signals.status.connect(func.feedback)
         self.threadpool.start(worker)
 
-    def button_start(self):
-        logging.debug("Start Pressed")
-        func.feedback("Starting...", self)
-        worker = workers.Control(self, "start", self.scripts)
-        worker.signals.status.connect(func.feedback)
-        self.threadpool.start(worker)
-
-    def button_pause(self):
-        logging.debug("Pause Pressed")
-        func.feedback("Pausing...", self)
-        worker = workers.Control(self, "pause", self.scripts)
-        worker.signals.status.connect(func.feedback)
-        self.threadpool.start(worker)
-
-    def button_resume(self):
-        logging.debug("Resume Pressed")
-        func.feedback("Resuming...", self)
-        worker = workers.Control(self, "resume", self.scripts)
-        worker.signals.status.connect(func.feedback)
-        self.threadpool.start(worker)
-
-    def button_stop(self):
-        logging.debug("Stop Pressed")
-        func.feedback("Stopping...", self)
-        worker = workers.Control(self, "stop", self.scripts)
-        worker.signals.status.connect(func.feedback)
-        self.threadpool.start(worker)
-
-    # Begin Attribute Assignment Definitions
-
-    def script_box_activated(self, text):
+    def set(self, key, text):
         """Sets object's script to one selected in dropdown"""
-        self.attributes["script_title"] = text
-
-    def package_box_activated(self, text):
-        """Sets object's package type to one selected in dropdown"""
-        self.attributes["package"] = text
-
-    def cell_box_activated(self, text):
-        """Sets object's cell type to one selected in dropdown"""
-        self.attributes["type"] = text
-
-    def requestor_box_activated(self, text):
-        """Sets object's requestor to one selected in dropdown"""
-        self.attributes["requestor"] = text
-
-    def set_id(self, text):
-        """Set object identification from text box"""
-        self.attributes["id"] = text
-
-    def set_comment(self, text):
-        """Set object comment from text box"""
-        self.attributes["comment"] = text
-
-    def set_path(self, text):
-        """Set object path from text box"""
-        self.attributes["path"] = text
-
-    def set_mass(self, text):
-        """Set object mass from text box"""
-        self.attributes["mass"] = text
-
-    def set_protocol(self, text):
-        """Set object protocol from text box"""
-        self.attributes["protocol_name"] = text
+        self.attributes[key] = text
 
     def paintEvent(self, event):
         style_option = QStyleOption()

@@ -1,3 +1,5 @@
+import functools
+
 from PySide2.QtWidgets import QMessageBox, QPushButton, QComboBox, QLineEdit, \
      QLabel
 
@@ -45,16 +47,16 @@ def button(text, status, connect):
     button = QPushButton()
     button.setText(text)
     button.setStatusTip(status)
-    button.clicked.connect(connect)
+    button.clicked.connect(functools.partial(connect, text))
     return button
 
 
-def combo_box(items, status, connect):
+def combo_box(items, status, key, connect):
     """Creates a combo box with given information"""
     box = QComboBox()
     box.addItems(items)
     box.setStatusTip(status)
-    box.activated[str].connect(connect)
+    box.activated[str].connect(functools.partial(connect, key))
     return box
 
 
@@ -66,13 +68,13 @@ def label(text, status=None, tag=None):
     return label
 
 
-def line_edit(label, status, connect):
+def line_edit(label, status, key, connect):
     """Creates text edit field with given information"""
     text = QLineEdit()
     text.setMinimumSize(60, 20)
     text.setPlaceholderText(label)
     text.setStatusTip(status)
-    text.textChanged.connect(connect)
+    text.textChanged.connect(functools.partial(connect, key))
     return text
 
 
