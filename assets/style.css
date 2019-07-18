@@ -1,21 +1,21 @@
-* { selection-background-color: #f05f40; font-size: 16px; }
+* { font-size: 16px; selection-background-color: #f05f40; }
 
-* ScriptEditor, * LogViewer, * QMainWindow { background-color: #F2F2F2; }
+* ScriptEditor, * LogViewer, * QMainWindow { background-color: #f2f2f2; }
 
-* ChannelWidget#even { background-color: #F2F2F2; }
+* ChannelWidget#even { background-color: #f2f2f2; }
 
-* ChannelWidget#odd { background-color: #D9D9D9; }
+* ChannelWidget#odd { background-color: #d9d9d9; }
 
-* QWidget#off { background-color: #A6A6A6; }
+* QWidget#off { background-color: #a6a6a6; }
 
 * QWidget#on { background-color: #f05f40; }
 
 * ChannelWidget { border-bottom: 1px solid #f05f40; }
 
-* QLabel#id_label { font-weight: bold; color: #f05f40; }
+* QLabel#id_label { color: #f05f40; font-weight: bold; }
 
 * QPushButton:pressed { background-color: #f05f40; }
 
 * QPlainTextEdit:focus, * QListWidget:focus { border: 1px solid #f05f40; }
 
-* QMainWindow { background-color: #A6A6A6; }
+* QMainWindow { background-color: #a6a6a6; }
