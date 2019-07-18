@@ -11,6 +11,7 @@ import functions as func
 class Icon(QSystemTrayIcon):
     def __init__(self, config):
         """Create tray applet and self.controls"""
+        # TODO: Make icon visible on all backgrounds
         super().__init__(QIcon(func.find_path("assets/bolt.png")))
 
         self.config = config
