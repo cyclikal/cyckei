@@ -1,7 +1,7 @@
 import functools
 
 from PySide2.QtWidgets import QMessageBox, QPushButton, QComboBox, QLineEdit, \
-     QLabel
+     QLabel, QAction
 
 
 class Icon(object):
@@ -76,6 +76,14 @@ def line_edit(label, status, key, connect):
     text.setStatusTip(status)
     text.textChanged.connect(functools.partial(connect, key))
     return text
+
+
+def action(text=None, connect=None, disabled=False, separator=False):
+    action = QAction(text)
+    action.triggered.connect(connect)
+    action.setDisabled(disabled)
+    action.setSeparator(separator)
+    return action
 
 
 def status(status, channel):

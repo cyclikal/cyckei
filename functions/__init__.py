@@ -2,7 +2,7 @@ import os
 import sys
 
 from functions.gui import message, button, combo_box, \
-     label, line_edit, status, feedback
+     label, line_edit, status, feedback, action, Icon
 
 
 def find_path(path):
