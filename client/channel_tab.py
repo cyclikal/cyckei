@@ -56,18 +56,19 @@ class ChannelWidget(QWidget):
     def __init__(self, channel, record_folder, threadpool, scripts):
         super().__init__()
         # Default Values
-        self.attributes = {}
-        self.attributes["channel"] = channel
-        self.attributes["record_folder"] = record_folder
-        self.attributes["id"] = 0
-        self.attributes["comment"] = "No Comment"
-        self.attributes["package"] = "Pouch"
-        self.attributes["type"] = "Full"
-        self.attributes["path"] = "default.pyb"
-        self.attributes["mass"] = 1
-        self.attributes["requestor"] = "Unspecified"
-        self.attributes["protocol_name"] = None
-        self.attributes["script_title"] = None
+        self.attributes = {
+            "channel": channel,
+            "record_folder": record_folder,
+            "id": 0,
+            "comment": "No Comment",
+            "package": "Pouch",
+            "type": "Full",
+            "path": "default.pyb",
+            "mass": 1,
+            "requestor": "Unspecified",
+            "protocol_name": None,
+            "script_title": None,
+        }
 
         self.threadpool = threadpool
         self.scripts = scripts

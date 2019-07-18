@@ -36,7 +36,8 @@ Focused on simplifying the code to aid in further development. This includes uni
 
 #### Development Releases
 *   0.2.dev1, 7/15/2019 -- Improve Documentation
-*   0.2.dev2, 7/17/2019 -- Switch to pyInstaller build system
+*   0.2.dev2, 7/17/2019 -- Switch to PyInstaller build system
+*   0.2.dev3, 0/00/0000 -- Simplify codebase and unify common functions
 
 #### Release Candidates
 *   0.2rc1, 00/00/0000 -- TBD
