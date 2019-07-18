@@ -3,8 +3,7 @@
 import logging
 import sys
 
-from PySide2.QtWidgets import QWidget, QMainWindow, QAction, QTabWidget,\
-    QMessageBox
+from PySide2.QtWidgets import QWidget, QMainWindow, QAction, QTabWidget
 from PySide2.QtCore import QThreadPool
 
 from .channel_tab import ChannelTab
@@ -17,32 +16,22 @@ import functions as func
 
 def help():
     """Direct to help"""
-    msg = QMessageBox()
-    msg.setIcon(QMessageBox.Information)
-    msg.setText(
-        """For help refer to the HELP.md and README.md files located in
-the cyckei install location, or online on our GitLab page.
-\n\ngitlab.com/cyclikal/cyckei"""
-    )
-    msg.setWindowTitle("Help")
-    msg.exec_()
+    msg = "For help refer to the HELP.md and README.md files located in" \
+          "the cyckei install location, or online on our GitLab page." \
+          "\n\ngitlab.com/cyclikal/cyckei"
+    func.message(msg)
 
 
 def about():
     """Display basic information about cyckei"""
     # TODO: Pass version number
     version = "dev"
-
-    msg = QMessageBox()
-    msg.setIcon(QMessageBox.Information)
-    msg.setText(
-        """Cyckei version {}\n\n
-Cyckei is developed by Gabriel Ewig and Vincent Chevrier at Cyclikal, LLC.\n\n
-Updates and source code can be found on GitLab at gitlab.com/cyclikal/cyckei.
-\n\nFor information about Cyclikal, visit cyclikal.com.""".format(version)
-    )
-    msg.setWindowTitle("About")
-    msg.exec_()
+    msg = "Cyckei version {}\n\n" \
+          "Cyckei is developed by Gabriel Ewig and Vincent Chevrier " \
+          "at Cyclikal, LLC.\n\n Updates and source code can be found " \
+          "on GitLab at gitlab.com/cyclikal/cyckei. \n\nFor information" \
+          "about Cyclikal, visit cyclikal.com.".format(version)
+    func.message(msg)
 
 
 class MainWindow(QMainWindow):
@@ -123,24 +112,18 @@ class MainWindow(QMainWindow):
 
     def ping_server(self):
         worker = workers.Ping()
-        worker.signals.alert.connect(self.post_message)
+        worker.signals.alert.connect(func.message)
         self.threadpool.start(worker)
-
-    def post_message(self, status):
-        msg = QMessageBox()
-        msg.setText(status)
-        msg.exec_()
 
     def save_batch(self):
         """Saves id and log information to file"""
-        reply = QMessageBox.question(
-            QWidget(),
-            "Batch",
-            "Save batch?\nCurrent saved batch will be deleted.",
-            QMessageBox.Yes | QMessageBox.No,
-            QMessageBox.Yes
-        )
-        if reply == QMessageBox.Yes:
+        msg = {
+            "text": "Save batch?",
+            "info": "Current saved batch will be deleted.",
+            "confirm": True,
+            "icon": func.Icon().Question
+        }
+        if func.message(**msg):
             batch = []
             for channel_widget in self.channels:
                 channel = [channel_widget.attributes["id"],
@@ -156,14 +139,13 @@ class MainWindow(QMainWindow):
 
     def load_batch(self):
         """Loads id and log information from file"""
-        reply = QMessageBox.question(
-            QWidget(),
-            "Batch",
-            "Load batch?\nAll current values will be overwritten.",
-            QMessageBox.Yes | QMessageBox.No,
-            QMessageBox.Yes
-        )
-        if reply == QMessageBox.Yes:
+        msg = {
+            "text": "Load batch?",
+            "info": "All current values will be overwritten.",
+            "confirm": True,
+            "icon": func.Icon().Question
+        }
+        if func.message(**msg):
             with open(self.config["record_dir"] + "/batch.txt", "r") as file:
                 for index, line in enumerate(file):
                     channel = self.channels[index]
@@ -189,13 +171,10 @@ class MainWindow(QMainWindow):
 
                     channel.settings[3].setText("".join(working_list))
                 except Exception as exception:
-                    msg = QMessageBox()
-                    msg.setText(
-                        "Could not increment channel {}.\n".format(
+                    msg = {
+                        "text": "Could not increment channel {}.\n".format(
                             channel.channel
-                        )
-                        + str(exception)
-                    )
-                    msg.setIcon(QMessageBox.Warning)
-                    msg.setWindowTitle("Increment")
-                    msg.exec_()
+                        ) + str(exception),
+                        "icon": func.Icon().Warning
+                    }
+                    func.message(**msg)

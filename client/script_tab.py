@@ -1,12 +1,14 @@
 """Tab to view and edit scripts, also has access to checking procedure"""
 
 from PySide2.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel,\
-    QPlainTextEdit, QPushButton, QListWidget, QFileDialog, QMessageBox,\
+    QPlainTextEdit, QPushButton, QListWidget, QFileDialog, \
     QWidget, QStyleOption, QStyle
 from PySide2.QtCore import Qt
 from PySide2.QtGui import QPainter
+
 from . import scripts
 from .workers import Check
+import functions as func
 
 
 class ScriptEditor(QWidget):
@@ -113,23 +115,22 @@ class ScriptEditor(QWidget):
         """Run check protocol to verify validity"""
         worker = Check(self.file_list.currentItem().content)
         self.threadpool.start(worker)
-        worker.signals.status.connect(self.post_message)
+        worker.signals.status.connect(self.alert_check)
 
-    def post_message(self, result, message):
-        msg = QMessageBox()
-        msg.setIcon(QMessageBox.Information)
+    def alert_check(self, result, message):
         if result:
-            msg.setText("Passed!")
-            msg.setInformativeText("Script is good to go.")
-            msg.setWindowTitle("Check Passed")
-            msg.exec_()
+            msg = {
+                "text": "Passed!",
+                "info": "Script is good to go.",
+            }
         else:
-            msg.setText("Failed!")
-            msg.setInformativeText("Script did not pass the check.")
-            msg.setWindowTitle("Check Failed")
-            msg.setDetailedText(message)
-            msg.exec_()
-            return False
+            msg = {
+                "text": "Failed!",
+                "info": "Script did not pass the check.",
+                "detail": message,
+                "icon": func.Icon().Warning
+            }
+        func.message(**msg)
 
     def add(self, file):
         """Add new script to list to make available"""

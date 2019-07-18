@@ -2,7 +2,8 @@ import zmq
 import json
 import logging
 
-from PySide2.QtWidgets import QMessageBox, QWidget
+
+import functions as func
 
 TIMEOUT = 3  # Seconds for listening to server before giving up.
 
@@ -37,12 +38,8 @@ class Socket(object):
         """Gets time since server began listening for commands"""
         script = json.loads('{"function": "time", "kwargs": ""}')
         server_time = self.send(script)
-        msg = QMessageBox()
-        msg.setText("Server time in seconds: {}".format(
-            server_time["response"]
-        ))
-        msg.setWindowTitle("Time")
-        msg.exec_()
+        func.meessage("Server time in seconds: {}".format(
+            server_time["response"]))
 
     def send_file(self, file):
         """Sends packet loaded from JSON file"""
@@ -59,20 +56,15 @@ class Socket(object):
 
     def kill_server(self):
         """Tells server to kill itself and closes connection"""
-        reply = QMessageBox.question(
-            QWidget(),
-            "Message",
-            "Kill server?\nAll jobs will be cancelled.",
-            QMessageBox.Yes | QMessageBox.No,
-            QMessageBox.No
-        )
-
-        if reply == QMessageBox.Yes:
+        msg = {
+            "text": "Kill server?",
+            "info": "All jobs will be cancelled.",
+            "icon": func.Icon().Question
+        }
+        if func.message(**msg):
             script = json.loads('{"function": "kill_server"}')
             self.send(script)
             self.close_socket()
-        else:
-            pass
 
     def ping(self):
         """Send "ping" to server"""

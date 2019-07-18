@@ -45,10 +45,10 @@ class Icon(QSystemTrayIcon):
             "text": "Are you sure you want to quit Cyckei?",
             "info": "This will stop any current cycles and "
                     "release control of all channels.",
-            "icon": func.QMessageBox.Warning,
+            "icon": func.Icon().Warning,
             "confirm": True
         }
 
-        if func.message(**msg) == func.QMessageBox.Yes:
+        if func.message(**msg):
             logging.warning("applet.applet.Icon.stop: Shutting down\n")
             sys.exit()

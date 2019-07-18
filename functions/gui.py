@@ -2,6 +2,14 @@ from PySide2.QtWidgets import QMessageBox, QPushButton, QComboBox, QLineEdit, \
      QLabel
 
 
+class Icon(object):
+    def __init__(self):
+        self.Question = QMessageBox.Question
+        self.Information = QMessageBox.Information
+        self.Warning = QMessageBox.Warning
+        self.Critical = QMessageBox.Critical
+
+
 def message(text=None, info=None, icon=QMessageBox.Information,
             detail=None, confirm=False):
     """
@@ -27,7 +35,9 @@ def message(text=None, info=None, icon=QMessageBox.Information,
     if confirm:
         msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
 
-    return msg.exec_()
+    if msg.exec_() == QMessageBox.No:
+        return False
+    return True
 
 
 def button(text, status, connect):
