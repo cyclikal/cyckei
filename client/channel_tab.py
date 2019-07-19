@@ -8,7 +8,7 @@ import json
 from PySide2.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, \
      QScrollArea, QStyleOption, QStyle
 from PySide2.QtCore import QTimer, Qt
-from PySide2.QtGui import QPainter
+from PySide2.QtGui import QPainter, QPalette
 
 from . import workers
 import functions as func
@@ -46,6 +46,16 @@ class ChannelTab(QWidget):
         painter = QPainter(self)
         style = self.style()
         style.drawPrimitive(QStyle.PE_Widget, style_option, painter, self)
+        self.alternate_colors()
+
+    def alternate_colors(self):
+        base = self.palette().color(QPalette.Window)
+        for channel in self.channels:
+            if (int(channel.attributes["channel"]) % 2 == 0):
+                color = base.lighter(110)
+            else:
+                color = base.darker(110)
+            channel.setStyleSheet("background-color: {};".format(color.name()))
 
 
 class ChannelWidget(QWidget):
@@ -119,11 +129,6 @@ class ChannelWidget(QWidget):
         self.feedback = func.label(*args)
         self.feedback.setAlignment(Qt.AlignCenter)
         right.addWidget(self.feedback)
-
-        if (int(self.attributes["channel"]) % 2 == 0):
-            self.setObjectName("even")
-        else:
-            self.setObjectName("odd")
 
         # Load default JSON
         self.json = json.load(open(func.find_path("assets/defaultJSON.json")))

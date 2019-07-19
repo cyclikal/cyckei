@@ -4,25 +4,12 @@ $font: None
 $font-size: 16px
 
 $orange: #f05f40
-$off-white: #f2f2f2
-$light-grey: #d9d9d9
 $dark-grey: #a6a6a6
 
 *
   font: $font
   font-size: $font-size
   selection-background-color: $orange
-
-  ScriptEditor,
-  LogViewer,
-  QMainWindow
-    background-color: $off-white
-
-  ChannelWidget#even
-    background-color: $off-white
-
-  ChannelWidget#odd
-    background-color: $light-grey
 
   QWidget#off
     background-color: $dark-grey
@@ -44,6 +31,3 @@ $dark-grey: #a6a6a6
 
   QListWidget:focus
     border: 1px solid $orange
-
-  QMainWindow
-    background-color: $dark-grey
