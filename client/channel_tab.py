@@ -49,6 +49,8 @@ class ChannelTab(QWidget):
         self.alternate_colors()
 
     def alternate_colors(self):
+        # TODO: Make compatible with windows
+        # TODO: Prevent child overwrite
         base = self.palette().color(QPalette.Window)
         text = self.palette().color(QPalette.WindowText)
         for channel in self.channels:
@@ -127,7 +129,7 @@ class ChannelWidget(QWidget):
 
         # Feedback
         args = [
-            "Awaiting Server Response...",
+            "",
             "Server Response",
         ]
         self.feedback = func.label(*args)
