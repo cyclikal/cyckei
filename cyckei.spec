@@ -59,4 +59,5 @@ app = BUNDLE(exe,  # noqa: F821
              bundle_identifier=identifier,
              info_plist={
                 'NSPrincipalClass': 'NSApplication',
+                'NSRequiresAquaSystemAppearance': 'No'
              })
