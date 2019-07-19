@@ -1,4 +1,4 @@
-.PHONY: help venv update clean run build
+.PHONY: help update clean run build
 
 VENV_NAME?=venv
 PYTHON=${VENV_NAME}/bin/python3
@@ -15,7 +15,8 @@ help:
 	@echo "build"
 	@echo "	Freeze current Cyckei version"
 
-venv:
+venv: $(VENV_NAME)/bin/activate
+$(VENV_NAME)/bin/activate: requirements.txt
 	python3 -m pip install virtualenv
 	test -d $(VENV_NAME) || virtualenv $(VENV_NAME)
 	$(VENV_NAME)/bin/pip install -Ur requirements.txt
