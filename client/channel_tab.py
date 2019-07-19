@@ -50,12 +50,16 @@ class ChannelTab(QWidget):
 
     def alternate_colors(self):
         base = self.palette().color(QPalette.Window)
+        text = self.palette().color(QPalette.WindowText)
         for channel in self.channels:
             if (int(channel.attributes["channel"]) % 2 == 0):
-                color = base.lighter(110)
+                color = base.lighter(120)
             else:
-                color = base.darker(110)
-            channel.setStyleSheet("background-color: {};".format(color.name()))
+                color = base.darker(120)
+            channel.setStyleSheet(
+                "background-color: {};"
+                "color: {};".format(color.name(), text.name())
+            )
 
 
 class ChannelWidget(QWidget):
