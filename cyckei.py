@@ -5,7 +5,6 @@ import shutil
 import logging
 import traceback
 import threading
-import ctypes
 
 from PySide2.QtWidgets import QApplication
 from PySide2.QtGui import QIcon
@@ -44,12 +43,6 @@ def main():
     app.setStyle("fusion")
     app.setQuitOnLastWindowClosed(False)
     app.setWindowIcon(QIcon(func.find_path("assets/cyckei.png")))
-
-    # Set icon for windows
-    try:
-        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(ID)
-    except AttributeError:
-        logging.warning("cyckei.main: Could not set windows-specific icon")
 
     # Start Server
     logging.debug("cyckei.main: Starting Server")

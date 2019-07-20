@@ -14,7 +14,7 @@ def rand_string(length=10):
 # TODO: Standardize versioning
 name = "Cyckei"
 identifier = "com.cyclikal.cyckei"
-use_key = True
+use_key = False
 mac_icon = os.path.join("assets", "cyckei.icns")
 win_icon = os.path.join("assets", "cyckei.ico")
 data = ("assets/*", "assets")
@@ -22,6 +22,7 @@ path = os.path.dirname(sys.argv[0])
 
 if use_key:
     block_cipher = pyi_crypto.PyiBlockCipher(key=rand_string())
+else:
     block_cipher = None
 
 a = Analysis(["cyckei.py"],
