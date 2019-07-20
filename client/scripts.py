@@ -17,7 +17,7 @@ class ScriptList(object):
             for file in files:
                 self.script_list.append(Script(file, path))
 
-    def get_script_by_title(self, title):
+    def by_title(self, title):
         """Returns script object with given title"""
         for script in self.script_list:
             if script.title == title:

@@ -101,7 +101,7 @@ class MainWindow(QMainWindow):
                 menu.addAction(func.action(*item, parent=self))
 
     def ping_server(self):
-        worker = workers.Ping()
+        worker = workers.Ping(self.config)
         worker.signals.alert.connect(func.message)
         self.threadpool.start(worker)
 
@@ -116,7 +116,7 @@ class MainWindow(QMainWindow):
         if func.message(**msg):
             batch = []
             for channel_widget in self.channels:
-                channel = [channel_widget.attributes["id"],
+                channel = [channel_widget.attributes["cellid"],
                            channel_widget.attributes["path"]]
                 batch.append(channel)
 

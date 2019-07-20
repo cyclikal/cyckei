@@ -16,6 +16,7 @@ class ScriptEditor(QWidget):
         self.channels = resource["tabs"].widget(0).channels
         self.scripts = resource["scripts"]
         self.threadpool = resource["threadpool"]
+        self.config = config
 
         # Create overall layout
         columns = QHBoxLayout(self)
@@ -104,7 +105,7 @@ class ScriptEditor(QWidget):
 
     def check(self, text):
         """Run check protocol to verify validity"""
-        worker = Check(self.file_list.currentItem().content)
+        worker = Check(self.config, self.file_list.currentItem().content)
         self.threadpool.start(worker)
         worker.signals.status.connect(self.alert_check)
 

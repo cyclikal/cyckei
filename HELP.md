@@ -97,12 +97,8 @@ Editing the configuration file is crucial for the client to function properly. A
 
 -   **zmq** - A dictionary of properties that control how the client and server communicate.
     -   *port* - Port to communicate over.
-    -   *client*
-        -   *address (string)* - Address for the client to connect to. Usually localhost.
-        -   *retries (int)*
-        -   *timeout (int)*
-    -   *server*
-        -   *address (string)* - Address for the server to listen on. Usually all.
+    -   *client-address (string)* - Address for the client to connect to. Usually localhost.
+    -   *serever-address (string)* - Address for the server to listen on. Usually all.
 
 
 -   **verbosity** - The amount of information to be saved to log files. Generally should be set to 20, but the following levels can also be used. Lower values print more information for debugging purposes.
@@ -134,14 +130,8 @@ Here is an example configuration file for a simple setup running on port 5556 wi
         ],
         "zmq":{
             "port": 5556,
-            "client":{
-              "address":"tcp://localhost",
-              "retries": 3,
-              "timeout": 2500
-            },
-            "server":{
-              "address":"tcp://*"
-            }
+            "client-address":"tcp://localhost",
+            "server-address":"tcp://*"
         },
         "verbosity": 20,
     }

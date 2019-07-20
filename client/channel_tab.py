@@ -84,6 +84,7 @@ class ChannelWidget(QWidget):
             "protocol_name": None,
             "script_title": None,
         }
+        self.config = config
 
         self.threadpool = resource["threadpool"]
         self.scripts = resource["scripts"]
@@ -156,7 +157,7 @@ class ChannelWidget(QWidget):
         # Script selection box
         available_scripts = []
         if self.scripts.script_list:
-            self.attributes["script_title"] = self.scripts.script_list[0].title
+            self.attributes["protocol_name"] = self.scripts.script_list[0].title
             for script in self.scripts.script_list:
                 available_scripts.append(script.title)
         elements.append(func.combo_box(available_scripts,
@@ -207,9 +208,10 @@ class ChannelWidget(QWidget):
     def button(self, text):
         func.feedback("{} in progress...".format(text), self)
         if text == "Read Cell":
-            worker = workers.Read(self)
+            worker = workers.Read(self.config, self)
         else:
-            worker = workers.Control(self, text.lower(), self.scripts)
+            worker = workers.Control(
+                self.config, self, text.lower(), self.scripts)
         worker.signals.status.connect(func.feedback)
         self.threadpool.start(worker)
 
@@ -224,7 +226,7 @@ class ChannelWidget(QWidget):
         self.style().drawPrimitive(QStyle.PE_Widget, option, painter, self)
 
     def update_status(self):
-        updater = workers.UpdateStatus(self)
+        updater = workers.UpdateStatus(self, self.config)
         updater.signals.status.connect(func.status)
         updater.signals.info.connect(self.set_divider)
         self.threadpool.start(updater)
