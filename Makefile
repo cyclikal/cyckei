@@ -36,4 +36,4 @@ build:
 	${PYTHON} -m PyInstaller --onefile --windowed --noconfirm --clean cyckei.spec
 
 count:
-	find . -name '*.py' | xargs wc -l
+	find . -name '*.py' -o -path ./$(VENV_NAME) -prune | xargs wc -l
