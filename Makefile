@@ -1,4 +1,4 @@
-.PHONY: help update clean run build
+.PHONY: help update clean run build count
 
 VENV_NAME?=venv
 PYTHON=${VENV_NAME}/bin/python3
@@ -9,11 +9,13 @@ help:
 	@echo "venv"
 	@echo "	Setup virtual environment with requirements"
 	@echo "clean"
-	@echo "	Remove virtual environment and reinstall requirements"
+	@echo "	Remove virtual environment, builds, cache, and compiled files"
 	@echo "run"
 	@echo "	Run current Cyckei version"
 	@echo "build"
 	@echo "	Freeze current Cyckei version"
+	@echo "count"
+	@echo "	Count lines of python code"
 
 venv: $(VENV_NAME)/bin/activate
 $(VENV_NAME)/bin/activate: requirements.txt
@@ -23,10 +25,15 @@ $(VENV_NAME)/bin/activate: requirements.txt
 
 clean:
 	rm -rf $(VENV_NAME)
-	make venv
+	rm -rf build
+	rm -rf dist
+	find . | grep -E "(__pycache__|\.pyc|\.pyo$$)" | xargs rm -rf
 
 run:
 	${PYTHON} cyckei.py
 
 build:
 	${PYTHON} -m PyInstaller --onefile --windowed --noconfirm --clean cyckei.spec
+
+count:
+	find . -name '*.py' | xargs wc -l
