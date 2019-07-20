@@ -1,13 +1,18 @@
-# Cyckei Change-log and Roadmap
+# Cyckei Changelog
 
 ## 0.0 - 08/16/2018
 Original version of Cyckei developed by Vincent Chevrier and Gabriel Ewig for the Lithium-ion Battery Lab.
+
+#### Notable Changes
+*   Create complex UI to handle all software functions
+*   Implement cycling protocols such as CCCharge and Sleep
+
 
 ## 0.1 Vayu - 07/2/2019
 Intended to significantly improve the performance and responsiveness of the application by improving the execution pattern and introducing threading to the Qt interface. Also overhauls the UI and brings many components up to date.
 
 #### Notable Changes
-*   Run client communication functions as QRunnable
+*   Run client communication functions as synchronous worker
 *   Switch GUI from PyQt5 to PySide2
 *   Improve layout and scaling of UI elements
 
@@ -29,18 +34,23 @@ Intended to significantly improve the performance and responsiveness of the appl
 
 
 ## 0.2 Alviss
-Focused on simplifying the code to aid in further development. This includes unifying as many commonly used functions as possible, and adding code documentation. Also adds single file executables because they're fun.
+Focused on simplifying the code to aid in further development. This includes unifying as many commonly used functions as possible and adding code documentation. Also adds single file executables because they're fun.
 
 #### Notable Changes
-*   TBD
+*   Unify common functions and generally refactor codebase
+*   Support distribution of compiled executables
+*   Improve documentation
+*   Small UI adjustments including dark mode
 
 #### Development Releases
 *   0.2.dev1, 7/15/2019 -- Improve Documentation
 *   0.2.dev2, 7/17/2019 -- Switch to PyInstaller build system
-*   0.2.dev3, 0/00/0000 -- Simplify codebase and unify common functions
+*   0.2.dev3, 7/20/2019 -- Simplify client codebase, unify common functions, improve UI
+*   0.2.dev4, X/XX/XXXX -- Simplify server codebase and add contribution documentation
 
 #### Release Candidates
 *   0.2rc1, 00/00/0000 -- TBD
 
-#### Bug Tracker
-*   None known
+
+## General Bug Tracker
+*   `Segmentation Fault: 11` on Darwin
