@@ -42,7 +42,7 @@ def message(text=None, info=None, icon=QMessageBox.Information,
     return True
 
 
-def button(text, status, connect, enabled=True):
+def button(text=None, status=None, connect=None, enabled=True):
     """Creates a button with given information"""
     button = QPushButton()
     button.setText(text)

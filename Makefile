@@ -6,7 +6,7 @@ PYTHON=${VENV_NAME}/bin/python3
 help:
 	@echo "help"
 	@echo "	Show this help dialog"
-	@echo "venv"
+	@echo "setup"
 	@echo "	Setup virtual environment with requirements"
 	@echo "clean"
 	@echo "	Remove virtual environment, builds, cache, and compiled files"
@@ -17,7 +17,7 @@ help:
 	@echo "count"
 	@echo "	Count lines of python code"
 
-venv: $(VENV_NAME)/bin/activate
+setup: $(VENV_NAME)/bin/activate
 $(VENV_NAME)/bin/activate: requirements.txt
 	python3 -m pip install virtualenv
 	test -d $(VENV_NAME) || virtualenv $(VENV_NAME)
