@@ -58,6 +58,7 @@ class Signals(QObject):
     # TODO: Standardize signals and alerts
     alert = Signal(object)
     status = Signal(object, object)
+    info = Signal(object)
 
 
 class Ping(QRunnable):
@@ -96,6 +97,7 @@ class UpdateStatus(QRunnable):
         logging.debug("Updating channel {} with satus {}".format(
             self.channel.attributes["channel"], status))
         self.signals.status.emit(status, self.channel)
+        self.signals.info.emit(channel_status)
 
 
 class AutoFill(QRunnable):

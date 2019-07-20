@@ -4,6 +4,9 @@ import sys
 from functions.gui import message, button, combo_box, \
      label, line_edit, status, feedback, action, Icon
 
+orange = "#f05f40"
+grey = "#a6a6a6"
+
 
 def find_path(path):
     if hasattr(sys, '_MEIPASS'):

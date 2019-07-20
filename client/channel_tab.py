@@ -100,13 +100,12 @@ class ChannelWidget(QWidget):
         right = QVBoxLayout()
         sides.addLayout(right)
 
-        # TODO: make divider change color if running
         # Divider
-        divider = QWidget()
-        divider.setObjectName("off")
-        divider.setMinimumWidth(2)
-        divider.setMaximumWidth(2)
-        middle.addWidget(divider)
+        self.divider = QWidget(self)
+        self.divider.setMinimumWidth(2)
+        self.divider.setMaximumWidth(2)
+        middle.addWidget(self.divider)
+        self.set_divider()
 
         # Settings
         settings = QHBoxLayout()
@@ -233,4 +232,13 @@ class ChannelWidget(QWidget):
     def update_status(self):
         updater = workers.UpdateStatus(self)
         updater.signals.status.connect(func.status)
+        updater.signals.info.connect(self.set_divider)
         self.threadpool.start(updater)
+
+    def set_divider(self, status=""):
+        if status.lower() == "started":
+            self.divider.setStyleSheet(
+                "background-color: {}".format(func.orange))
+        else:
+            self.divider.setStyleSheet(
+                "background-color: {}".format(func.grey))
