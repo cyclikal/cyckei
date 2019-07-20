@@ -1,7 +1,7 @@
 .PHONY: help update clean run build count
 
-VENV_NAME?=venv
-PYTHON=${VENV_NAME}/bin/python3
+VENV?=venv
+PYTHON=${VENV}/bin/python3
 
 help:
 	@echo "help"
@@ -17,14 +17,14 @@ help:
 	@echo "count"
 	@echo "	Count lines of python code"
 
-setup: $(VENV_NAME)/bin/activate
-$(VENV_NAME)/bin/activate: requirements.txt
+setup: $(VENV)/bin/activate
+$(VENV)/bin/activate: requirements.txt
 	python3 -m pip install virtualenv
-	test -d $(VENV_NAME) || virtualenv $(VENV_NAME)
-	$(VENV_NAME)/bin/pip install -Ur requirements.txt
+	test -d $(VENV) || virtualenv $(VENV)
+	$(VENV)/bin/pip install -Ur requirements.txt
 
 clean:
-	rm -rf $(VENV_NAME)
+	rm -rf $(VENV)
 	rm -rf build
 	rm -rf dist
 	find . | grep -E "(__pycache__|\.pyc|\.pyo$$)" | xargs rm -rf
@@ -36,4 +36,4 @@ build:
 	${PYTHON} -m PyInstaller --onefile --windowed --noconfirm --clean cyckei.spec
 
 count:
-	find . -name '*.py' -o -path ./$(VENV_NAME) -prune | xargs wc -l
+	find . -name '*.py' -o -path ./$(VENV) -prune | xargs wc -l
