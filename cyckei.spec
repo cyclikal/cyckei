@@ -21,11 +21,10 @@ data = ("assets/*", "assets")
 path = os.path.dirname(sys.argv[0])
 
 if use_key:
-    block_cipher = pyi_crypto.PyiBlockCipher(key=rand_string())  # noqa: F821
-else:
+    block_cipher = pyi_crypto.PyiBlockCipher(key=rand_string())
     block_cipher = None
 
-a = Analysis(["cyckei.py"],  # noqa: F821
+a = Analysis(["cyckei.py"],
              pathex=[path],
              binaries=[],
              datas=[data],
@@ -37,9 +36,9 @@ a = Analysis(["cyckei.py"],  # noqa: F821
              win_private_assemblies=False,
              cipher=block_cipher,
              noarchive=False)
-pyz = PYZ(a.pure, a.zipped_data,  # noqa: F821
+pyz = PYZ(a.pure, a.zipped_data,
           cipher=block_cipher)
-exe = EXE(pyz,  # noqa: F821
+exe = EXE(pyz,
           a.scripts,
           a.binaries,
           a.zipfiles,
@@ -53,7 +52,7 @@ exe = EXE(pyz,  # noqa: F821
           runtime_tmpdir=None,
           console=False,
           icon=win_icon)
-app = BUNDLE(exe,  # noqa: F821
+app = BUNDLE(exe,
              name="{}.app".format(name),
              icon=mac_icon,
              bundle_identifier=identifier,
