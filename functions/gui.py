@@ -78,8 +78,9 @@ def line_edit(label, status, key, connect):
     return text
 
 
-def action(text=None, connect=None, disabled=False, separator=False):
-    action = QAction(text)
+def action(text=None, connect=None, tip=None, parent=None, disabled=False, separator=False):
+    action = QAction(text, parent)
+    action.setStatusTip(tip)
     action.triggered.connect(connect)
     action.setDisabled(disabled)
     action.setSeparator(separator)
