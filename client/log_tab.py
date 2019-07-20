@@ -78,13 +78,6 @@ class LogViewer(QWidget):
         worker = Logs(self, item)
         self.threadpool.start(worker)
 
-    def paintEvent(self, event):
-        style_option = QStyleOption()
-        style_option.initFrom(self)
-        painter = QPainter(self)
-        style = self.style()
-        style.drawPrimitive(QStyle.PE_Widget, style_option, painter, self)
-
 
 class Log(QListWidgetItem):
     """Object of log, stores title and content of file for quick access"""

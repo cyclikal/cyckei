@@ -138,10 +138,3 @@ class ScriptEditor(QWidget):
         self.file_list.addItem(self.scripts.script_list[-1])
         for channel in self.channels:
             channel.settings[1].addItem(self.scripts.script_list[-1].title)
-
-    def paintEvent(self, event):
-        style_option = QStyleOption()
-        style_option.initFrom(self)
-        painter = QPainter(self)
-        style = self.style()
-        style.drawPrimitive(QStyle.PE_Widget, style_option, painter, self)

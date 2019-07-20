@@ -44,6 +44,9 @@ class MainWindow(QMainWindow):
         self.config = config
         self.resize(1100, 600)
 
+        self.setStyleSheet(
+            open(func.find_path("assets/style.css"), "r").read())
+
         # Setup ThreadPool
         self.threadpool = QThreadPool()
         logging.info("Multithreading set with maximum {} threads".format(
@@ -58,22 +61,25 @@ class MainWindow(QMainWindow):
         self.menu_bar = self.create_menu()
         self.status_bar = self.statusBar()
 
+        # Create Tabs
         self.tab_widget = QTabWidget(self)
         self.setCentralWidget(self.tab_widget)
 
+        # Add Channel Tab
         self.tab_widget.addTab(
             ChannelTab(self.config, self.threadpool, scripts),
             "Channels"
         )
         self.channels = self.tab_widget.widget(0).channels
+
+        # Add Script Tab
         self.tab_widget.addTab(
             ScriptEditor(self.channels, scripts, self.threadpool),
             "Scripts"
         )
-        self.tab_widget.addTab(LogViewer(self.config, self.threadpool), "Logs")
 
-        self.setStyleSheet(
-            open(func.find_path("assets/style.css"), "r").read())
+        # Add Log Tab
+        self.tab_widget.addTab(LogViewer(self.config, self.threadpool), "Logs")
 
     def action(self, title, tip, connect):
         temp = QAction(title, self)

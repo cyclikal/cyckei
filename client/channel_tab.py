@@ -41,11 +41,10 @@ class ChannelTab(QWidget):
             rows.addWidget(self.channels[-1])
 
     def paintEvent(self, event):
-        style_option = QStyleOption()
-        style_option.initFrom(self)
+        option = QStyleOption()
+        option.initFrom(self)
         painter = QPainter(self)
-        style = self.style()
-        style.drawPrimitive(QStyle.PE_Widget, style_option, painter, self)
+        self.style().drawPrimitive(QStyle.PE_Widget, option, painter, self)
         self.alternate_colors()
 
     def alternate_colors(self):
@@ -59,8 +58,12 @@ class ChannelTab(QWidget):
             else:
                 color = base.darker(120)
             channel.setStyleSheet(
-                "background-color: {};"
-                "color: {};".format(color.name(), text.name())
+                "QComboBox {{"
+                "   color: {};"
+                "}}"
+                ".ChannelWidget {{"
+                "   background: {};"
+                "}}".format(text.name(), color.name())
             )
 
 
@@ -223,11 +226,10 @@ class ChannelWidget(QWidget):
         self.attributes[key] = text
 
     def paintEvent(self, event):
-        style_option = QStyleOption()
-        style_option.initFrom(self)
+        option = QStyleOption()
+        option.initFrom(self)
         painter = QPainter(self)
-        style = self.style()
-        style.drawPrimitive(QStyle.PE_Widget, style_option, painter, self)
+        self.style().drawPrimitive(QStyle.PE_Widget, option, painter, self)
 
     def update_status(self):
         updater = workers.UpdateStatus(self)
