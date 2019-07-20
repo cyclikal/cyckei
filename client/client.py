@@ -46,39 +46,27 @@ class MainWindow(QMainWindow):
         self.setStyleSheet(
             open(func.find_path("assets/style.css"), "r").read())
 
+        resource = {}
         # Setup ThreadPool
-        self.threadpool = QThreadPool()
+        resource["threadpool"] = QThreadPool()
         logging.info("Multithreading set with maximum {} threads".format(
-            self.threadpool.maxThreadCount()
+            resource["threadpool"].maxThreadCount()
         ))
 
         # Load scripts
-        scripts = ScriptList()
-        scripts.load_default_scripts(config["record_dir"] + "/scripts")
+        resource["scripts"] = ScriptList(config)
 
         # Create menu and status bar
         self.menu_bar = self.create_menu()
         self.status_bar = self.statusBar()
 
         # Create Tabs
-        self.tab_widget = QTabWidget(self)
-        self.setCentralWidget(self.tab_widget)
+        resource["tabs"] = QTabWidget(self)
+        self.setCentralWidget(resource["tabs"])
 
-        # Add Channel Tab
-        self.tab_widget.addTab(
-            ChannelTab(self.config, self.threadpool, scripts),
-            "Channels"
-        )
-        self.channels = self.tab_widget.widget(0).channels
-
-        # Add Script Tab
-        self.tab_widget.addTab(
-            ScriptEditor(self.channels, scripts, self.threadpool),
-            "Scripts"
-        )
-
-        # Add Log Tab
-        self.tab_widget.addTab(LogViewer(self.config, self.threadpool), "Logs")
+        resource["tabs"].addTab(ChannelTab(config, resource), "Channels")
+        resource["tabs"].addTab(ScriptEditor(config, resource), "Scripts")
+        resource["tabs"].addTab(LogViewer(config, resource), "Logs")
 
     def action(self, title, tip, connect):
         temp = QAction(title, self)
@@ -91,7 +79,9 @@ class MainWindow(QMainWindow):
         bar = self.menuBar()
 
         client = bar.addMenu("Client")
-        client.addAction(self.action("&Info", "About Cyckei", functools.partial(about, self.config["version"])))
+        client.addAction(self.action(
+            "&Info", "About Cyckei",
+            functools.partial(about, self.config["version"])))
         client.addAction(self.action("&Help", "Help Using Cyckei", help))
         client.addAction(self.action("&Close", "Exit Client Application",
                                      sys.exit))

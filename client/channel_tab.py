@@ -15,7 +15,7 @@ import functions as func
 
 
 class ChannelTab(QWidget):
-    def __init__(self, config, threadpool, scripts):
+    def __init__(self, config, resource):
         """Setup each channel widget and place in QVBoxlayout"""
         QWidget.__init__(self)
 
@@ -34,9 +34,8 @@ class ChannelTab(QWidget):
         for channel in config["channels"]:
             self.channels.append(ChannelWidget(
                 channel["channel"],
-                config["record_dir"] + "/tests",
-                threadpool,
-                scripts
+                config,
+                resource
             ))
             rows.addWidget(self.channels[-1])
 
@@ -69,12 +68,12 @@ class ChannelTab(QWidget):
 class ChannelWidget(QWidget):
     """Controls and stores information for a given channel"""
 
-    def __init__(self, channel, record_folder, threadpool, scripts):
+    def __init__(self, channel, config, resource):
         super(ChannelWidget, self).__init__()
         # Default Values
         self.attributes = {
             "channel": channel,
-            "record_folder": record_folder,
+            "record_folder": config["record_dir"] + "/tests",
             "id": 0,
             "comment": "No Comment",
             "package": "Pouch",
@@ -86,8 +85,8 @@ class ChannelWidget(QWidget):
             "script_title": None,
         }
 
-        self.threadpool = threadpool
-        self.scripts = scripts
+        self.threadpool = resource["threadpool"]
+        self.scripts = resource["scripts"]
 
         self.setMinimumSize(1050, 110)
 

@@ -1,10 +1,8 @@
 """Tab to view and edit scripts, also has access to checking procedure"""
 
 from PySide2.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel,\
-    QPlainTextEdit, QPushButton, QListWidget, QFileDialog, \
-    QWidget, QStyleOption, QStyle
+    QPlainTextEdit, QPushButton, QListWidget, QFileDialog, QWidget
 from PySide2.QtCore import Qt
-from PySide2.QtGui import QPainter
 
 from . import scripts
 from .workers import Check
@@ -13,11 +11,11 @@ import functions as func
 
 class ScriptEditor(QWidget):
     """Main object of script tab"""
-    def __init__(self, channels, scripts, threadpool):
+    def __init__(self, config, resource):
         QWidget.__init__(self)
-        self.channels = channels
-        self.scripts = scripts
-        self.threadpool = threadpool
+        self.channels = resource["tabs"].widget(0).channels
+        self.scripts = resource["scripts"]
+        self.threadpool = resource["threadpool"]
 
         # Create overall layout
         columns = QHBoxLayout(self)

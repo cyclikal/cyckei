@@ -6,6 +6,7 @@ import shutil
 import logging
 import traceback
 import threading
+import ctypes
 
 from PySide2.QtWidgets import QApplication
 from PySide2.QtGui import QIcon
@@ -27,6 +28,7 @@ def main():
     config = json.load(open(record_dir + "/config.json", "r"))
     config["version"] = VERSION
     config["record_dir"] = record_dir
+    config["id"] = u"com.cyclikal.cyckei"
 
     # Setup Logging
     logging.basicConfig(filename="{}/cyckei.log".format(record_dir),
@@ -46,12 +48,10 @@ def main():
 
     # Set icon for windows
     try:
-        import ctypes
-        id = u"com.cyclikal.cyckei"
-        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(id)
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(
+            config["id"])
     except AttributeError:
         logging.warning("cyckei.main: Could not set windows-specific icon")
-        pass
 
     # Start Server
     logging.debug("cyckei.main: Starting Server")
@@ -75,7 +75,6 @@ def main():
 
 def file_structure(path):
     """Checks for existing folder structure and sets up if missing"""
-
     os.makedirs(path, exist_ok=True)
     os.makedirs(path + "/tests", exist_ok=True)
     if not os.path.exists(path + "/config.json"):

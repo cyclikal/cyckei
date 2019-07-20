@@ -3,18 +3,17 @@
 import subprocess
 from os import path, listdir
 
-from PySide2.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel, QStyleOption,\
-    QPushButton, QListWidget, QListWidgetItem, QWidget, QPlainTextEdit, QStyle
-from PySide2.QtGui import QPainter
+from PySide2.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel, \
+    QPushButton, QListWidget, QListWidgetItem, QWidget, QPlainTextEdit
 from PySide2.QtCore import Slot, QRunnable
 
 
 class LogViewer(QWidget):
     """Object of log tab"""
-    def __init__(self, config, threadpool):
+    def __init__(self, config, resource):
         QWidget.__init__(self)
         self.path = config["record_dir"] + "/tests"
-        self.threadpool = threadpool
+        self.threadpool = resource["threadpool"]
 
         self.log_list = QListWidget()
         self.log_list.itemClicked.connect(self.log_clicked)
