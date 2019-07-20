@@ -41,6 +41,8 @@ class Signals(QObject):
 class Ping(QRunnable):
     def __init__(self, config):
         super(Ping, self).__init__()
+        self.port = port
+        self.address = address
         self.signals = Signals()
         self.config = config
 
@@ -56,6 +58,8 @@ class UpdateStatus(QRunnable):
     def __init__(self, channel, config):
         super(UpdateStatus, self).__init__()
         self.channel = channel
+        self.port = port
+        self.address = address
         self.signals = Signals()
         self.config = config
 
@@ -135,6 +139,8 @@ class Control(QRunnable):
         self.config = config
         self.command = command
         self.scripts = scripts
+        self.port = port
+        self.address = address
         self.signals = Signals()
 
     @Slot()
