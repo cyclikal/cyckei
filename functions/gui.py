@@ -4,30 +4,9 @@ from PySide2.QtWidgets import QMessageBox, QPushButton, QComboBox, QLineEdit, \
      QLabel, QAction
 
 
-class Icon(object):
-    def __init__(self):
-        self.Question = QMessageBox.Question
-        self.Information = QMessageBox.Information
-        self.Warning = QMessageBox.Warning
-        self.Critical = QMessageBox.Critical
-
-
 def message(text=None, info=None, icon=QMessageBox.Information,
             detail=None, confirm=False):
-    """
-    Show a Qt Message with given information.
-
-    Arguments:
-        text -- Main text
-        info -- Additional text
-        icon -- Icon to show
-        detail -- Details which need to be displayed manually
-        title -- Name of message window
-        confirm -- Displays 'yes/no' prompt if True, otherwise only 'ok'
-
-    Returns:
-        Button pressed in message
-    """
+    """Show a Qt Message with given information."""
 
     msg = QMessageBox()
     msg.setText(text)
@@ -87,10 +66,6 @@ def action(text=None, connect=None, tip=None, parent=None,
     action.setDisabled(disabled)
     action.setSeparator(separator)
     return action
-
-
-def status(status, channel):
-    channel.status.setText(status)
 
 
 def feedback(status, channel):

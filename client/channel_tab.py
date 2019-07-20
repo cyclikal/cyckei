@@ -227,7 +227,6 @@ class ChannelWidget(QWidget):
 
     def update_status(self):
         updater = workers.UpdateStatus(self, self.config)
-        updater.signals.status.connect(func.status)
         updater.signals.info.connect(self.set_divider)
         self.threadpool.start(updater)
 

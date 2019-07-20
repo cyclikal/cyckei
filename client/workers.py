@@ -74,7 +74,7 @@ class UpdateStatus(QRunnable):
             status = info_channel
         logging.debug("Updating channel {} with satus {}".format(
             self.channel.attributes["channel"], status))
-        self.signals.status.emit(status, self.channel)
+        self.channel.status.setText(status)
         self.signals.info.emit(channel_status)
 
 

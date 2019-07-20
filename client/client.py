@@ -111,7 +111,7 @@ class MainWindow(QMainWindow):
             "text": "Save batch?",
             "info": "Current saved batch will be deleted.",
             "confirm": True,
-            "icon": func.Icon().Question
+            "icon": func.Question
         }
         if func.message(**msg):
             batch = []
@@ -133,7 +133,7 @@ class MainWindow(QMainWindow):
             "text": "Load batch?",
             "info": "All current values will be overwritten.",
             "confirm": True,
-            "icon": func.Icon().Question
+            "icon": func.Question
         }
         if func.message(**msg):
             with open(self.config["record_dir"] + "/batch.txt", "r") as file:
@@ -165,6 +165,6 @@ class MainWindow(QMainWindow):
                         "text": "Could not increment channel {}.\n".format(
                             channel["channel"]
                         ) + str(exception),
-                        "icon": func.Icon().Warning
+                        "icon": func.Warning
                     }
                     func.message(**msg)

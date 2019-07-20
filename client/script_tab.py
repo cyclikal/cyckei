@@ -120,7 +120,7 @@ class ScriptEditor(QWidget):
                 "text": "Failed!",
                 "info": "Script did not pass the check.",
                 "detail": message,
-                "icon": func.Icon().Warning
+                "icon": func.Warning
             }
         func.message(**msg)
 
