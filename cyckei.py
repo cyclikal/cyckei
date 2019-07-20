@@ -1,4 +1,3 @@
-# from subprocess import Popen, DEVNULL
 import sys
 import json
 import os
@@ -17,6 +16,7 @@ from applet import applet
 import functions as func
 
 VERSION = "0.2.dev3"
+ID = "com.cyclikal.cyckei"
 
 
 def main():
@@ -28,7 +28,6 @@ def main():
     config = json.load(open(record_dir + "/config.json", "r"))
     config["version"] = VERSION
     config["record_dir"] = record_dir
-    config["id"] = u"com.cyclikal.cyckei"
 
     # Setup Logging
     logging.basicConfig(filename="{}/cyckei.log".format(record_dir),
@@ -48,8 +47,7 @@ def main():
 
     # Set icon for windows
     try:
-        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(
-            config["id"])
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(ID)
     except AttributeError:
         logging.warning("cyckei.main: Could not set windows-specific icon")
 
