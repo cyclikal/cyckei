@@ -115,10 +115,7 @@ class ChannelWidget(QWidget):
             settings.addWidget(element)
 
         # Status
-        args = [
-            "Loading Status...",
-            "Current Cell Status",
-        ]
+        args = ["Loading Status...", "Current Cell Status"]
         self.status = func.label(*args)
         left.addWidget(self.status)
 
@@ -129,16 +126,14 @@ class ChannelWidget(QWidget):
             controls.addWidget(element)
 
         # Feedback
-        args = [
-            "",
-            "Server Response",
-        ]
+        args = ["", "Server Response"]
         self.feedback = func.label(*args)
         self.feedback.setAlignment(Qt.AlignCenter)
         right.addWidget(self.feedback)
 
         # Load default JSON
-        self.json = json.load(open(func.find_path("assets/defaultJSON.json")))
+        self.json = json.load(open(
+            func.find_path("assets/default_packet.json")))
 
         # Set initial status and set status timer
         self.update_status()
