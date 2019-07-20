@@ -42,11 +42,12 @@ def message(text=None, info=None, icon=QMessageBox.Information,
     return True
 
 
-def button(text, status, connect):
+def button(text, status, connect, enabled=True):
     """Creates a button with given information"""
     button = QPushButton()
     button.setText(text)
     button.setStatusTip(status)
+    button.setEnabled(enabled)
     button.clicked.connect(functools.partial(connect, text))
     return button
 
@@ -78,7 +79,8 @@ def line_edit(label, status, key, connect):
     return text
 
 
-def action(text=None, connect=None, tip=None, parent=None, disabled=False, separator=False):
+def action(text=None, connect=None, tip=None, parent=None,
+           disabled=False, separator=False):
     action = QAction(text, parent)
     action.setStatusTip(tip)
     action.triggered.connect(connect)

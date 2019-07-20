@@ -1,11 +1,13 @@
 """Controls log tab, which displays logs as they are being recorded"""
 
-import subprocess
+import webbrowser
 from os import path, listdir
 
-from PySide2.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel, \
-    QPushButton, QListWidget, QListWidgetItem, QWidget, QPlainTextEdit
+from PySide2.QtWidgets import QVBoxLayout, QHBoxLayout, \
+    QListWidget, QListWidgetItem, QWidget, QPlainTextEdit
 from PySide2.QtCore import Slot, QRunnable
+
+import functions as func
 
 
 class LogViewer(QWidget):
@@ -35,8 +37,7 @@ class LogViewer(QWidget):
         list_rows.setStretch(1, 3)
 
         # create edit_rows
-        self.title_bar = QLabel()
-        self.title_bar.setText("Select file on left to view log.")
+        self.title_bar = func.label("Select file on left to view log.")
         edit_rows.addWidget(self.title_bar)
 
         self.editor = QPlainTextEdit()
@@ -46,27 +47,22 @@ class LogViewer(QWidget):
         edit_rows.addLayout(controls)
 
         # create control buttons
-        reload = QPushButton()
-        reload.setText("Reload")
-        reload.clicked.connect(self.reload)
-        controls.addWidget(reload)
+        buttons = [
+            ["Reload", "Update Logs", self.reload],
+            ["Open Folder", "Show Log Folder", self.open_explorer]
+        ]
 
-        open_folder = QPushButton()
-        open_folder.setText("Open Folder")
-        open_folder.clicked.connect(self.open_explorer)
-        controls.addWidget(open_folder)
-        # TODO: Make cross platform
-        open_folder.setEnabled(False)
+        for button in buttons:
+            controls.addWidget(func.button(*button))
 
         self.reload()
 
-    def reload(self):
-        worker = Folders(self)
-        self.threadpool.start(worker)
+    def reload(self, text=None):
+        self.threadpool.start(Folders(self))
 
-    def open_explorer(self):
+    def open_explorer(self, text=None):
         """Open logging folder in explorer"""
-        subprocess.Popen(r'explorer /select,"{}"'.format(self.path))
+        webbrowser.open("file://{}".format(self.path))
 
     def log_clicked(self, item):
         """Display text of clicked file in text box"""
