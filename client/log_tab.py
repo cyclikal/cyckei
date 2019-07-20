@@ -82,7 +82,7 @@ class LogViewer(QWidget):
 class Log(QListWidgetItem):
     """Object of log, stores title and content of file for quick access"""
     def __init__(self, path, name):
-        super().__init__()
+        super(Log, self).__init__()
         self.path = path
         self.name = name
         self.setText(self.name)
@@ -96,7 +96,7 @@ class Log(QListWidgetItem):
 class Folder(QListWidgetItem):
     """Object of log, stores title and content of file for quick access"""
     def __init__(self, path, name):
-        super().__init__()
+        super(Folder, self).__init__()
         self.path = path
         self.setText(name)
 

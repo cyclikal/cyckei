@@ -27,7 +27,7 @@ class ScriptList(object):
 class Script(QListWidgetItem):
     """Object to store and manipulate scripts"""
     def __init__(self, title, path):
-        super().__init__()
+        super(Script, self).__init__()
         self.title = title
         self.path = path
         try:

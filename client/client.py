@@ -38,7 +38,7 @@ class MainWindow(QMainWindow):
     """Main Window class which is and sets up itself"""
     # Setup main windows
     def __init__(self, config):
-        super().__init__()
+        super(MainWindow, self).__init__()
         # Set basic window properties
         self.setWindowTitle("Cyckei Client")
         self.config = config

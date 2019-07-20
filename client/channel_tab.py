@@ -49,7 +49,6 @@ class ChannelTab(QWidget):
 
     def alternate_colors(self):
         # TODO: Make compatible with windows
-        # TODO: Prevent child overwrite
         base = self.palette().color(QPalette.Window)
         text = self.palette().color(QPalette.WindowText)
         for channel in self.channels:
@@ -71,7 +70,7 @@ class ChannelWidget(QWidget):
     """Controls and stores information for a given channel"""
 
     def __init__(self, channel, record_folder, threadpool, scripts):
-        super().__init__()
+        super(ChannelWidget, self).__init__()
         # Default Values
         self.attributes = {
             "channel": channel,
