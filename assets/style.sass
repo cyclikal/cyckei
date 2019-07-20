@@ -1,0 +1,26 @@
+// Cyckei SASS, should be compiled into CSS
+
+$font: None
+$font-size: 16px
+
+$orange: #f05f40
+$grey: #a6a6a6
+
+*
+  font: $font
+  font-size: $font-size
+  selection-background-color: $orange
+
+  ChannelWidget
+    border-bottom: 2px solid $orange
+
+  QLabel#id_label
+    color: $orange
+    font-weight: bold
+
+  QPushButton:pressed
+    background-color: $orange
+    
+  QPlainTextEdit:focus,
+  QListWidget:focus
+    border: 1px solid $orange

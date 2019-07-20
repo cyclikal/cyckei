@@ -1,0 +1,4 @@
+[flake8]
+per-file-ignores =
+    functions/__init__.py:F401
+    cyckei.spec:F821
