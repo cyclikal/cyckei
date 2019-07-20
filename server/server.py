@@ -22,7 +22,7 @@ def main(config):
     try:
         context = zmq.Context(1)
         socket = context.socket(zmq.REP)
-        socket.bind("{}:{}".format(config["zmq"]["server"]["address"],
+        socket.bind("{}:{}".format(config["zmq"]["server-address"],
                                    config["zmq"]["port"]))
     except zmq.error.ZMQError as error:
         logging.error(
@@ -171,21 +171,9 @@ def process_socket(socket, runners, sources, server_time):
 
             elif fun == "test":
                 resp = test(kwargs["protocol"])
-
+            # TODO: combine channel_status and info_channel
             elif fun == "channel_status":
                 resp = channel_status(kwargs["channel"], runners)
-
-            elif fun == "time":
-                resp = str(server_time)
-
-            elif fun == "kill_server":
-                for protocol in runners:
-                    protocol.close()
-                response["response"] = "Killing server now"
-                socket.send_json(response)
-                socket.close()
-                socket.context.term()
-                exit()
 
             elif fun == "stop":
                 resp = stop(kwargs["channel"], runners)
@@ -195,9 +183,6 @@ def process_socket(socket, runners, sources, server_time):
                     zmq.LAST_ENDPOINT
                 ).split(":")[-1]
                 resp = "True: server is running on port {}".format(port)
-
-            elif fun == "info_all_channels":
-                resp = info_all_channels(runners, sources)
 
             elif fun == "info_channel":
                 resp = info_channel(kwargs["channel"], runners)

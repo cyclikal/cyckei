@@ -15,7 +15,7 @@ import functions as func
 
 
 class ChannelTab(QWidget):
-    def __init__(self, config, threadpool, scripts):
+    def __init__(self, config, resource):
         """Setup each channel widget and place in QVBoxlayout"""
         QWidget.__init__(self)
 
@@ -35,8 +35,7 @@ class ChannelTab(QWidget):
             self.channels.append(ChannelWidget(
                 channel["channel"],
                 config,
-                threadpool,
-                scripts
+                resource
             ))
             rows.addWidget(self.channels[-1])
 
@@ -69,7 +68,7 @@ class ChannelTab(QWidget):
 class ChannelWidget(QWidget):
     """Controls and stores information for a given channel"""
 
-    def __init__(self, channel, config, threadpool, scripts):
+    def __init__(self, channel, config, resource):
         super(ChannelWidget, self).__init__()
         # Default Values
         self.attributes = {
@@ -85,10 +84,10 @@ class ChannelWidget(QWidget):
             "protocol_name": None,
             "script_title": None,
         }
-
-        self.threadpool = threadpool
-        self.scripts = scripts
         self.config = config
+
+        self.threadpool = resource["threadpool"]
+        self.scripts = resource["scripts"]
 
         self.setMinimumSize(1050, 110)
 
@@ -116,10 +115,7 @@ class ChannelWidget(QWidget):
             settings.addWidget(element)
 
         # Status
-        args = [
-            "Loading Status...",
-            "Current Cell Status",
-        ]
+        args = ["Loading Status...", "Current Cell Status"]
         self.status = func.label(*args)
         left.addWidget(self.status)
 
@@ -130,16 +126,14 @@ class ChannelWidget(QWidget):
             controls.addWidget(element)
 
         # Feedback
-        args = [
-            "",
-            "Server Response",
-        ]
+        args = ["", "Server Response"]
         self.feedback = func.label(*args)
         self.feedback.setAlignment(Qt.AlignCenter)
         right.addWidget(self.feedback)
 
         # Load default JSON
-        self.json = json.load(open(func.find_path("assets/defaultJSON.json")))
+        self.json = json.load(open(
+            func.find_path("assets/default_packet.json")))
 
         # Set initial status and set status timer
         self.update_status()
@@ -163,7 +157,7 @@ class ChannelWidget(QWidget):
         # Script selection box
         available_scripts = []
         if self.scripts.script_list:
-            self.attributes["script_title"] = self.scripts.script_list[0].title
+            self.attributes["protocol_name"] = self.scripts.script_list[0].title
             for script in self.scripts.script_list:
                 available_scripts.append(script.title)
         elements.append(func.combo_box(available_scripts,
@@ -214,12 +208,10 @@ class ChannelWidget(QWidget):
     def button(self, text):
         func.feedback("{} in progress...".format(text), self)
         if text == "Read Cell":
-            worker = workers.Read(self, self.config["zmq"]["port"],
-                                  self.config["zmq"]["client"]["address"])
+            worker = workers.Read(self.config, self)
         else:
-            worker = workers.Control(self, text.lower(), self.scripts,
-                                     self.config["zmq"]["port"],
-                                     self.config["zmq"]["client"]["address"])
+            worker = workers.Control(
+                self.config, self, text.lower(), self.scripts)
         worker.signals.status.connect(func.feedback)
         self.threadpool.start(worker)
 
@@ -234,9 +226,7 @@ class ChannelWidget(QWidget):
         self.style().drawPrimitive(QStyle.PE_Widget, option, painter, self)
 
     def update_status(self):
-        updater = workers.UpdateStatus(self, self.config["zmq"]["port"],
-                                       self.config["zmq"]["client"]["address"])
-        updater.signals.status.connect(func.status)
+        updater = workers.UpdateStatus(self, self.config)
         updater.signals.info.connect(self.set_divider)
         self.threadpool.start(updater)
 

@@ -1,11 +1,18 @@
 import os
 import sys
 
+from PySide2.QtWidgets import QMessageBox
+
 from functions.gui import message, button, combo_box, \
-     label, line_edit, status, feedback, action, Icon
+     label, line_edit, feedback, action
 
 orange = "#f05f40"
 grey = "#a6a6a6"
+
+Question = QMessageBox.Question
+Information = QMessageBox.Information
+Warning = QMessageBox.Warning
+Critical = QMessageBox.Critical
 
 
 def find_path(path):

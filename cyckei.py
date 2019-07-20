@@ -1,4 +1,3 @@
-# from subprocess import Popen, DEVNULL
 import sys
 import json
 import os
@@ -6,6 +5,7 @@ import shutil
 import logging
 import traceback
 import threading
+import ctypes
 
 from PySide2.QtWidgets import QApplication
 from PySide2.QtGui import QIcon
@@ -16,6 +16,7 @@ from applet import applet
 import functions as func
 
 VERSION = "0.2.dev3"
+ID = "com.cyclikal.cyckei"
 
 
 def main():
@@ -46,12 +47,9 @@ def main():
 
     # Set icon for windows
     try:
-        import ctypes
-        id = u"com.cyclikal.cyckei"
-        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(id)
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(ID)
     except AttributeError:
         logging.warning("cyckei.main: Could not set windows-specific icon")
-        pass
 
     # Start Server
     logging.debug("cyckei.main: Starting Server")
@@ -75,16 +73,12 @@ def main():
 
 def file_structure(path):
     """Checks for existing folder structure and sets up if missing"""
-
-    if not os.path.exists(path):
-        os.makedirs(path)
-    if not os.path.exists(path + "/tests"):
-        os.makedirs(path + "/tests")
+    os.makedirs(path, exist_ok=True)
+    os.makedirs(path + "/tests", exist_ok=True)
     if not os.path.exists(path + "/config.json"):
-        shutil.copy(func.find_path("assets/default.config.json"),
+        shutil.copy(func.find_path("assets/default_config.json"),
                     path + "/config.json")
-    if not os.path.exists(path + "/batch.txt"):
-        shutil.copy(func.find_path("assets/batch.txt"), path + "/batch.txt")
+    open(path + "/batch.txt", "a")
     if not os.path.exists(path + "/scripts"):
         os.makedirs(path + "/scripts")
         shutil.copy(func.find_path("assets/example-script"),

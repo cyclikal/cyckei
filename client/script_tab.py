@@ -1,10 +1,8 @@
 """Tab to view and edit scripts, also has access to checking procedure"""
 
-from PySide2.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel,\
-    QPlainTextEdit, QPushButton, QListWidget, QFileDialog, \
-    QWidget, QStyleOption, QStyle
+from PySide2.QtWidgets import QVBoxLayout, QHBoxLayout, \
+    QPlainTextEdit, QListWidget, QFileDialog, QWidget
 from PySide2.QtCore import Qt
-from PySide2.QtGui import QPainter
 
 from . import scripts
 from .workers import Check
@@ -13,11 +11,12 @@ import functions as func
 
 class ScriptEditor(QWidget):
     """Main object of script tab"""
-    def __init__(self, channels, scripts, threadpool):
+    def __init__(self, config, resource):
         QWidget.__init__(self)
-        self.channels = channels
-        self.scripts = scripts
-        self.threadpool = threadpool
+        self.channels = resource["tabs"].widget(0).channels
+        self.scripts = resource["scripts"]
+        self.threadpool = resource["threadpool"]
+        self.config = config
 
         # Create overall layout
         columns = QHBoxLayout(self)
@@ -29,8 +28,7 @@ class ScriptEditor(QWidget):
         columns.setStretch(1, 5)
 
         # Create edit_rows
-        self.title_bar = QLabel()
-        self.title_bar.setText("Select or open file to edit.")
+        self.title_bar = func.label("Select or open file to edit.")
         edit_rows.addWidget(self.title_bar)
 
         self.editor = QPlainTextEdit()
@@ -40,24 +38,15 @@ class ScriptEditor(QWidget):
         controls = QHBoxLayout()
         edit_rows.addLayout(controls)
 
-        buttons = []
-        buttons.append(QPushButton())
-        buttons[-1].setText("Open")
-        buttons[-1].clicked.connect(self.open)
-        buttons.append(QPushButton())
-        buttons[-1].setText("Remove")
-        buttons[-1].clicked.connect(self.remove)
-        buttons.append(QPushButton())
-        buttons[-1].setText("New")
-        buttons[-1].clicked.connect(self.new)
-        buttons.append(QPushButton())
-        buttons[-1].setText("Save")
-        buttons[-1].clicked.connect(self.save)
-        buttons.append(QPushButton())
-        buttons[-1].setText("Check")
-        buttons[-1].clicked.connect(self.check)
+        buttons = [
+            ["Open", self.open],
+            ["Remove", self.remove],
+            ["New", self.new],
+            ["Save", self.save],
+            ["Check", self.check],
+        ]
         for button in buttons:
-            controls.addWidget(button)
+            controls.addWidget(func.button(text=button[0], connect=button[1]))
 
     def setup_file_list(self):
         """Create list of script files"""
@@ -77,7 +66,7 @@ class ScriptEditor(QWidget):
             self.file_list.currentItem().content = self.editor.toPlainText()
             self.file_list.currentItem().update_status()
 
-    def open(self):
+    def open(self, text):
         """Open new file and add as script"""
         script_file = QFileDialog.getOpenFileName(
             QWidget(), "Open Script File"
@@ -85,7 +74,7 @@ class ScriptEditor(QWidget):
         if script_file[0]:
             self.add(script_file)
 
-    def remove(self):
+    def remove(self, text):
         """Remove script from list and channel selector"""
         self.scripts.script_list.pop(self.file_list.currentRow())
         for channel in self.channels:
@@ -99,7 +88,7 @@ class ScriptEditor(QWidget):
         except AttributeError:
             pass
 
-    def new(self):
+    def new(self, text):
         """Create new file and add to list as script"""
         script_file = QFileDialog.getSaveFileName(QWidget(),
                                                   "Select Directory")[0]
@@ -107,13 +96,16 @@ class ScriptEditor(QWidget):
             open(script_file, "a")
             self.add(script_file.rsplit("/", 1))
 
-    def save(self):
+    def save(self, text):
         """Save script"""
-        self.file_list.currentItem().save()
+        try:
+            self.file_list.currentItem().save()
+        except AttributeError:
+            pass
 
-    def check(self):
+    def check(self, text):
         """Run check protocol to verify validity"""
-        worker = Check(self.file_list.currentItem().content)
+        worker = Check(self.config, self.file_list.currentItem().content)
         self.threadpool.start(worker)
         worker.signals.status.connect(self.alert_check)
 
@@ -128,7 +120,7 @@ class ScriptEditor(QWidget):
                 "text": "Failed!",
                 "info": "Script did not pass the check.",
                 "detail": message,
-                "icon": func.Icon().Warning
+                "icon": func.Warning
             }
         func.message(**msg)
 

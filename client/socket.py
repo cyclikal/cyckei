@@ -2,20 +2,18 @@ import zmq
 import json
 import logging
 
-
-import functions as func
-
 TIMEOUT = 3  # Seconds for listening to server before giving up.
 
 
 class Socket(object):
     """Handles connection, communication, and control of server over ZMQ"""
 
-    def __init__(self, address, port):
-        self.address = address
-        self.port = port
+    def __init__(self, config):
+        self.config = config
         self.socket = zmq.Context().socket(zmq.REQ)
-        self.socket.connect("{}:{}".format(self.address, self.port))
+        self.socket.connect("{}:{}".format(
+            config["zmq"]["client-address"],
+            config["zmq"]["port"]))
         self.socket.setsockopt(zmq.LINGER, 0)
 
     def send(self, to_send):
@@ -34,13 +32,6 @@ class Socket(object):
         self.socket.close()
         return response
 
-    def get_server_time(self):
-        """Gets time since server began listening for commands"""
-        script = json.loads('{"function": "time", "kwargs": ""}')
-        server_time = self.send(script)
-        func.meessage("Server time in seconds: {}".format(
-            server_time["response"]))
-
     def send_file(self, file):
         """Sends packet loaded from JSON file"""
         script = json.load(open(file))
@@ -54,18 +45,6 @@ class Socket(object):
             + """}}""")
         return self.send(script)
 
-    def kill_server(self):
-        """Tells server to kill itself and closes connection"""
-        msg = {
-            "text": "Kill server?",
-            "info": "All jobs will be cancelled.",
-            "icon": func.Icon().Question
-        }
-        if func.message(**msg):
-            script = json.loads('{"function": "kill_server"}')
-            self.send(script)
-            self.close_socket()
-
     def ping(self):
         """Send "ping" to server"""
         script = json.loads('{"function": "ping"}')
@@ -78,9 +57,4 @@ class Socket(object):
             """{"function": "info_channel", "kwargs": {"channel": """
             + str(channel)
             + """}}""")
-        return self.send(script)
-
-    def info_all_channels(self):
-        """Send "info_all_channels" to server"""
-        script = json.loads('{"function": "info_all_channels"}')
         return self.send(script)

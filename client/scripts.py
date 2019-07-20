@@ -6,17 +6,18 @@ from PySide2.QtWidgets import QListWidgetItem
 
 
 class ScriptList(object):
-    def __init__(self):
+    def __init__(self, config):
         self.script_list = []
+        self.default_scripts(config["record_dir"] + "/scripts")
 
-    def load_default_scripts(self, path):
+    def default_scripts(self, path):
         """Load scripts from scripts folder"""
         files = listdir(path)
         if files is not None:
             for file in files:
                 self.script_list.append(Script(file, path))
 
-    def get_script_by_title(self, title):
+    def by_title(self, title):
         """Returns script object with given title"""
         for script in self.script_list:
             if script.title == title:

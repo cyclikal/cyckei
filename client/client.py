@@ -4,7 +4,7 @@ import logging
 import sys
 import functools
 
-from PySide2.QtWidgets import QMainWindow, QAction, QTabWidget
+from PySide2.QtWidgets import QMainWindow, QTabWidget
 from PySide2.QtCore import QThreadPool
 
 from .channel_tab import ChannelTab
@@ -46,78 +46,62 @@ class MainWindow(QMainWindow):
         self.setStyleSheet(
             open(func.find_path("assets/style.css"), "r").read())
 
+        resource = {}
         # Setup ThreadPool
-        self.threadpool = QThreadPool()
+        resource["threadpool"] = QThreadPool()
+        self.threadpool = resource["threadpool"]
         logging.info("Multithreading set with maximum {} threads".format(
-            self.threadpool.maxThreadCount()
+            resource["threadpool"].maxThreadCount()
         ))
 
         # Load scripts
-        scripts = ScriptList()
-        scripts.load_default_scripts(config["record_dir"] + "/scripts")
+        resource["scripts"] = ScriptList(config)
 
         # Create menu and status bar
-        self.menu_bar = self.create_menu()
+        self.create_menu()
         self.status_bar = self.statusBar()
 
         # Create Tabs
-        self.tab_widget = QTabWidget(self)
-        self.setCentralWidget(self.tab_widget)
+        resource["tabs"] = QTabWidget(self)
+        self.setCentralWidget(resource["tabs"])
 
-        # Add Channel Tab
-        self.tab_widget.addTab(
-            ChannelTab(self.config, self.threadpool, scripts),
-            "Channels"
-        )
-        self.channels = self.tab_widget.widget(0).channels
+        resource["tabs"].addTab(ChannelTab(config, resource), "Channels")
+        resource["tabs"].addTab(ScriptEditor(config, resource), "Scripts")
+        resource["tabs"].addTab(LogViewer(config, resource), "Logs")
 
-        # Add Script Tab
-        self.tab_widget.addTab(
-            ScriptEditor(self.channels, scripts, self.threadpool),
-            "Scripts"
-        )
-
-        # Add Log Tab
-        self.tab_widget.addTab(LogViewer(self.config, self.threadpool), "Logs")
-
-    def action(self, title, tip, connect):
-        temp = QAction(title, self)
-        temp.setStatusTip(tip)
-        temp.triggered.connect(connect)
-        return temp
+        self.threadpool = resource["threadpool"]
+        self.channels = resource["tabs"].widget(0).channels
 
     def create_menu(self):
         """Setup menu bar"""
-        bar = self.menuBar()
 
-        client = bar.addMenu("Client")
-        client.addAction(self.action("&Info", "About Cyckei", functools.partial(about, self.config["version"])))
-        client.addAction(self.action("&Help", "Help Using Cyckei", help))
-        client.addAction(self.action("&Close", "Exit Client Application",
-                                     sys.exit))
+        entries = {
+            "Client": [
+                ["&Info", functools.partial(about, self.config["version"]),
+                    "About Cyckei"],
+                ["&Help", help, "Help Using Cyckei"],
+                ["&Close", sys.exit, "Exit Client Application"]
+            ],
+            "Server": [
+                ["&Ping", self.ping_server, "Test Connection to Server"]
+            ],
+            "Batch": [
+                ["&Fill All", self.fill_batch,
+                    "Auto Fill All Log Files in Batch"],
+                ["&Increment", self.increment_batch,
+                    "Increment Last Letter for Entire Batch"],
+                ["&Save", self.save_batch, "Save Batch as File"],
+                ["&Load", self.load_batch, "Load Batch from File"]
+            ]
+        }
 
-        server = bar.addMenu("Server")
-        server.addAction(self.action("&Ping", "Test Connection to Server",
-                                     self.ping_server))
-
-        batch = bar.addMenu("Batch")
-        batch.addAction(self.action("&Fill All",
-                                    "Auto Fill All Log Files in Batch",
-                                    self.fill_batch))
-        batch.addAction(self.action("&Increment",
-                                    "Increment Last Letter for Entire Batch",
-                                    self.increment_batch))
-        batch.addSeparator()
-        batch.addAction(self.action("&Save", "Save Batch as File",
-                                    self.save_batch))
-        batch.addAction(self.action("&Load", "Load Batch from File",
-                                    self.load_batch))
-
-        return bar
+        for key, items in entries.items():
+            menu = self.menuBar().addMenu(key)
+            for item in items:
+                menu.addAction(func.action(*item, parent=self))
 
     def ping_server(self):
-        worker = workers.Ping(self.config["zmq"]["port"],
-                              self.config["zmq"]["client"]["address"])
+        worker = workers.Ping(self.config)
         worker.signals.alert.connect(func.message)
         self.threadpool.start(worker)
 
@@ -127,12 +111,12 @@ class MainWindow(QMainWindow):
             "text": "Save batch?",
             "info": "Current saved batch will be deleted.",
             "confirm": True,
-            "icon": func.Icon().Question
+            "icon": func.Question
         }
         if func.message(**msg):
             batch = []
             for channel_widget in self.channels:
-                channel = [channel_widget.attributes["id"],
+                channel = [channel_widget.attributes["cellid"],
                            channel_widget.attributes["path"]]
                 batch.append(channel)
 
@@ -149,7 +133,7 @@ class MainWindow(QMainWindow):
             "text": "Load batch?",
             "info": "All current values will be overwritten.",
             "confirm": True,
-            "icon": func.Icon().Question
+            "icon": func.Question
         }
         if func.message(**msg):
             with open(self.config["record_dir"] + "/batch.txt", "r") as file:
@@ -181,6 +165,6 @@ class MainWindow(QMainWindow):
                         "text": "Could not increment channel {}.\n".format(
                             channel["channel"]
                         ) + str(exception),
-                        "icon": func.Icon().Warning
+                        "icon": func.Warning
                     }
                     func.message(**msg)

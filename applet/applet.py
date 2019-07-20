@@ -42,7 +42,7 @@ class Icon(QSystemTrayIcon):
             "text": "Are you sure you want to quit Cyckei?",
             "info": "This will stop any current cycles and "
                     "release control of all channels.",
-            "icon": func.Icon().Warning,
+            "icon": func.Warning,
             "confirm": True
         }
 

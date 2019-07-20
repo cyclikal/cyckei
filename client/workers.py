@@ -1,7 +1,7 @@
 import json
 import logging
-from os.path import exists
-from os import makedirs
+import time
+import os
 from datetime import date
 
 from PySide2.QtCore import QRunnable, Slot, Signal, QObject
@@ -10,47 +10,25 @@ from .socket import Socket
 import functions as func
 
 
-def send(json, port, address):
-    """Sends json to server and updates status with response"""
-    resp = Socket(address, port).send(json)["response"]
-    logging.info(resp)
-    return resp
-
-
 def prepare_json(channel, function, scripts):
     """Sets the channel's json script to current values"""
-    protocol = scripts.get_script_by_title(
-        channel.attributes["script_title"]).content
-    json_packet = json.load(open(func.find_path("assets/defaultJSON.json")))
+    protocol = scripts.by_title(
+        channel.attributes["protocol_name"]).content
+    packet = json.load(open(func.find_path("assets/default_packet.json")))
 
-    json_packet["function"] = function
-    json_packet["kwargs"]["channel"] = channel.attributes["channel"]
-    json_packet["kwargs"]["meta"]["cellid"] = channel.attributes["id"]
-    json_packet["kwargs"]["meta"]["comment"] = channel.attributes["comment"]
-    json_packet["kwargs"]["meta"]["package"] = channel.attributes["package"]
-    json_packet["kwargs"]["meta"]["cell_type"] = channel.attributes["type"]
-    temp_path = (
-        channel.attributes["record_folder"]
-        + "/"
-        + str(date.today())
-    )
-    if not exists(temp_path):
-        makedirs(temp_path)
-    json_packet["kwargs"]["meta"]["path"] = (
-        temp_path
-        + "/"
-        + channel.attributes["path"]
-    )
-    json_packet["kwargs"]["meta"]["mass"] = channel.attributes["mass"]
-    json_packet["kwargs"]["meta"]["protocol_name"]\
-        = channel.attributes["script_title"]
-    json_packet["kwargs"]["meta"]["requester"]\
-        = channel.attributes["requestor"]
-    json_packet["kwargs"]["meta"]["channel"] = channel.attributes["channel"]
-    json_packet["kwargs"]["meta"]["protocol"] = protocol
-    json_packet["kwargs"]["protocol"] = protocol
+    packet["function"] = function
+    packet["kwargs"]["channel"] = channel.attributes["channel"]
+    packet["kwargs"]["protocol"] = protocol
+    packet["kwargs"]["meta"] = channel.attributes
+    packet["kwargs"]["meta"]["protocol"] = protocol
 
-    return json_packet
+    dir = os.path.join(channel.attributes["record_folder"],
+                       str(date.today()))
+    os.makedirs(dir, exist_ok=True)
+    packet["kwargs"]["meta"]["path"] \
+        = os.path.join(dir, channel.attributes["path"])
+
+    return packet
 
 
 class Signals(QObject):
@@ -61,32 +39,35 @@ class Signals(QObject):
 
 
 class Ping(QRunnable):
-    def __init__(self, port, address):
+    def __init__(self, config):
         super(Ping, self).__init__()
         self.port = port
         self.address = address
         self.signals = Signals()
+        self.config = config
 
     @Slot()
     def run(self):
-        response = Socket(self.address, self.port).ping()
+        # TODO: Load info from config
+        response = Socket(self.config).ping()
         self.signals.alert.emit(response)
 
 
 class UpdateStatus(QRunnable):
     """Update status shown below controls by contacting server"""
-    def __init__(self, channel, port, address):
+    def __init__(self, channel, config):
         super(UpdateStatus, self).__init__()
         self.channel = channel
         self.port = port
         self.address = address
         self.signals = Signals()
+        self.config = config
 
     @Slot()
     def run(self):
-        info_channel = Socket(self.address, self.port).info_channel(
+        info_channel = Socket(self.config).info_channel(
             self.channel.attributes["channel"])["response"]
-        channel_status = Socket(self.address, self.port).channel_status(
+        channel_status = Socket(self.config).channel_status(
             self.channel.attributes["channel"])["response"]
         try:
             status = (channel_status
@@ -97,7 +78,7 @@ class UpdateStatus(QRunnable):
             status = info_channel
         logging.debug("Updating channel {} with satus {}".format(
             self.channel.attributes["channel"], status))
-        self.signals.status.emit(status, self.channel)
+        self.channel.status.setText(status)
         self.signals.info.emit(channel_status)
 
 
@@ -116,26 +97,27 @@ class AutoFill(QRunnable):
 
 class Read(QRunnable):
     """Tell channel to Rest() long enough to get voltage reading on cell"""
-    def __init__(self, channel, port, address):
+    def __init__(self, config, channel):
         super(Read, self).__init__()
         self.channel = channel
-        self.port = port
-        self.address = address
+        self.config = config
         self.signals = Signals()
 
     @Slot()
     def run(self):
-        package = json.load(open(func.find_path("assets/defaultJSON.json")))
+        package = json.load(open(func.find_path("assets/default_packet.json")))
         package["function"] = "start"
         package["kwargs"]["channel"] = self.channel.attributes["channel"]
         package["kwargs"]["meta"]["path"] = (
             self.channel.attributes["record_folder"]
             + "/{}.temp".format(self.channel.attributes["channel"])
         )
+        # TODO: prevent current cycle overwrite
         package["kwargs"]["protocol"] = """Rest()"""
-        Socket(self.address, self.port).send(package)
+        Socket(self.config).send(package)
 
-        info_channel = Socket(self.address, self.port).info_channel(
+        time.sleep(1)
+        info_channel = Socket(self.config).info_channel(
             self.channel.attributes["channel"])["response"]
         try:
             status = ("Voltage of cell: "
@@ -144,16 +126,17 @@ class Read(QRunnable):
             status = "Could not read cell voltage."
 
         package["function"] = "stop"
-        Socket("tcp://localhost", 5556).send(package)
+        Socket(self.config).send(package)
 
         self.signals.status.emit(status, self.channel)
 
 
 class Control(QRunnable):
     """Update json and send "start" function to server"""
-    def __init__(self, channel, command, scripts, port, address):
+    def __init__(self, config, channel, command, scripts):
         super(Control, self).__init__()
         self.channel = channel
+        self.config = config
         self.command = command
         self.scripts = scripts
         self.port = port
@@ -163,23 +146,22 @@ class Control(QRunnable):
     @Slot()
     def run(self):
         if self.command == "start":
-            script_ok, msg = Check(self.scripts.get_script_by_title(
-                    self.channel.attributes["script_title"]).content,
-                    self.port, self.scripts).run()
+            script_ok, msg = Check(self.config, self.scripts.by_title(
+                self.channel.attributes["protocol_name"]).content).run()
             if script_ok is False:
                 self.signals.status.emit("Script Check Failed", self.channel)
                 return
 
-        response = send(prepare_json(self.channel, self.command, self.scripts))
+        response = Socket(self.config).send(prepare_json(
+            self.channel, self.command, self.scripts))["response"]
         self.signals.status.emit(response, self.channel)
 
 
 class Check(QRunnable):
-    def __init__(self, protocol, port, address):
+    def __init__(self, config, protocol):
         super(Check, self).__init__()
         self.protocol = protocol
-        self.port = port
-        self.address = address
+        self.config = config
         self.signals = Signals()
 
     @Slot()
@@ -222,18 +204,18 @@ class Check(QRunnable):
     def run_test(self, protocol):
         """Checks if server can load script successfully"""
         packet = self.prepare_json(protocol)
-        response = send(packet, self.port, self.address)
+        response = Socket(self.config).send(packet)["response"]
         if response == "Passed":
             return True, "Passed"
-        return (False,
-                "Server failed to run script. Error: \"{}\".".format(response))
+        return False, \
+            "Server failed to run script. Error: \"{}\".".format(response)
 
     def prepare_json(self, protocol):
         """create json to send to server"""
-        json_packet = json.load(
-            open(func.find_path("assets/defaultJSON.json")))
+        packet = json.load(
+            open(func.find_path("assets/default_packet.json")))
 
-        json_packet["function"] = "test"
-        json_packet["kwargs"]["protocol"] = protocol
+        packet["function"] = "test"
+        packet["kwargs"]["protocol"] = protocol
 
-        return json_packet
+        return packet
