@@ -1,7 +1,7 @@
 # Cyckei Change-log and Roadmap
 
 ## 0.0 - 08/16/2018
-Original version of Cyckei developed by Vincent Chevrier and Gabriel Ewig for the Lithium-ion Battery Lab.
+Original version of Cyckei developed by Vincent Chevrier and Gabriel Ewig for the Lithium-ion Battery Lab at 3M.
 
 ## 0.1 Vayu - 07/2/2019
 Intended to significantly improve the performance and responsiveness of the application by improving the execution pattern and introducing threading to the Qt interface. Also overhauls the UI and brings many components up to date.
@@ -12,6 +12,7 @@ Intended to significantly improve the performance and responsiveness of the appl
 *   Improve layout and scaling of UI elements
 
 #### Development Releases
+
 *   0.1.dev1, 05/26/2019 -- Initial Vayu release
 *   0.1.dev2, 05/30/2019 -- Adjust layout and switch to PySide2
 *   0.1.dev3, 05/31/2019 -- Create threaded workers for each action
@@ -24,23 +25,12 @@ Intended to significantly improve the performance and responsiveness of the appl
 *   0.1.dev10, 06/27/2019 -- A bunch of script tab fixes and separated status and feedback on the channel tab
 
 #### Release Candidates
+
 *   0.1rc1, 06/28/2019 -- Initial Release Candidate
 *   0.1rc2, 06/29/2019 -- Fixed some bugs, enable MenuBar on Windows, and added exception logging
 
-
-## 0.2 Alviss
-Focused on simplifying the code to aid in further development. This includes unifying as many commonly used functions as possible, and adding code documentation. Also adds single file executables because they're fun.
-
-#### Notable Changes
-*   TBD
-
-#### Development Releases
-*   0.2.dev1, 7/15/2019 -- Improve Documentation
-*   0.2.dev2, 7/17/2019 -- Switch to PyInstaller build system
-*   0.2.dev3, 0/00/0000 -- Simplify codebase and unify common functions
-
-#### Release Candidates
-*   0.2rc1, 00/00/0000 -- TBD
-
 #### Bug Tracker
-*   None known
+*   None currently known
+
+## 0.2
+Focused on simplifying the code to aid in further development. This includes unifying as many commonly used functions as possible, and adding code documentation.

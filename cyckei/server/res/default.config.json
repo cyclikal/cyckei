@@ -1,0 +1,28 @@
+{
+    "channels": [
+        {
+            "channel": "1",
+            "gpib_address": 5,
+            "keithley_model": "2602A",
+            "keithley_channel": "a"
+        },
+        {
+            "channel": "2",
+            "gpib_address": 5,
+            "keithley_model": "2602A",
+            "keithley_channel": "b"
+        }
+    ],
+    "zmq":{
+        "port": 5556,
+        "client":{
+          "address":"tcp://localhost",
+          "retries": 3,
+          "timeout": 2500
+        },
+        "server":{
+          "address":"tcp://*"
+        }
+    },
+    "verbosity": 20
+}

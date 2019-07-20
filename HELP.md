@@ -1,13 +1,15 @@
-# Cyckei Help
+# Cyckei Client Help
 #### A battery cycler written in Python 3
 ---
 
 ## Controlling the Server
 Cyckei uses a server background process to interface directly with Keithley instruments.
 This allows cycles to continue running even if the client is closed abruptly or becomes slow.
-Running `cyckei` will start both the server and the client, but they can be run independently with `cyckei-server` and `cyckei-client`.
+The server is started automatically with the client, or can be started directly with the following command:
 
-The server can be controlled from a taskbar applet created upon server start.
+    python cyckei.pyw -s
+
+The server can be controlled from the "Server" menu of the client application.
 
 
 ## Starting a cycle
@@ -89,16 +91,20 @@ Editing the configuration file is crucial for the client to function properly. A
     -   *gpib_address (int)* - Hardware address of GPIB interface. Can be found with a NI VISA application or the following python code:
 
         import visa
-        rm = visa.ResourceManager()
-        print(rm.list_resources())
+        resource_manager = visa.ResourceManager()
+        print(resource_manager.list_resources())
     -   *keithley_model (string)* - Model number of keithley being used.
     -   *keithley_channel (string)* - Particular channel on said keithley (a or b).
 
 
 -   **zmq** - A dictionary of properties that control how the client and server communicate.
     -   *port* - Port to communicate over.
-    -   *client-address (string)* - Address for the client to connect to. Usually localhost.
-    -   *serever-address (string)* - Address for the server to listen on. Usually all.
+    -   *client*
+        -   *address (string)* - Address for the client to connect to. Usually localhost.
+        -   *retries (int)*
+        -   *timeout (int)*
+    -   *server*
+        -   *address (string)* - Address for the server to listen on. Usually all.
 
 
 -   **verbosity** - The amount of information to be saved to log files. Generally should be set to 20, but the following levels can also be used. Lower values print more information for debugging purposes.
@@ -130,8 +136,14 @@ Here is an example configuration file for a simple setup running on port 5556 wi
         ],
         "zmq":{
             "port": 5556,
-            "client-address":"tcp://localhost",
-            "server-address":"tcp://*"
+            "client":{
+              "address":"tcp://localhost",
+              "retries": 3,
+              "timeout": 2500
+            },
+            "server":{
+              "address":"tcp://*"
+            }
         },
         "verbosity": 20,
     }
