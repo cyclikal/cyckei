@@ -2,6 +2,7 @@
 
 import logging
 import sys
+import functools
 
 from PySide2.QtWidgets import QMainWindow, QAction, QTabWidget
 from PySide2.QtCore import QThreadPool
@@ -22,10 +23,8 @@ def help():
     func.message(msg)
 
 
-def about():
+def about(version):
     """Display basic information about cyckei"""
-    # TODO: Pass version number
-    version = "dev"
     msg = "Cyckei version {}\n\n" \
           "Cyckei is developed by Gabriel Ewig and Vincent Chevrier " \
           "at Cyclikal, LLC.\n\n Updates and source code can be found " \
@@ -92,7 +91,7 @@ class MainWindow(QMainWindow):
         bar = self.menuBar()
 
         client = bar.addMenu("Client")
-        client.addAction(self.action("&Info", "About Cyckei", about))
+        client.addAction(self.action("&Info", "About Cyckei", functools.partial(about, self.config["version"])))
         client.addAction(self.action("&Help", "Help Using Cyckei", help))
         client.addAction(self.action("&Close", "Exit Client Application",
                                      sys.exit))
