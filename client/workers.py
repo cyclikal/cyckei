@@ -10,10 +10,9 @@ from .socket import Socket
 import functions as func
 
 
-def send(json):
+def send(json, port, address):
     """Sends json to server and updates status with response"""
-    # TODO: Load info from config
-    resp = Socket("tcp://localhost", 5556).send(json)["response"]
+    resp = Socket(address, port).send(json)["response"]
     logging.info(resp)
     return resp
 
@@ -62,30 +61,32 @@ class Signals(QObject):
 
 
 class Ping(QRunnable):
-    def __init__(self):
+    def __init__(self, port, address):
         super(Ping, self).__init__()
+        self.port = port
+        self.address = address
         self.signals = Signals()
 
     @Slot()
     def run(self):
-        # TODO: Load info from config
-        response = Socket("tcp://localhost", 5556).ping()
+        response = Socket(self.address, self.port).ping()
         self.signals.alert.emit(response)
 
 
 class UpdateStatus(QRunnable):
     """Update status shown below controls by contacting server"""
-    def __init__(self, channel):
+    def __init__(self, channel, port, address):
         super(UpdateStatus, self).__init__()
         self.channel = channel
+        self.port = port
+        self.address = address
         self.signals = Signals()
 
     @Slot()
     def run(self):
-        # TODO: Utilize configuration
-        info_channel = Socket("tcp://localhost", 5556).info_channel(
+        info_channel = Socket(self.address, self.port).info_channel(
             self.channel.attributes["channel"])["response"]
-        channel_status = Socket("tcp://localhost", 5556).channel_status(
+        channel_status = Socket(self.address, self.port).channel_status(
             self.channel.attributes["channel"])["response"]
         try:
             status = (channel_status
@@ -115,9 +116,11 @@ class AutoFill(QRunnable):
 
 class Read(QRunnable):
     """Tell channel to Rest() long enough to get voltage reading on cell"""
-    def __init__(self, channel):
+    def __init__(self, channel, port, address):
         super(Read, self).__init__()
         self.channel = channel
+        self.port = port
+        self.address = address
         self.signals = Signals()
 
     @Slot()
@@ -130,9 +133,9 @@ class Read(QRunnable):
             + "/{}.temp".format(self.channel.attributes["channel"])
         )
         package["kwargs"]["protocol"] = """Rest()"""
-        Socket("tcp://localhost", 5556).send(package)
+        Socket(self.address, self.port).send(package)
 
-        info_channel = Socket("tcp://localhost", 5556).info_channel(
+        info_channel = Socket(self.address, self.port).info_channel(
             self.channel.attributes["channel"])["response"]
         try:
             status = ("Voltage of cell: "
@@ -148,18 +151,21 @@ class Read(QRunnable):
 
 class Control(QRunnable):
     """Update json and send "start" function to server"""
-    def __init__(self, channel, command, scripts):
+    def __init__(self, channel, command, scripts, port, address):
         super(Control, self).__init__()
         self.channel = channel
         self.command = command
         self.scripts = scripts
+        self.port = port
+        self.address = address
         self.signals = Signals()
 
     @Slot()
     def run(self):
         if self.command == "start":
             script_ok, msg = Check(self.scripts.get_script_by_title(
-                    self.channel.attributes["script_title"]).content).run()
+                    self.channel.attributes["script_title"]).content,
+                    self.port, self.scripts).run()
             if script_ok is False:
                 self.signals.status.emit("Script Check Failed", self.channel)
                 return
@@ -169,9 +175,11 @@ class Control(QRunnable):
 
 
 class Check(QRunnable):
-    def __init__(self, protocol):
+    def __init__(self, protocol, port, address):
         super(Check, self).__init__()
         self.protocol = protocol
+        self.port = port
+        self.address = address
         self.signals = Signals()
 
     @Slot()
@@ -214,7 +222,7 @@ class Check(QRunnable):
     def run_test(self, protocol):
         """Checks if server can load script successfully"""
         packet = self.prepare_json(protocol)
-        response = send(packet)
+        response = send(packet, self.port, self.address)
         if response == "Passed":
             return True, "Passed"
         return (False,

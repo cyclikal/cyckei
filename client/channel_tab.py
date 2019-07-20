@@ -34,7 +34,7 @@ class ChannelTab(QWidget):
         for channel in config["channels"]:
             self.channels.append(ChannelWidget(
                 channel["channel"],
-                config["record_dir"] + "/tests",
+                config,
                 threadpool,
                 scripts
             ))
@@ -69,12 +69,12 @@ class ChannelTab(QWidget):
 class ChannelWidget(QWidget):
     """Controls and stores information for a given channel"""
 
-    def __init__(self, channel, record_folder, threadpool, scripts):
+    def __init__(self, channel, config, threadpool, scripts):
         super(ChannelWidget, self).__init__()
         # Default Values
         self.attributes = {
             "channel": channel,
-            "record_folder": record_folder,
+            "record_folder": config["record_dir"] + "/tests",
             "id": 0,
             "comment": "No Comment",
             "package": "Pouch",
@@ -88,6 +88,7 @@ class ChannelWidget(QWidget):
 
         self.threadpool = threadpool
         self.scripts = scripts
+        self.config = config
 
         self.setMinimumSize(1050, 110)
 
@@ -213,9 +214,12 @@ class ChannelWidget(QWidget):
     def button(self, text):
         func.feedback("{} in progress...".format(text), self)
         if text == "Read Cell":
-            worker = workers.Read(self)
+            worker = workers.Read(self, self.config["zmq"]["port"],
+                                  self.config["zmq"]["client"]["address"])
         else:
-            worker = workers.Control(self, text.lower(), self.scripts)
+            worker = workers.Control(self, text.lower(), self.scripts,
+                                     self.config["zmq"]["port"],
+                                     self.config["zmq"]["client"]["address"])
         worker.signals.status.connect(func.feedback)
         self.threadpool.start(worker)
 
@@ -230,7 +234,8 @@ class ChannelWidget(QWidget):
         self.style().drawPrimitive(QStyle.PE_Widget, option, painter, self)
 
     def update_status(self):
-        updater = workers.UpdateStatus(self)
+        updater = workers.UpdateStatus(self, self.config["zmq"]["port"],
+                                       self.config["zmq"]["client"]["address"])
         updater.signals.status.connect(func.status)
         updater.signals.info.connect(self.set_divider)
         self.threadpool.start(updater)

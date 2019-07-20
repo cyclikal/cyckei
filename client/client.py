@@ -116,7 +116,8 @@ class MainWindow(QMainWindow):
         return bar
 
     def ping_server(self):
-        worker = workers.Ping()
+        worker = workers.Ping(self.config["zmq"]["port"],
+                              self.config["zmq"]["client"]["address"])
         worker.signals.alert.connect(func.message)
         self.threadpool.start(worker)
 
