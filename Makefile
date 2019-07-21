@@ -1,4 +1,4 @@
-.PHONY: help update clean run build count
+.PHONY: help update clean run build count docs
 
 VENV?=venv
 PYTHON=${VENV}/bin/python3
@@ -37,3 +37,6 @@ build:
 
 count:
 	find . -name '*.py' -o -path ./$(VENV) -prune | xargs wc -l
+
+docs:
+	@echo Currently, docs must be built manually from within a virtual environment
