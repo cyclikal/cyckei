@@ -18,9 +18,18 @@ VERSION = "0.2.dev4"
 ID = "com.cyclikal.cyckei"
 
 
-def main():
+def main(record_dir="/cyckei"):
+    """
+    Begins execution of Cyckei.
+
+    Args:
+        record_dir: Optional path to recording directory.
+    Returns:
+        Result of app.exec_(), Qt's main event loop.
+
+    """
     # Ensure Recording Directory is Setup
-    record_dir = os.path.expanduser("~") + "/cyckei"
+    record_dir = os.path.expanduser("~") + record_dir
     file_structure(record_dir)
 
     # Setup Configuration
@@ -61,7 +70,7 @@ def main():
     main_window = client.MainWindow(config)
     main_window.show()
 
-    sys.exit(app.exec_())
+    return app.exec_()
 
 
 def file_structure(path):
@@ -87,4 +96,4 @@ def handler(type, value, tb):
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
