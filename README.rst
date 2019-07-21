@@ -1,5 +1,8 @@
-About the Cyckei Project
+Cyckei
 ========================
+
+Details about Cyckei can be found in our `documentation`_
+
 Cyckei is a battery cycling application designed to carry out charging, discharging, and data collection on lithium-ion cells. It is designed to interface with the Keithley 2602A/B SourceMeter for calorimetry testing, but can be used in a variety or setups.
 
 The application uses a Python-like scripting format in order to write cycles that are carried out on cells. To learn more about scripts, read the :ref:`Creating Scripts` section or look at the example below.
@@ -21,3 +24,4 @@ Cyckei is currently developed and maintained by Gabriel Ewig and Vincent Chevrie
   Screen shot of Cyckei channel tab on Mac OS.
 
 .. _cyclikal.com: http://cyclikal.com
+.. _documentation: https://docs.cyclikal.com/en/stable/
