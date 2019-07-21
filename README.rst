@@ -17,7 +17,7 @@ Cyckei is open source, and we encourage users to modify the code to fit a given 
 Cyckei is currently developed and maintained by Gabriel Ewig and Vincent Chevrier at Cyclikal, LLC. For more information about Cyclikal, visit `cyclikal.com`_.
 
 .. figure:: docs/_static/images/screenshot.png
-  :scale: 80%
+  :width: 400px
   :figclass: align-center
 
   Screen shot of Cyckei channel tab on Mac OS.
