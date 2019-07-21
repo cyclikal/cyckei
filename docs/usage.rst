@@ -1,8 +1,8 @@
 Using Cyckei
 ============
 
-How-To
-------
+First Launch
+------------
 
 Upon first launch, Cyckei will create a ``cyckei`` directory in the
 user's home folder to hold scripts, test results, logs, and
