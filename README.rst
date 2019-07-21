@@ -1,7 +1,7 @@
 Cyckei
 ========================
 
-Details about Cyckei can be found in our `documentation`_
+Details about Cyckei can be found in our `documentation`_.
 
 Cyckei is a battery cycling application designed to carry out charging, discharging, and data collection on lithium-ion cells. It is designed to interface with the Keithley 2602A/B SourceMeter for calorimetry testing, but can be used in a variety or setups.
 

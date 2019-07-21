@@ -1,5 +1,5 @@
 Installation
-=================
+============
 
 .. _Host System Setup:
 
