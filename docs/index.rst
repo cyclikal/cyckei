@@ -32,7 +32,7 @@ Cyckei is open source, and we encourage users to modify the code to fit a given 
 
 Cyckei is currently developed and maintained by Gabriel Ewig and Vincent Chevrier at Cyclikal, LLC. For more information about Cyclikal, visit `cyclikal.com`_.
 
-.. figure:: screenshot.png
+.. figure:: _static/images/screenshot.png
   :width: 100%
   :figclass: align-center
 
