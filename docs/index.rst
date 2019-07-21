@@ -1,18 +1,13 @@
-.. Cyckei documentation master file, created by
-   sphinx-quickstart on Sun Jul 21 00:05:20 2019.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
-Cyckei: Li-ion Testing in Python 3
-==================================
-
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+  :maxdepth: 2
+  :caption: Contents:
+  :hidden:
 
-   install
-   usage
-   contributing
+  install
+  usage
+  contributing
+  methods
+
 
 About the Cyckei Project
 ========================

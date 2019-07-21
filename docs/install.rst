@@ -1,4 +1,4 @@
-Installing Cyckei
+Installation
 =================
 
 .. _Host System Setup:

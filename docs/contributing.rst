@@ -1,4 +1,4 @@
-Contributing to Cyckei
+Contributing
 ======================
 
 Developing Cyckei
