@@ -3,3 +3,4 @@ PyInstaller
 PySide2
 PyVISA
 pyzmq
+sphinx

@@ -1,5 +1,5 @@
 # Cyckei Help
-#### A battery cycler written in Python 3
+
 ---
 
 ## Controlling the Server

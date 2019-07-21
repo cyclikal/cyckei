@@ -1,5 +1,5 @@
 # Installing Cyckei
-#### A battery cycler written in Python 3
+
 ---
 
 ## Host System Setup
@@ -20,16 +20,33 @@ Like NI-VISA, NI-488.2 is National Instruments' GPIB driver. It is simple to ins
 Linux-GPIB is a GPL licensed GPIB support package for Linux. In addition to the C API, it includes bindings for multiple languages including Python. Linux-GPIB must be compiled for your OS and requires some configuration, but works fine with PyVISA. To learn more about Linux-GPIB and download the source code visit <https://linux-gpib.sourceforge.io/>.
 
 ## Installation
-#### For User
-Since version 0.2 (Alviss), Cyckei has been distributed using "frozen" executables generated with PyInstaller.
+#### For Users
+Since version 0.2 (Alviss), Cyckei is being distributed using standalone executables for Linux, Mac OS, and Windows.
 
 Installation is as simple as downloading the correct executable from the GitLab releases page at <https://gitlab.com/cyclikal/cyckei/-/releases>.
 
 After downloading, simply double-click the executable to start Cyckei. A "cyckei" folder will automatically be created in the user's home directory to store scripts, configuration, and results.
 
+Cyckei will almost certainly need to be configured to work with your instruments. See the `HELP` file for more details.
+
 Frozen versions are only provided for major releases. For the latest (generally unstable) version see the developer section below.
 
-#### For Developer
-Developers should clone the Cyckei Git repository to run and develop the latest versions. {TODO: write more and automate dependencies}
+#### For Developers
+The Cyckei source code is available on GitLab, and can be cloned locally to run the latest version.
 
-For more information about editing cyckei see the `CONTRIBUING` file.
+    git clone https://gitlab.com/cyclikal/cyckei.git
+    cd cyckei
+
+Cyckei requires Python 3, and assumes that \*NIX-style commands are available. If developing on Windows, `make` will not function properly, and you must manually setup all virtual environments and dependencies. This can be accomplished with the following commands.
+
+    pip install virtualenv
+    virtualenv venv
+    .\venv\Scripts\activate.bat
+    pip install -Ur requirements.txt
+
+On Linux and Mac OS, `make` is used to easily handle setting up and running Cyckei from source. For example, you can setup a virtual environment, install necessary dependencies, and run Cyckei with the following commands. `make help` will show all options for testing and building Cyckei.
+
+    make setup
+    make run
+
+For more information about editing and contributing to Cyckei see the `CONTRIBUTING` file.

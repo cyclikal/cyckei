@@ -1,4 +1,4 @@
-# About Cyckei
+# Cyckei
 #### A battery cycler written in Python 3
 ---
 
@@ -10,7 +10,7 @@ Cyckei is currently developed and maintained by Gabriel Ewig and Vincent Chevrie
 ## System Requirements
 Cyckei is currently developed, tested, and deployed using the latest version of Python 3 running on Windows 10. It has been used on various other configurations including Mac and Linux, but may require additional setup and stability testing.
 
-Cyckei relies on the PyVISA wrapper to communicate with any devices, and generally requires an additional VISA library as well as a driver for the device or adaptor which PyVISA controls. We use the National Instruments GPIB-USB-HS adaptors, which require both the NI VISA library and the NI 488.2 GPIB driver. The Python following code is helpful to verify whether PyVISA can find your devices.
+Cyckei relies on the PyVISA wrapper to communicate with any devices, and generally requires an additional VISA library as well as a driver for the device or adaptor which PyVISA controls. We use the National Instruments GPIB-USB-HS adaptors, which require both the NI VISA library and the NI 488.2 GPIB driver. The following Python code is helpful to verify whether PyVISA can find your devices.
 
     import visa
     rm = visa.ResourceManager()
