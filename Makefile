@@ -24,7 +24,7 @@ help:
 	@echo "	Count lines of python code."
 	@echo "docs"
 	@echo "	Generate documenation with Sphinx."
-	@echo "view"
+	@echo "read"
 	@echo "	View latest generated documentation."
 
 setup: ${VENV}/bin/activate
@@ -54,6 +54,6 @@ count:
 docs:
 	${VENV}/bin/sphinx-build -b html ${DOCS} ${DOCS}/_build
 
-view:
+read:
 	test -f ${DOCS}/_build/index.html || make docs
 	open ${DOCS}/_build/index.html

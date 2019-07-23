@@ -1,8 +1,6 @@
 pycrypto
-Pygments
 PyInstaller
 PySide2
 PyVISA
 pyzmq
 Sphinx
-sphinx_rtd_theme
