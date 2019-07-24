@@ -33,7 +33,7 @@ class Script(QListWidgetItem):
         self.path = path
         try:
             self.content = open(self.path + "/" + self.title, "r").read()
-        except UnicodeDecodeError as error:
+        except (UnicodeDecodeError, PermissionError) as error:
             self.content = "Could not read file: {}".format(error)
         self.setText(self.title)
 
