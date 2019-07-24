@@ -55,7 +55,7 @@ Smaller update focused on simplifying the code to aid in further development. Th
 
 
 ## 0.3 Tenjin
-Add significant features which make the platform more effcient. This includes automatic scripting, better batch management, pretty log view and more.
+Add significant features which make the platform more effiicient. This includes automatic scripting, better batch management, pretty log view, multi-folder scripts, and more.
 
 #### Development Releases
 *   0.3.dev1, 0/00/0000 -- TBD
