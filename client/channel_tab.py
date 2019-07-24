@@ -77,12 +77,11 @@ class ChannelWidget(QWidget):
             "cellid": 0,
             "comment": "No Comment",
             "package": "Pouch",
-            "type": "Full",
+            "celltype": "Full",
             "path": "default.pyb",
             "mass": 1,
-            "requestor": "Unspecified",
+            "requester": "Unspecified",
             "protocol_name": None,
-            "script_title": None,
         }
         self.config = config
 
@@ -163,7 +162,7 @@ class ChannelWidget(QWidget):
                 available_scripts.append(script.title)
         elements.append(func.combo_box(available_scripts,
                                        "Select scripts to run",
-                                       "script_title",
+                                       "protocol_name",
                                        self.set))
 
         # Line Edits
@@ -183,9 +182,9 @@ class ChannelWidget(QWidget):
                 "Package Type", "package"],
             [["Full",  "Half", "AnodeHalf", "CathodeHalf", "LithiumLithium",
                 "Symmetric", "Unknown"],
-                "Package Type", "type"],
+                "Package Type", "celltype"],
             [["Unspecified", "VC", "GE", "LK"],
-                "Cell Type", "requestor"],
+                "Cell Type", "requester"],
         ]
         for box in selectables:
             elements.append(func.combo_box(*box, self.set))

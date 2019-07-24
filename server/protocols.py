@@ -65,7 +65,7 @@ class CellRunner(object):
         "comment": None,
         "requester": None,
         "cycler": None,
-        "cell_type": None,
+        "celltype": None,
         "package": None,
         "start_cycle": None
     }
@@ -77,8 +77,8 @@ class CellRunner(object):
 
         if self.meta["cycler"] is None:
             self.meta["cycler"] = "Keithley2602"
-        if self.meta["cell_type"] is None:
-            self.meta["cell_type"] = "unknown"
+        if self.meta["celltype"] is None:
+            self.meta["celltype"] = "unknown"
 
         # Enforce a str channel
         self.meta["channel"] = str(self.meta["channel"])
@@ -120,7 +120,7 @@ class CellRunner(object):
         ----------
         direction: str or None
             direction for the cell can be "pos", "neg", or None
-            if it is None, the "cell_type" in teh meta data is used,
+            if it is None, the "celltype" in teh meta data is used,
             if this is not set it defaults to "pos"
 
 
@@ -136,7 +136,7 @@ class CellRunner(object):
 
         if direction is None:
             direction = 'pos'
-            if "anode" in self.meta["cell_type"].lower():
+            if "anode" in self.meta["celltype"].lower():
                 direction = 'neg'
 
         if direction == "pos":
