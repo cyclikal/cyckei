@@ -137,7 +137,7 @@ def process_socket(socket, runners, sources, server_time):
         try:
             # a message has been received
             fun = msg["function"]
-            logging.info("Packet request received: {}".format(fun))
+            logging.debug("Packet request received: {}".format(fun))
             kwargs = msg.get("kwargs", None)
             # response = {"version": __version__, "response": None}
             resp = "Unknown function"
