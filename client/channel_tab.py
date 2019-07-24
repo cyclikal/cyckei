@@ -157,7 +157,8 @@ class ChannelWidget(QWidget):
         # Script selection box
         available_scripts = []
         if self.scripts.script_list:
-            self.attributes["protocol_name"] = self.scripts.script_list[0].title
+            self.attributes["protocol_name"] \
+                = self.scripts.script_list[0].title
             for script in self.scripts.script_list:
                 available_scripts.append(script.title)
         elements.append(func.combo_box(available_scripts,

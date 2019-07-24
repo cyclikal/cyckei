@@ -1,6 +1,5 @@
 import json
 import logging
-import time
 import os
 from datetime import date
 
@@ -46,7 +45,6 @@ class Ping(QRunnable):
 
     @Slot()
     def run(self):
-        # TODO: Load info from config
         response = Socket(self.config).ping()
         self.signals.alert.emit(response)
 
@@ -101,28 +99,33 @@ class Read(QRunnable):
 
     @Slot()
     def run(self):
-        package = json.load(open(func.find_path("assets/default_packet.json")))
-        package["function"] = "start"
-        package["kwargs"]["channel"] = self.channel.attributes["channel"]
-        package["kwargs"]["meta"]["path"] = (
-            self.channel.attributes["record_folder"]
-            + "/{}.temp".format(self.channel.attributes["channel"])
-        )
-        # TODO: prevent current cycle overwrite
-        package["kwargs"]["protocol"] = """Rest()"""
-        Socket(self.config).send(package)
-
-        time.sleep(1)
-        info_channel = Socket(self.config).info_channel(
+        channel_status = Socket(self.config).channel_status(
             self.channel.attributes["channel"])["response"]
-        try:
-            status = ("Voltage of cell: "
-                      + func.not_none(info_channel["voltage"]))
-        except Exception:
-            status = "Could not read cell voltage."
 
-        package["function"] = "stop"
-        Socket(self.config).send(package)
+        if channel_status == "available":
+            package = json.load(open(
+                func.find_path("assets/default_packet.json")))
+            package["function"] = "start"
+            package["kwargs"]["channel"] = self.channel.attributes["channel"]
+            package["kwargs"]["meta"]["path"] = (
+                self.channel.attributes["record_folder"]
+                + "/{}.temp".format(self.channel.attributes["channel"])
+            )
+            package["kwargs"]["protocol"] = """Rest()"""
+            Socket(self.config).send(package)
+
+            info_channel = Socket(self.config).info_channel(
+                self.channel.attributes["channel"])["response"]
+            try:
+                status = ("Voltage of cell: "
+                          + func.not_none(info_channel["voltage"]))
+            except Exception:
+                status = "Could not read cell voltage."
+
+            package["function"] = "stop"
+            Socket(self.config).send(package)
+        else:
+            status = "Cannot read voltage during cycle"
 
         self.signals.status.emit(status, self.channel)
 

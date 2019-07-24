@@ -81,7 +81,6 @@ def main(config):
         # check messages on the socket and execute necessary tasks
         # ideally this would happen on a separate thread
         # but it might not be necessary
-        # TODO verify this is fast enough to be blocking
         # main loop without problem
         logging.debug("cyckei.server.server.main: Processing socket messages")
         process_socket(socket, runners, sources, current_time)

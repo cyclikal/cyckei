@@ -34,7 +34,7 @@ Intended to significantly improve the performance and responsiveness of the appl
 
 
 ## 0.2 Alviss
-Focused on simplifying the code to aid in further development. This includes unifying as many commonly used functions as possible and adding code documentation. Also adds single file executables because they're fun.
+Smaller update focused on simplifying the code to aid in further development. This includes unifying as many commonly used functions as possible and adding code documentation. Also adds single file executables because they're fun.
 
 #### Notable Changes
 *   Unify common functions and generally refactor codebase
@@ -46,7 +46,8 @@ Focused on simplifying the code to aid in further development. This includes uni
 *   0.2.dev1, 7/15/2019 -- Improve Documentation
 *   0.2.dev2, 7/17/2019 -- Switch to PyInstaller build system
 *   0.2.dev3, 7/20/2019 -- Simplify client codebase, unify common functions, improve UI
-*   0.2.dev4, 7/21/2019 -- Simplify server codebase and add contribution documentation
+*   0.2.dev4, 7/21/2019 -- Introduce Sphinx and add contribution documentation
+*   0.2.dev5, 7/24/2019 -- Small adjustments to prepare release candidates
 
 #### Release Candidates
 *   0.2rc1, 00/00/0000 -- TBD
