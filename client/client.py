@@ -79,8 +79,7 @@ class MainWindow(QMainWindow):
             "Client": [
                 ["&Info", functools.partial(about, self.config["version"]),
                     "About Cyckei"],
-                ["&Help", help, "Help Using Cyckei"],
-                ["&Close", sys.exit, "Exit Client Application"]
+                ["&Help", help, "Help Using Cyckei"]
             ],
             "Server": [
                 ["&Ping", self.ping_server, "Test Connection to Server"]
