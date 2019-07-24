@@ -18,7 +18,7 @@ VERSION = "0.2.dev5"
 ID = "com.cyclikal.cyckei"
 
 
-def main(record_dir="/cyckei"):
+def main(record_dir="/Cyckei"):
     """
     Begins execution of Cyckei.
 
