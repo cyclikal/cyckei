@@ -6,6 +6,7 @@ import logging
 import traceback
 import threading
 
+import zmq
 from PySide2.QtWidgets import QApplication
 from PySide2.QtGui import QIcon
 
@@ -53,10 +54,32 @@ def main(record_dir="/Cyckei"):
     app.setQuitOnLastWindowClosed(False)
     app.setWindowIcon(QIcon(func.find_path("assets/cyckei.png")))
 
+    # Create Server's ZMQ Socket
+    logging.debug("cyckei.server.server.main: Binding socket")
+    try:
+        context = zmq.Context(1)
+        socket = context.socket(zmq.REP)
+        socket.bind("{}:{}".format(config["zmq"]["server-address"],
+                                   config["zmq"]["port"]))
+    except zmq.error.ZMQError as error:
+        logging.critical(
+            "It appears the server is already running: ".format(error))
+        msg = [
+            "Cyckei Instance Already Running!",
+            "To show client, open taskbar widget and click \"Launch Client\"",
+            func.Critical,
+            "Failed to initialize socket. "
+            "This indicates an existing server insance. "
+            "Error: {}".format(error)
+        ]
+        func.message(*msg)
+        return
+    logging.debug("cyckei.server.server.main: Socket bound successfully")
+
     # Start Server
     logging.debug("cyckei.main: Starting Server")
     server_thread = threading.Thread(target=server.main,
-                                     args=(config,),
+                                     args=(config, socket,),
                                      daemon=True)
     server_thread.start()
 
