@@ -51,7 +51,7 @@ Smaller update focused on simplifying the code to aid in further development. Th
 *   0.2.dev5, 7/24/2019 -- Small adjustments to prepare release candidates
 
 #### Release Candidates
-*   0.2rc1, 0/00/0000 -- TBD
+*   0.2rc1, 7/24/2019 -- Fix some small bugs
 
 
 ## 0.3 Tenjin
