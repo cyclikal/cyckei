@@ -13,6 +13,7 @@ def rand_string(length=10):
 
 # TODO: Standardize versioning
 name = "Cyckei"
+version = "0.2rc2"
 identifier = "com.cyclikal.cyckei"
 use_key = False
 mac_icon = os.path.join("assets", "cyckei.icns")
@@ -45,7 +46,7 @@ exe = EXE(pyz,
           a.zipfiles,
           a.datas,
           [],
-          name=name,
+          name="{}-{}".format(name, version),
           debug=False,
           bootloader_ignore_signals=False,
           strip=False,
@@ -54,7 +55,7 @@ exe = EXE(pyz,
           console=False,
           icon=win_icon)
 app = BUNDLE(exe,
-             name="{}.app".format(name),
+             name="{}-{}.app".format(name, version),
              icon=mac_icon,
              bundle_identifier=identifier,
              info_plist={
