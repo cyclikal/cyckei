@@ -74,7 +74,7 @@ class ChannelWidget(QWidget):
         self.attributes = {
             "channel": channel,
             "record_folder": config["record_dir"] + "/tests",
-            "id": 0,
+            "cellid": 0,
             "comment": "No Comment",
             "package": "Pouch",
             "type": "Full",
@@ -168,7 +168,7 @@ class ChannelWidget(QWidget):
 
         # Line Edits
         editables = [
-            ["Cell ID", "Cell identification", "id"],
+            ["Cell ID", "Cell identification", "cellid"],
             ["Log file", "File to log to, placed in specified logs folder",
                 "path"],
             ["Mass", "Mass of Cell", "mass"],
