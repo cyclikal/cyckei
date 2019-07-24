@@ -14,7 +14,7 @@ from client import client
 from applet import applet
 import functions as func
 
-VERSION = "0.2.dev5"
+VERSION = "0.2rc1"
 ID = "com.cyclikal.cyckei"
 
 

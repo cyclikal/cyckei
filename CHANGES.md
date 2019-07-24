@@ -1,5 +1,6 @@
 # Cyckei Changelog
 
+
 ## 0.0 - 08/16/2018
 Original version of Cyckei developed by Vincent Chevrier and Gabriel Ewig for the Lithium-ion Battery Lab.
 
@@ -17,7 +18,7 @@ Intended to significantly improve the performance and responsiveness of the appl
 *   Improve layout and scaling of UI elements
 
 #### Development Releases
-*   0.1.dev1, 05/26/2019 -- Initial Vayu release
+*   0.1.dev1, 05/26/2019 -- Initial Cyclikal commits
 *   0.1.dev2, 05/30/2019 -- Adjust layout and switch to PySide2
 *   0.1.dev3, 05/31/2019 -- Create threaded workers for each action
 *   0.1.dev4, 06/02/2019 -- All primary buttons execute as separate thread
@@ -50,7 +51,17 @@ Smaller update focused on simplifying the code to aid in further development. Th
 *   0.2.dev5, 7/24/2019 -- Small adjustments to prepare release candidates
 
 #### Release Candidates
-*   0.2rc1, 00/00/0000 -- TBD
+*   0.2rc1, 0/00/0000 -- TBD
+
+
+## 0.3 Tenjin
+Add significant features which make the platform more effcient. This includes automatic scripting, better batch management, pretty log view and more.
+
+#### Development Releases
+*   0.3.dev1, 0/00/0000 -- TBD
+
+#### Release Candidates
+*   0.3rc1, 0/00/0000 -- TBD
 
 
 ## General Bug Tracker
