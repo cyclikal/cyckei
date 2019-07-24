@@ -1,6 +1,3 @@
-pycrypto
-PyInstaller
 PySide2
 PyVISA
 pyzmq
-Sphinx

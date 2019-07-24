@@ -1,4 +1,4 @@
-.PHONY: help update clean clean-all run build count docs view
+.PHONY: help update clean clean-all run build count docs view lint
 
 VENV=venv
 PYTHON=${VENV}/bin/python3
@@ -22,6 +22,7 @@ help:
 
 	@echo "count"
 	@echo "	Count lines of python code."
+
 	@echo "docs"
 	@echo "	Generate documenation with Sphinx."
 	@echo "read"
@@ -36,7 +37,7 @@ ${VENV}/bin/activate: requirements.txt
 clean:
 	rm -rf build
 	rm -rf docs/_build/*
-	find . | grep -E "(__pycache__|\.pyc|\.pyo$$)" | xargs rm -rf
+	find . | grep -E "(__pycache__|\.pyc|\.pyo|\.DS_Store$$)" | xargs rm -rf
 
 clean-all:
 	rm -rf ${VENV}
@@ -46,12 +47,14 @@ run:
 	${PYTHON} cyckei.py
 
 build:
+	${VENV}/bin/pip install pycrypto PyInstaller
 	${PYTHON} -m PyInstaller --onefile --windowed --noconfirm --clean cyckei.spec
 
 count:
 	find . -name '*.py' -o -path ./${VENV} -prune | xargs wc -l
 
 docs:
+	${VENV}/bin/pip install Sphinx
 	${VENV}/bin/sphinx-build -b html ${DOCS} ${DOCS}/_build
 
 read:
