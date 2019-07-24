@@ -13,6 +13,8 @@ from PySide2.QtGui import QPainter, QPalette
 from . import workers
 import functions as func
 
+UPDATE_INTERVAL = 12000
+
 
 class ChannelTab(QWidget):
     def __init__(self, config, resource):
@@ -138,7 +140,7 @@ class ChannelWidget(QWidget):
         self.update_status()
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_status)
-        self.timer.start(5000)
+        self.timer.start(UPDATE_INTERVAL)
 
     def get_settings(self):
         """Creates all UI elements and adds them to elements list"""
