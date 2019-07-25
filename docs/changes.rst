@@ -115,19 +115,19 @@ Release Candidates
 Planned Features
 ----------------
 - Client Interface
-  - Automatic scripting
-  - Better batch management
-  - Pretty log wiew
-  - Multi-folder script storage
+   - Automatic scripting
+   - Better batch management
+   - Pretty log wiew
+   - Multi-folder script storage
 - Server software
-  - "Plug-in" style core (lua) script management for different devices
-  - Threading and improved performance for massive cycles
-  - Auto shutoff due to crash or inactivity
-  - Possibly better logging format, dependent on Cell Explorer
+   - "Plug-in" style core (lua) script management for different devices
+   - Threading and improved performance for massive cycles
+   - Auto shutoff due to crash or inactivity
+   - Possibly better logging format, dependent on Cell Explorer
 - Hardware Support
-  - Complete Support for Mac and Linux
-  - Make equivalent for Windows
-  - Simplify VISA and driver installation for end user
+   - Complete Support for Mac and Linux
+   - Make equivalent for Windows
+   - Simplify VISA and driver installation for end user
 
 
 Bug Tracker
