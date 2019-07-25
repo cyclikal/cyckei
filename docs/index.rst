@@ -6,6 +6,7 @@
   install
   usage
   contributing
+  changes
   methods
 
 

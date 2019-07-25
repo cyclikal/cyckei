@@ -1,4 +1,4 @@
-.PHONY: help update clean clean-all run build count docs view lint
+.PHONY: help update clean clean-all run build count docs read lint
 
 VENV=venv
 PYTHON=${VENV}/bin/python3
