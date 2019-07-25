@@ -13,7 +13,7 @@ def rand_string(length=10):
 
 # TODO: Standardize versioning
 name = "Cyckei"
-version = "0.2rc2"
+version = "0.2rc3"
 identifier = "com.cyclikal.cyckei"
 use_key = False
 mac_icon = os.path.join("assets", "cyckei.icns")

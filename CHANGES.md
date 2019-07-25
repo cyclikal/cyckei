@@ -53,6 +53,7 @@ Smaller update focused on simplifying the code to aid in further development. Th
 #### Release Candidates
 *   0.2rc1, 7/24/2019 -- Fix some small bugs
 *   0.2rc2, 7/24/2019 -- Fix bugs, reduce server calls, and document issues
+*   0.2rc3, 0/00/0000 -- TBD
 
 
 ## 0.3 Tenjin
