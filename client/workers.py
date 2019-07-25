@@ -59,6 +59,7 @@ class UpdateStatus(QRunnable):
 
     @Slot()
     def run(self):
+        # TODO: Minimize server calls
         info_channel = Socket(self.config).info_channel(
             self.channel.attributes["channel"])["response"]
         channel_status = Socket(self.config).channel_status(
@@ -92,6 +93,7 @@ class AutoFill(QRunnable):
 class Read(QRunnable):
     """Tell channel to Rest() long enough to get voltage reading on cell"""
     def __init__(self, config, channel):
+        # TODO: Needs fixing
         super(Read, self).__init__()
         self.channel = channel
         self.config = config

@@ -220,6 +220,7 @@ def start(channel, meta, protocol, runners, sources):
     # check to see if there is a already a runner on that channel
     meta["channel"] = channel
     if get_runner_by_channel(channel, runners):
+        # TODO: Shorten output
         return "Failed to start channel {}, already in use.".format(channel)
 
     # check if log file is being used
