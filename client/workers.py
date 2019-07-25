@@ -115,6 +115,7 @@ class Read(QRunnable):
             )
             package["kwargs"]["protocol"] = """Rest()"""
             Socket(self.config).send(package)
+            # TODO: Fix race condition and info_channel
 
             info_channel = Socket(self.config).info_channel(
                 self.channel.attributes["channel"])["response"]
