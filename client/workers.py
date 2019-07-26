@@ -62,10 +62,8 @@ class UpdateStatus(QRunnable):
         # TODO: Minimize server calls
         info_channel = Socket(self.config).info_channel(
             self.channel.attributes["channel"])["response"]
-        channel_status = Socket(self.config).channel_status(
-            self.channel.attributes["channel"])["response"]
         try:
-            status = (channel_status
+            status = (func.not_none(info_channel["status"])
                       + " - " + func.not_none(info_channel["state"])
                       + " | C: " + func.not_none(info_channel["current"])
                       + ", V: " + func.not_none(info_channel["voltage"]))
@@ -74,7 +72,7 @@ class UpdateStatus(QRunnable):
         logging.debug("Updating channel {} with satus {}".format(
             self.channel.attributes["channel"], status))
         self.channel.status.setText(status)
-        self.signals.info.emit(channel_status)
+        self.signals.info.emit(func.not_none(info_channel["status"]))
 
 
 class AutoFill(QRunnable):
@@ -101,10 +99,10 @@ class Read(QRunnable):
 
     @Slot()
     def run(self):
-        channel_status = Socket(self.config).channel_status(
-            self.channel.attributes["channel"])["response"]
+        status = Socket(self.config).info_channel(
+            self.channel.attributes["channel"])["response"]["status"]
 
-        if channel_status == "available":
+        if status == "available":
             package = json.load(open(
                 func.find_path("assets/default_packet.json")))
             package["function"] = "start"

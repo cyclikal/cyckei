@@ -1,7 +1,6 @@
 """Main window for the cyckei client."""
 
 import logging
-import sys
 import functools
 
 from PySide2.QtWidgets import QMainWindow, QTabWidget

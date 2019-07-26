@@ -37,14 +37,6 @@ class Socket(object):
         script = json.load(open(file))
         return self.send(script)
 
-    def channel_status(self, channel):
-        """Asks server for "channel_status" information"""
-        script = json.loads(
-            """{"function": "channel_status", "kwargs": {"channel": """
-            + str(channel)
-            + """}}""")
-        return self.send(script)
-
     def ping(self):
         """Send "ping" to server"""
         script = json.loads('{"function": "ping"}')

@@ -157,9 +157,6 @@ def process_socket(socket, runners, sources, server_time):
 
             elif fun == "test":
                 resp = test(kwargs["protocol"])
-            # TODO: combine channel_status and info_channel
-            elif fun == "channel_status":
-                resp = channel_status(kwargs["channel"], runners)
 
             elif fun == "stop":
                 resp = stop(kwargs["channel"], runners)
@@ -194,24 +191,6 @@ def info_all_channels(runners, sources):
         infos[source.channel] = info_channel(source.channel, runners)
 
     return infos
-
-
-def info_channel(channel, runners):
-    """Return info on specified channels"""
-    info = OrderedDict(channel=channel, status=None, state=None,
-                       current=None, voltage=None)
-    runner = get_runner_by_channel(channel, runners)
-    if runner:
-        info["status"] = STATUS.string_map[runner.status]
-        info["state"] = runner.step.state_str
-        data = runner.last_data
-        if data:
-            info["current"] = data[1]
-            info["voltage"] = data[2]
-    else:
-        info["statuses"] = STATUS.string_map[STATUS.available]
-
-    return info
 
 
 def start(channel, meta, protocol, runners, sources):
@@ -293,13 +272,22 @@ def test(protocol):
         return str(e).splitlines()[-1]
 
 
-def channel_status(channel, runners):
-    """Get current state of channel"""
-    status = STATUS.string_map[STATUS.available]
+def info_channel(channel, runners):
+    """Return info on specified channels"""
+    info = OrderedDict(channel=channel, status=None, state=None,
+                       current=None, voltage=None)
     runner = get_runner_by_channel(channel, runners)
     if runner:
-        status = STATUS.string_map[runner.status]
-    return status
+        info["status"] = STATUS.string_map[runner.status]
+        info["state"] = runner.step.state_str
+        data = runner.last_data
+        if data:
+            info["current"] = data[1]
+            info["voltage"] = data[2]
+    else:
+        info["status"] = STATUS.string_map[STATUS.available]
+
+    return info
 
 
 def get_runner_by_channel(channel, runners, status=None):
