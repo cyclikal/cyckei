@@ -168,7 +168,7 @@ def process_socket(socket, runners, sources, server_time):
                 resp = "True: server is running on port {}".format(port)
 
             elif fun == "info_channel":
-                resp = info_channel(kwargs["channel"], runners)
+                resp = info_channel(kwargs["channel"], runners, sources)
 
             elif fun == "info_all_channels":
                 resp = info_all_channels(runners, sources)
@@ -191,7 +191,8 @@ def info_all_channels(runners, sources):
     """Return info on all channels"""
     info = {}
     for source in sources:
-        info[source.channel] = info_channel(source.channel, runners)
+        info[str(source.channel)] \
+            = info_channel(source.channel, runners, sources)
 
     return info
 
@@ -203,14 +204,12 @@ def start(channel, meta, protocol, runners, sources):
     meta["channel"] = channel
     if get_runner_by_channel(channel, runners):
         # TODO: Shorten output
-        return "Failed to start channel {}, already in use.".format(channel)
+        return "Channel {} already in use.".format(channel)
 
     # check if log file is being used
     path = meta["path"]
     if isfile(path):
-        return(
-            "Failed to start channel, log file '{}' already in use."
-        ).format(path)
+        return("Log file '{}' already in use.").format(path)
 
     runner = CellRunner(**meta)
     # Set the channel source
@@ -275,7 +274,7 @@ def test(protocol):
         return str(e).splitlines()[-1]
 
 
-def info_channel(channel, runners):
+def info_channel(channel, runners, sources):
     """Return info on specified channels"""
     info = OrderedDict(channel=channel, status=None, state=None,
                        current=None, voltage=None)
@@ -283,14 +282,12 @@ def info_channel(channel, runners):
     if runner:
         info["status"] = STATUS.string_map[runner.status]
         info["state"] = runner.step.state_str
-        data = runner.last_data
-        if data:
-            info["current"] = data[1]
-            info["voltage"] = data[2]
     else:
-        print("No Runner")
         info["status"] = STATUS.string_map[STATUS.available]
-
+    for src in sources:
+        if int(src.channel) == int(channel):
+            info["current"], info["voltage"] = src.read_iv()
+            break
     return info
 
 
