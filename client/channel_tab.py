@@ -20,6 +20,8 @@ class ChannelTab(QWidget):
     def __init__(self, config, resource):
         """Setup each channel widget and place in QVBoxlayout"""
         QWidget.__init__(self)
+        self.config = config
+        self.resource = resource
 
         area = QScrollArea()
         contents = QWidget()
@@ -40,6 +42,12 @@ class ChannelTab(QWidget):
                 resource
             ))
             rows.addWidget(self.channels[-1])
+
+        # Set initial status and set status timer
+        self.update_status()
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.update_status)
+        self.timer.start(UPDATE_INTERVAL)
 
     def paintEvent(self, event):
         option = QStyleOption()
@@ -65,6 +73,10 @@ class ChannelTab(QWidget):
                 "   background: {};"
                 "}}".format(text.name(), color.name())
             )
+
+    def update_status(self):
+        updater = workers.UpdateStatus(self.channels, self.config)
+        self.resource["threadpool"].start(updater)
 
 
 class ChannelWidget(QWidget):
@@ -106,7 +118,6 @@ class ChannelWidget(QWidget):
         self.divider.setMinimumWidth(2)
         self.divider.setMaximumWidth(2)
         middle.addWidget(self.divider)
-        self.set_divider()
 
         # Settings
         settings = QHBoxLayout()
@@ -135,12 +146,6 @@ class ChannelWidget(QWidget):
         # Load default JSON
         self.json = json.load(open(
             func.find_path("assets/default_packet.json")))
-
-        # Set initial status and set status timer
-        self.update_status()
-        self.timer = QTimer()
-        self.timer.timeout.connect(self.update_status)
-        self.timer.start(UPDATE_INTERVAL)
 
     def get_settings(self):
         """Creates all UI elements and adds them to elements list"""
@@ -226,16 +231,3 @@ class ChannelWidget(QWidget):
         option.initFrom(self)
         painter = QPainter(self)
         self.style().drawPrimitive(QStyle.PE_Widget, option, painter, self)
-
-    def update_status(self):
-        updater = workers.UpdateStatus(self, self.config)
-        updater.signals.info.connect(self.set_divider)
-        self.threadpool.start(updater)
-
-    def set_divider(self, status=""):
-        if status.lower() == "started":
-            self.divider.setStyleSheet(
-                "background-color: {}".format(func.orange))
-        else:
-            self.divider.setStyleSheet(
-                "background-color: {}".format(func.grey))

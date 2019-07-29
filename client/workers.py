@@ -51,28 +51,34 @@ class Ping(QRunnable):
 
 class UpdateStatus(QRunnable):
     """Update status shown below controls by contacting server"""
-    def __init__(self, channel, config):
+    def __init__(self, channels, config):
         super(UpdateStatus, self).__init__()
-        self.channel = channel
-        self.signals = Signals()
+        self.channels = channels
         self.config = config
 
     @Slot()
     def run(self):
-        # TODO: Minimize server calls
-        info_channel = Socket(self.config).info_channel(
-            self.channel.attributes["channel"])["response"]
-        try:
-            status = (func.not_none(info_channel["status"])
-                      + " - " + func.not_none(info_channel["state"])
-                      + " | C: " + func.not_none(info_channel["current"])
-                      + ", V: " + func.not_none(info_channel["voltage"]))
-        except TypeError:
-            status = info_channel
-        logging.debug("Updating channel {} with satus {}".format(
-            self.channel.attributes["channel"], status))
-        self.channel.status.setText(status)
-        self.signals.info.emit(func.not_none(info_channel["status"]))
+        info = Socket(self.config).info_all_channels()
+        i = 0
+        while i < len(info):
+            try:
+                status = (func.not_none(info[i]["status"])
+                          + " - " + func.not_none(info[i]["state"])
+                          + " | C: " + func.not_none(info[i]["current"])
+                          + ", V: " + func.not_none(info[i]["voltage"]))
+            except TypeError:
+                status = info[i]
+            logging.debug("Updating channel {} with satus {}".format(
+                self.channels[i].attributes["channel"], status))
+            self.channels[i].status.setText(status)
+            print(info)
+            if info[i]["status"] == "started":
+                self.channels[i].divider.setStyleSheet(
+                    "background-color: {}".format(func.orange))
+            else:
+                self.channels[i].divider.setStyleSheet(
+                    "background-color: {}".format(func.grey))
+            i += 1
 
 
 class AutoFill(QRunnable):

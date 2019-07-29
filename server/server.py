@@ -170,6 +170,9 @@ def process_socket(socket, runners, sources, server_time):
             elif fun == "info_channel":
                 resp = info_channel(kwargs["channel"], runners)
 
+            elif fun == "info_all_channels":
+                resp = info_all_channels(runners, sources)
+
             response["response"] = resp
             socket.send_json(response)
         except (IndexError, ValueError, TypeError, NameError) as exception:
@@ -186,11 +189,11 @@ def process_socket(socket, runners, sources, server_time):
 
 def info_all_channels(runners, sources):
     """Return info on all channels"""
-    infos = OrderedDict()
+    info = OrderedDict()
     for source in sources:
-        infos[source.channel] = info_channel(source.channel, runners)
+        info[source.channel] = info_channel(source.channel, runners)
 
-    return infos
+    return info
 
 
 def start(channel, meta, protocol, runners, sources):

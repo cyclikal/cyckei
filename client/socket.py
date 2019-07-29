@@ -50,3 +50,8 @@ class Socket(object):
             + str(channel)
             + """}}""")
         return self.send(script)
+
+    def info_all_channels(self):
+        """Send "info_all_channel" to server"""
+        script = json.loads("""{"function": "info_channel"}""")
+        return self.send(script)["response"]
