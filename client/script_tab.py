@@ -2,7 +2,6 @@
 
 from PySide2.QtWidgets import QVBoxLayout, QHBoxLayout, \
     QPlainTextEdit, QListWidget, QFileDialog, QWidget
-from PySide2.QtCore import Qt
 
 from . import scripts
 from .workers import Check
