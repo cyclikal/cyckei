@@ -1,6 +1,8 @@
 import json
 import logging
 import os
+import tempfile
+import time
 from datetime import date
 
 from PySide2.QtCore import QRunnable, Slot, Signal, QObject
@@ -9,10 +11,8 @@ from .socket import Socket
 import functions as func
 
 
-def prepare_json(channel, function, scripts):
+def prepare_json(channel, function, protocol, path=None):
     """Sets the channel's json script to current values"""
-    protocol = scripts.by_title(
-        channel.attributes["protocol_name"]).content
     packet = json.load(open(func.find_path("assets/default_packet.json")))
 
     packet["function"] = function
@@ -21,11 +21,14 @@ def prepare_json(channel, function, scripts):
     packet["kwargs"]["meta"] = channel.attributes
     packet["kwargs"]["meta"]["protocol"] = protocol
 
-    dir = os.path.join(channel.attributes["record_folder"],
-                       str(date.today()))
-    os.makedirs(dir, exist_ok=True)
-    packet["kwargs"]["meta"]["path"] \
-        = os.path.join(dir, channel.attributes["path"])
+    if path:
+        packet["kwargs"]["meta"]["path"] = path
+    else:
+        dir = os.path.join(channel.attributes["record_folder"],
+                           str(date.today()))
+        os.makedirs(dir, exist_ok=True)
+        packet["kwargs"]["meta"]["path"] \
+            = os.path.join(dir, channel.attributes["path"])
 
     return packet
 
@@ -106,21 +109,13 @@ class Read(QRunnable):
     @Slot()
     def run(self):
         status = Socket(self.config).info_channel(
-            self.channel.attributes["channel"])["response"]["status"]
-
-        if status == "available":
-            package = json.load(open(
-                func.find_path("assets/default_packet.json")))
-            package["function"] = "start"
-            package["kwargs"]["channel"] = self.channel.attributes["channel"]
-            package["kwargs"]["meta"]["path"] = (
-                self.channel.attributes["record_folder"]
-                + "/{}.temp".format(self.channel.attributes["channel"])
-            )
-            package["kwargs"]["protocol"] = """Rest()"""
-            Socket(self.config).send(package)
-            # TODO: Fix race condition and info_channel
-
+            self.channel.attributes["channel"])["response"]
+        if status["status"] == "available":
+            script = """Rest(ends=(("time", ">", "::3"),))"""
+            dir = tempfile.mkdtemp()
+            Control(self.config, self.channel, "start", script=script,
+                    log="{}/read_cell.pyb".format(dir)).run()
+            time.sleep(1)
             info_channel = Socket(self.config).info_channel(
                 self.channel.attributes["channel"])["response"]
             try:
@@ -128,9 +123,6 @@ class Read(QRunnable):
                           + func.not_none(info_channel["voltage"]))
             except Exception:
                 status = "Could not read cell voltage."
-
-            package["function"] = "stop"
-            Socket(self.config).send(package)
         else:
             status = "Cannot read voltage during cycle"
 
@@ -139,25 +131,30 @@ class Read(QRunnable):
 
 class Control(QRunnable):
     """Update json and send "start" function to server"""
-    def __init__(self, config, channel, command, scripts):
+    def __init__(self, config, channel, command, scripts=None,
+                 script=None, log=None):
         super(Control, self).__init__()
         self.channel = channel
         self.config = config
         self.command = command
         self.scripts = scripts
+        self.script = script
+        self.log = log
         self.signals = Signals()
 
     @Slot()
     def run(self):
-        if self.command == "start":
-            script_ok, msg = Check(self.config, self.scripts.by_title(
-                self.channel.attributes["protocol_name"]).content).run()
+        if self.command == "start" and self.script is None:
+            self.script = self.scripts.by_title(
+                self.channel.attributes["protocol_name"]).content
+            script_ok, msg = Check(self.config, self.script).run()
             if script_ok is False:
-                self.signals.status.emit("Script Check Failed", self.channel)
+                self.signals.status.emit("Script Failed", self.channel)
                 return
 
         response = Socket(self.config).send(prepare_json(
-            self.channel, self.command, self.scripts))["response"]
+            self.channel, self.command, self.script, self.log))["response"]
+        print(response)
         self.signals.status.emit(response, self.channel)
 
 
