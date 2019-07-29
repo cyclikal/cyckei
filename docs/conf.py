@@ -22,7 +22,7 @@ copyright = '2019, Cyclikal, LLC'
 author = 'Cyclikal, LLC'
 
 # The full version, including alpha/beta/rc tags
-release = '0.2rc3'
+release = '0.2rc4'
 
 
 # -- General configuration ---------------------------------------------------
