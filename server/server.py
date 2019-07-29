@@ -203,13 +203,11 @@ def start(channel, meta, protocol, runners, sources):
     # check to see if there is a already a runner on that channel
     meta["channel"] = channel
     if get_runner_by_channel(channel, runners):
-        # TODO: Shorten output
         return "Channel {} already in use.".format(channel)
 
-    # check if log file is being used
     path = meta["path"]
     if isfile(path):
-        return("Log file '{}' already in use.").format(path)
+        return("Log file '{}' already in use.").format(path.split("/")[-1])
 
     runner = CellRunner(**meta)
     # Set the channel source

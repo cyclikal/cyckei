@@ -100,7 +100,6 @@ class AutoFill(QRunnable):
 class Read(QRunnable):
     """Tell channel to Rest() long enough to get voltage reading on cell"""
     def __init__(self, config, channel):
-        # TODO: Needs fixing
         super(Read, self).__init__()
         self.channel = channel
         self.config = config
@@ -154,7 +153,6 @@ class Control(QRunnable):
 
         response = Socket(self.config).send(prepare_json(
             self.channel, self.command, self.script, self.log))["response"]
-        print(response)
         self.signals.status.emit(response, self.channel)
 
 

@@ -57,7 +57,7 @@ class ChannelTab(QWidget):
         self.alternate_colors()
 
     def alternate_colors(self):
-        # TODO: Make compatible with windows
+        # TODO: Make dark mode compatible with windows
         base = self.palette().color(QPalette.Window)
         text = self.palette().color(QPalette.WindowText)
         for channel in self.channels:
