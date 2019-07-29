@@ -40,7 +40,6 @@ class ScriptEditor(QWidget):
 
         buttons = [
             ["Open", self.open],
-            ["Remove", self.remove],
             ["New", self.new],
             ["Save", self.save],
             ["Check", self.check],
@@ -73,20 +72,6 @@ class ScriptEditor(QWidget):
         )[0].rsplit("/", 1)
         if script_file[0]:
             self.add(script_file)
-
-    def remove(self, text):
-        """Remove script from list and channel selector"""
-        self.scripts.script_list.pop(self.file_list.currentRow())
-        for channel in self.channels:
-            channel.settings[1].removeItem(channel.settings[1].findText(
-                    self.file_list.currentItem().title,
-                    Qt.MatchFixedString
-                ))
-        self.file_list.takeItem(self.file_list.currentRow())
-        try:
-            self.list_clicked()
-        except AttributeError:
-            pass
 
     def new(self, text):
         """Create new file and add to list as script"""
