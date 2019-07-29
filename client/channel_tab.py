@@ -13,7 +13,7 @@ from PySide2.QtGui import QPainter, QPalette
 from . import workers
 import functions as func
 
-UPDATE_INTERVAL = 12000
+UPDATE_INTERVAL = 6000
 
 
 class ChannelTab(QWidget):

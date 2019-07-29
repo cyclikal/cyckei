@@ -189,7 +189,7 @@ def process_socket(socket, runners, sources, server_time):
 
 def info_all_channels(runners, sources):
     """Return info on all channels"""
-    info = OrderedDict()
+    info = {}
     for source in sources:
         info[source.channel] = info_channel(source.channel, runners)
 
@@ -288,6 +288,7 @@ def info_channel(channel, runners):
             info["current"] = data[1]
             info["voltage"] = data[2]
     else:
+        print("No Runner")
         info["status"] = STATUS.string_map[STATUS.available]
 
     return info
