@@ -4,7 +4,7 @@ import time
 import traceback
 from collections import OrderedDict
 import logging
-from os.path import isfile
+import os
 
 import zmq
 from visa import VisaIOError
@@ -206,8 +206,8 @@ def start(channel, meta, protocol, runners, sources):
         return "Channel {} already in use.".format(channel)
 
     path = meta["path"]
-    if isfile(path):
-        return("Log file '{}' already in use.").format(path.split("/")[-1])
+    if os.path.isfile(path):
+        return("Log file '{}' already in use.").format(os.path.basename(path))
 
     runner = CellRunner(**meta)
     # Set the channel source
