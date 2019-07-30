@@ -15,16 +15,18 @@ def rand_string(length=10):
 name = "Cyckei"
 version = "0.2rc3"
 identifier = "com.cyclikal.cyckei"
-use_key = False
+use_key = "Use GitLab repo to modify!"
 mac_icon = os.path.join("assets", "cyckei.icns")
 win_icon = os.path.join("assets", "cyckei.ico")
 data = ("assets/*", "assets")
 path = os.path.dirname(sys.argv[0])
 
-if use_key:
+if use_key == "yes":
     block_cipher = pyi_crypto.PyiBlockCipher(key=rand_string())
-else:
+elif use_key == "no":
     block_cipher = None
+else:
+    block_cipher = use_key
 
 a = Analysis(["cyckei.py"],
              pathex=[path],

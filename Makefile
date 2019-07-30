@@ -1,7 +1,8 @@
 .PHONY: help update clean clean-all run build count docs read lint
 
 VENV=venv
-PYTHON=${VENV}/bin/python3
+LIB=${VENV}/Scripts
+PYTHON=${LIB}/python
 DOCS=docs
 
 help:
@@ -30,9 +31,9 @@ help:
 
 setup: ${VENV}/bin/activate
 ${VENV}/bin/activate: requirements.txt
-	python3 -m pip install virtualenv
+	python -m pip install virtualenv
 	test -d ${VENV} || virtualenv ${VENV}
-	${VENV}/bin/pip install -Ur requirements.txt
+	${LIB}/pip install -Ur requirements.txt
 
 clean:
 	rm -rf build
@@ -47,15 +48,15 @@ run:
 	${PYTHON} cyckei.py
 
 build:
-	${VENV}/bin/pip install pycrypto PyInstaller
+	${LIB}/pip install pycrypto PyInstaller
 	${PYTHON} -m PyInstaller --onefile --windowed --noconfirm --clean cyckei.spec
 
 count:
 	find . -name '*.py' -o -path ./${VENV} -prune | xargs wc -l
 
 docs:
-	${VENV}/bin/pip install Sphinx
-	${VENV}/bin/sphinx-build -b html ${DOCS} ${DOCS}/_build
+	${LIB}/pip install Sphinx
+	${LIB}/sphinx-build -b html ${DOCS} ${DOCS}/_build
 
 read:
 	test -f ${DOCS}/_build/index.html || make docs
