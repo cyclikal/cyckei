@@ -11,24 +11,27 @@ from .socket import Socket
 import functions as func
 
 
-def prepare_json(channel, function, protocol, path=None):
+def prepare_json(channel, function, protocol, temp):
     """Sets the channel's json script to current values"""
-    packet = json.load(open(func.find_path("assets/default_packet.json")))
+    with open(func.find_path("assets/default_packet.json")) as file:
+        packet = json.load(file)
 
     packet["function"] = function
+    for key, value in channel.attributes.items():
+        packet["kwargs"]["meta"][key] = value
     packet["kwargs"]["channel"] = channel.attributes["channel"]
     packet["kwargs"]["protocol"] = protocol
-    packet["kwargs"]["meta"] = channel.attributes
     packet["kwargs"]["meta"]["protocol"] = protocol
 
-    if path:
-        packet["kwargs"]["meta"]["path"] = path
+    if temp:
+        dir = tempfile.mkdtemp()
     else:
         dir = os.path.join(channel.attributes["record_folder"],
                            str(date.today()))
         os.makedirs(dir, exist_ok=True)
-        packet["kwargs"]["meta"]["path"] \
-            = os.path.join(dir, channel.attributes["path"])
+
+    packet["kwargs"]["meta"]["path"] \
+        = os.path.join(dir, channel.attributes["path"])
 
     return packet
 
@@ -110,9 +113,8 @@ class Read(QRunnable):
             self.channel.attributes["channel"])["response"]
         if status["status"] == "available":
             script = """Rest(ends=(("time", ">", "::3"),))"""
-            dir = tempfile.mkdtemp()
             Control(self.config, self.channel, "start", script=script,
-                    log="{}/read_cell.pyb".format(dir)).run()
+                    temp=True).run()
             time.sleep(1)
             info_channel = Socket(self.config).info_channel(
                 self.channel.attributes["channel"])["response"]
@@ -130,15 +132,15 @@ class Read(QRunnable):
 class Control(QRunnable):
     """Update json and send "start" function to server"""
     def __init__(self, config, channel, command, scripts=None,
-                 script=None, log=None):
+                 script=None, temp=False):
         super(Control, self).__init__()
         self.channel = channel
         self.config = config
         self.command = command
         self.scripts = scripts
         self.script = script
-        self.log = log
         self.signals = Signals()
+        self.temp = temp
 
     @Slot()
     def run(self):
@@ -150,8 +152,9 @@ class Control(QRunnable):
                 self.signals.status.emit("Script Failed", self.channel)
                 return
 
-        response = Socket(self.config).send(prepare_json(
-            self.channel, self.command, self.script, self.log))["response"]
+        packet = prepare_json(self.channel, self.command,
+                              self.script, self.temp)
+        response = Socket(self.config).send(packet)["response"]
         self.signals.status.emit(response, self.channel)
 
 

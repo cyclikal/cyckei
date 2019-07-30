@@ -13,7 +13,7 @@ from PySide2.QtGui import QPainter, QPalette
 from . import workers
 import functions as func
 
-UPDATE_INTERVAL = 6000
+UPDATE_INTERVAL = 12000
 
 
 class ChannelTab(QWidget):
@@ -189,9 +189,9 @@ class ChannelWidget(QWidget):
                 "Package Type", "package"],
             [["Full",  "Half", "AnodeHalf", "CathodeHalf", "LithiumLithium",
                 "Symmetric", "Unknown"],
-                "Package Type", "celltype"],
+                "Cell Type", "celltype"],
             [["Unspecified", "VC", "GE", "LK"],
-                "Cell Type", "requester"],
+                "Requester", "requester"],
         ]
         for box in selectables:
             elements.append(func.combo_box(*box, self.set))
@@ -218,7 +218,7 @@ class ChannelWidget(QWidget):
             worker = workers.Read(self.config, self)
         else:
             worker = workers.Control(
-                self.config, self, text.lower(), self.scripts)
+                self.config, self, text.lower(), self.scripts, temp=False)
         worker.signals.status.connect(func.feedback)
         self.threadpool.start(worker)
 

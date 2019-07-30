@@ -19,7 +19,7 @@ VERSION = "0.2rc4"
 ID = "com.cyclikal.cyckei"
 
 
-def main(record_dir="/Cyckei"):
+def main(record_dir="Cyckei"):
     """
     Begins execution of Cyckei.
 
@@ -30,7 +30,7 @@ def main(record_dir="/Cyckei"):
 
     """
     # Ensure Recording Directory is Setup
-    record_dir = os.path.expanduser("~") + record_dir
+    record_dir = os.path.join(os.path.expanduser("~"), record_dir)
     file_structure(record_dir)
 
     # Setup Configuration

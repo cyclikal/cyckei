@@ -93,7 +93,7 @@ Release Candidates
 -  0.2rc2, 7/24/2019 -- Fix bugs, reduce server calls, and document
    issues
 -  0.2rc3, 7/30/2019 -- Improve status updates and "Read Cell" function
-
+-  0.2rc4, 7/31/2019 -- Fix file naming while reading cell
 
 0.3 Tenjin
 ----------
