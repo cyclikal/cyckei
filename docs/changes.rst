@@ -129,6 +129,9 @@ Planned Features
    - Complete Support for Mac and Linux
    - Make equivalent for Windows
    - Simplify VISA and driver installation for end user
+- Miscellaneous
+   - Automated release delivery
+   - Add test suite
 
 
 Bug Tracker
