@@ -34,7 +34,6 @@ def prepare_json(channel, function, protocol, path=None):
 
 
 class Signals(QObject):
-    # TODO: Standardize signals and alerts
     alert = Signal(object)
     status = Signal(object, object)
     info = Signal(object)

@@ -72,6 +72,7 @@ Notable Changes
 -  Support distribution of compiled executables
 -  Improve documentation
 -  Small UI adjustments including dark mode
+-  Rewrite "Read" and "StatusUpdate" functions for better performance and functionality
 
 Development Releases
 ^^^^^^^^^^^^^^^^^^^^
@@ -91,7 +92,7 @@ Release Candidates
 -  0.2rc1, 7/24/2019 -- Fix some small bugs
 -  0.2rc2, 7/24/2019 -- Fix bugs, reduce server calls, and document
    issues
--  0.2rc3, 0/00/0000 -- TBD
+-  0.2rc3, 7/30/2019 -- Improve status updates and "Read Cell" function
 
 
 0.3 Tenjin
@@ -119,9 +120,9 @@ Planned Features
    - Better batch management
    - Pretty log wiew
    - Multi-folder script storage
-- Server software
+- Server Software
    - "Plug-in" style core (lua) script management for different devices
-   - Threading and improved performance for massive cycles
+   - Implement Cython and threading for improved performance with massive cycles
    - Auto shutoff due to crash or inactivity
    - Possibly better logging format, dependent on Cell Explorer
 - Hardware Support
