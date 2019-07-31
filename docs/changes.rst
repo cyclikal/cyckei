@@ -119,6 +119,7 @@ Possible Features
    - Better batch management
    - Pretty log wiew
    - Multi-folder script storage
+   - Script highlighting
 - Server Software
    - "Plug-in" style core (lua) script management for different devices
    - Implement Cython and threading for improved performance with massive cycles
