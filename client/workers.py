@@ -64,26 +64,29 @@ class UpdateStatus(QRunnable):
     @Slot()
     def run(self):
         info_all = Socket(self.config).info_all_channels()
-        i = 0
         for channel in self.channels:
-            info = info_all[channel.attributes["channel"]]
             try:
+                info = info_all[channel.attributes["channel"]]
                 status = (func.not_none(info["status"])
                           + " - " + func.not_none(info["state"])
                           + " | C: " + func.not_none(info["current"])
                           + ", V: " + func.not_none(info["voltage"]))
-            except TypeError:
-                status = info
+            except (TypeError, KeyError):
+                status = "Could not get status!"
             logging.debug("Updating channel {} with satus {}".format(
                 channel.attributes["channel"], status))
             channel.status.setText(status)
-            if info["status"] == "started":
-                channel.divider.setStyleSheet(
-                    "background-color: {}".format(func.orange))
-            else:
+            # Make cleaner
+            try:
+                if info["status"] == "started":
+                    channel.divider.setStyleSheet(
+                        "background-color: {}".format(func.orange))
+                else:
+                    channel.divider.setStyleSheet(
+                        "background-color: {}".format(func.grey))
+            except UnboundLocalError:
                 channel.divider.setStyleSheet(
                     "background-color: {}".format(func.grey))
-            i += 1
 
 
 class AutoFill(QRunnable):
