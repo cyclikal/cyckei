@@ -13,9 +13,9 @@ def rand_string(length=10):
 
 # TODO: Standardize versioning
 name = "Cyckei"
-version = "0.2rc3"
+version = "0.2rc4"
 identifier = "com.cyclikal.cyckei"
-use_key = "Use GitLab repo to modify!"
+use_key = "no"
 mac_icon = os.path.join("assets", "cyckei.icns")
 win_icon = os.path.join("assets", "cyckei.ico")
 data = ("assets/*", "assets")
