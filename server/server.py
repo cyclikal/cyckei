@@ -33,7 +33,7 @@ def main(config, socket):
             try:
                 keithley = Keithley2602(gpib_addr)
             except (ValueError, VisaIOError) as e:
-                logging.error("Could not esablish connection: "
+                logging.error("Could not establish connection: "
                               "Channel {}, GPIB {}.".format(
                                 chd["channel"],
                                 chd["gpib_address"])
