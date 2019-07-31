@@ -112,7 +112,7 @@ Release Candidates
 - 0.3rc1, 0/00/0000 -- TBD
 
 
-Planned Features
+Possible Features
 ----------------
 - Client Interface
    - Automatic scripting
