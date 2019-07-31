@@ -2,11 +2,10 @@ Changes & Features
 ==================
 
 
-0.0 - 08/16/2018
+0.0
 ----------------
 
-Original version of Cyckei developed by Vincent Chevrier and Gabriel
-Ewig for the Lithium-ion Battery Lab.
+Original version of Cyckei.
 
 Notable Changes
 ^^^^^^^^^^^^^^^
