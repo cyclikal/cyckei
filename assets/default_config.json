@@ -16,7 +16,8 @@
     "zmq":{
         "port": 5556,
         "client-address":"tcp://localhost",
-        "server-address":"tcp://*"
+        "server-address":"tcp://*",
+        "timeout": 10
     },
     "verbosity": 20
 }

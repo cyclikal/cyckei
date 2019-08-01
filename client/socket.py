@@ -2,8 +2,6 @@ import zmq
 import json
 import logging
 
-TIMEOUT = 3  # Seconds for listening to server before giving up.
-
 
 class Socket(object):
     """Handles connection, communication, and control of server over ZMQ"""
@@ -23,7 +21,7 @@ class Socket(object):
         self.socket.send_json(to_send)
         poller = zmq.Poller()
         poller.register(self.socket, zmq.POLLIN)
-        if poller.poll(TIMEOUT*1000):
+        if poller.poll(self.config["zmq"]["timeout"]*1000):
             response = self.socket.recv_json()
         else:
             response = (

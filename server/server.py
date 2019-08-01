@@ -197,6 +197,23 @@ def info_all_channels(runners, sources):
     return info
 
 
+def info_channel(channel, runners, sources):
+    """Return info on specified channels"""
+    info = OrderedDict(channel=channel, status=None, state=None,
+                       current=None, voltage=None)
+    runner = get_runner_by_channel(channel, runners)
+    if runner:
+        info["status"] = STATUS.string_map[runner.status]
+        info["state"] = runner.step.state_str
+    else:
+        info["status"] = STATUS.string_map[STATUS.available]
+    for src in sources:
+        if int(src.channel) == int(channel):
+            info["current"], info["voltage"] = src.read_iv()
+            break
+    return info
+
+
 def start(channel, meta, protocol, runners, sources):
     """Start channel with given protocol"""
 
@@ -270,23 +287,6 @@ def test(protocol):
         return "Passed"
     except Exception as e:
         return str(e).splitlines()[-1]
-
-
-def info_channel(channel, runners, sources):
-    """Return info on specified channels"""
-    info = OrderedDict(channel=channel, status=None, state=None,
-                       current=None, voltage=None)
-    runner = get_runner_by_channel(channel, runners)
-    if runner:
-        info["status"] = STATUS.string_map[runner.status]
-        info["state"] = runner.step.state_str
-    else:
-        info["status"] = STATUS.string_map[STATUS.available]
-    for src in sources:
-        if int(src.channel) == int(channel):
-            info["current"], info["voltage"] = src.read_iv()
-            break
-    return info
 
 
 def get_runner_by_channel(channel, runners, status=None):
