@@ -116,6 +116,7 @@ Possible Features
    - Implement Cython and threading for improved performance with massive cycles
    - Auto shutoff due to crash or inactivity
    - Possibly better logging format, dependent on Cell Explorer
+   - Stop all cycles on exit
 - Hardware Support
    - Complete Support for Mac and Linux
    - Make equivalent for Windows
