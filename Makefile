@@ -1,7 +1,7 @@
 .PHONY: help update clean clean-all run build count docs read lint
 
 VENV=venv
-LIB=${VENV}/Scripts
+LIB=${VENV}/bin
 PYTHON=${LIB}/python
 DOCS=docs
 
