@@ -151,17 +151,15 @@ Each section is described in more detail below:
    -  *channel (string)* - Channel number for identification within the application.
    -  *gpib\_address (int)* - Hardware address of GPIB interface can be found with a NI VISA application or wth the code in :ref:`Host System Setup`.
    -  *keithley\_model (string)* - Model number of keithley being used.
-   -  *keithley\_channel (string)* - Particular channel on said keithley
-      (a or b).
+   -  *keithley\_channel (string)* - Particular channel on said keithley (a or b).
 
 -  **zmq** - A dictionary of properties that control how the client and
    server communicate.
 
-   -  *port* - Port to communicate over.
-   -  *client-address (string)* - Address for the client to connect to.
-      Usually localhost.
-   -  *serever-address (string)* - Address for the server to listen on.
-      Usually all.
+   -  *port (int)* - Port to communicate over.
+   -  *client-address (string)* - Address for the client to connect to. Usually localhost.
+   -  *server-address (string)* - Address for the server to listen on. Usually all.
+   -  *timeout (int)* - Number of seconds to wait for server response. 10 seconds seems to work well for most configurations.
 
 -  **verbosity** - The amount of information to be saved to log files.
    Generally should be set to 20, but the following levels can also be
@@ -197,7 +195,8 @@ Here is an example configuration file for a simple setup running on port
         "zmq":{
             "port": 5556,
             "client-address":"tcp://localhost",
-            "server-address":"tcp://*"
+            "server-address":"tcp://*",
+            "timeout": 10
         },
         "verbosity": 20,
     }
