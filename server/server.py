@@ -187,7 +187,6 @@ def process_socket(socket, runners, sources, server_time):
             socket.send_json(response)
 
 
-<<<<<<< HEAD
 def info_all_channels(runners, sources):
     """Return info on all channels"""
     info = {}
@@ -215,8 +214,6 @@ def info_channel(channel, runners, sources):
     return info
 
 
-=======
->>>>>>> af8a468c892e665bbefef2033177f83b7e8a6caa
 def start(channel, meta, protocol, runners, sources):
     """Start channel with given protocol"""
 
@@ -292,40 +289,6 @@ def test(protocol):
         return str(e).splitlines()[-1]
 
 
-<<<<<<< HEAD
-=======
-def info_all_channels(runners, sources):
-    """Return info on all channels"""
-    info = {}
-    for source in sources:
-        info[str(source.channel)] \
-            = info_channel(source.channel, runners, sources)
-
-    return info
-
-
-def info_channel(channel, runners, sources):
-    """Return info on specified channels"""
-    info = OrderedDict(channel=channel, status=None, state=None,
-                       current=None, voltage=None)
-    runner = get_runner_by_channel(channel, runners)
-    if runner:
-        info["status"] = STATUS.string_map[runner.status]
-        info["state"] = runner.step.state_str
-        data = runner.last_data
-        if data:
-            info["current"] = data[1]
-            info["voltage"] = data[2]
-    else:
-        info["status"] = STATUS.string_map[STATUS.available]
-        for src in sources:
-            if int(src.channel) == int(channel):
-                info["current"], info["voltage"] = src.read_iv()
-                break
-    return info
-
-
->>>>>>> af8a468c892e665bbefef2033177f83b7e8a6caa
 def get_runner_by_channel(channel, runners, status=None):
     """Get runner currently on given channel"""
     if status is None:
