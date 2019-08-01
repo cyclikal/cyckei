@@ -15,9 +15,6 @@ from client import client
 from applet import applet
 import functions as func
 
-VERSION = "0.2rc4"
-ID = "com.cyclikal.cyckei"
-
 
 def main(record_dir="Cyckei"):
     """
@@ -34,8 +31,11 @@ def main(record_dir="Cyckei"):
     file_structure(record_dir)
 
     # Setup Configuration
-    config = json.load(open(record_dir + "/config.json", "r"))
-    config["version"] = VERSION
+    with open(record_dir + "/config.json") as file:
+        config = json.load(file)
+    with open(func.find_path("assets/variables.json")) as file:
+        var = json.load(file)
+    config["version"] = var["version"]
     config["record_dir"] = record_dir
 
     # Setup Logging

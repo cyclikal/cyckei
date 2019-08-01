@@ -11,10 +11,9 @@ def rand_string(length=10):
     return "".join(random.choice(string.printable) for i in range(length))
 
 
-# TODO: Standardize versioning
-name = "Cyckei"
-version = "0.2rc4"
-identifier = "com.cyclikal.cyckei"
+with open(func.find_path("assets/variables.json")) as file:
+    var = json.load(file)
+
 use_key = "no"
 mac_icon = os.path.join("assets", "cyckei.icns")
 win_icon = os.path.join("assets", "cyckei.ico")
@@ -48,7 +47,7 @@ exe = EXE(pyz,
           a.zipfiles,
           a.datas,
           [],
-          name="{}-{}".format(name, version),
+          name="{}-{}".format(var["name"], var["version"]),
           debug=False,
           bootloader_ignore_signals=False,
           strip=False,
@@ -57,9 +56,9 @@ exe = EXE(pyz,
           console=False,
           icon=win_icon)
 app = BUNDLE(exe,
-             name="{}-{}.app".format(name, version),
+             name="{}-{}.app".format(var["name"], var["version"]),
              icon=mac_icon,
-             bundle_identifier=identifier,
+             bundle_identifier=var["id"],
              info_plist={
                 'NSPrincipalClass': 'NSApplication',
                 'NSRequiresAquaSystemAppearance': 'No'
