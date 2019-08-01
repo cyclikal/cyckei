@@ -4,6 +4,7 @@ import os
 import random
 import string
 import sys
+import json
 
 
 def rand_string(length=10):
@@ -11,7 +12,7 @@ def rand_string(length=10):
     return "".join(random.choice(string.printable) for i in range(length))
 
 
-with open(func.find_path("assets/variables.json")) as file:
+with open("assets/variables.json") as file:
     var = json.load(file)
 
 use_key = "no"
