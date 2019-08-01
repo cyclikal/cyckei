@@ -26,23 +26,28 @@ def main(record_dir="Cyckei"):
         Result of app.exec_(), Qt's main event loop.
 
     """
-    # Ensure Recording Directory is Setup
-    record_dir = os.path.join(os.path.expanduser("~"), record_dir)
-    file_structure(record_dir)
+    try:
+        # Ensure Recording Directory is Setup
+        record_dir = os.path.join(os.path.expanduser("~"), record_dir)
+        file_structure(record_dir)
 
-    # Setup Configuration
-    with open(record_dir + "/config.json") as file:
-        config = json.load(file)
-    with open(func.find_path("assets/variables.json")) as file:
-        var = json.load(file)
-    config["version"] = var["version"]
-    config["record_dir"] = record_dir
+        # Setup Configuration
+        with open(record_dir + "/config.json") as file:
+            config = json.load(file)
+        with open(func.find_path("assets/variables.json")) as file:
+            var = json.load(file)
+        config["version"] = var["version"]
+        config["record_dir"] = record_dir
 
-    # Setup Logging
-    logging.basicConfig(filename="{}/cyckei.log".format(record_dir),
-                        level=config["verbosity"],
-                        format="%(asctime)s \t %(message)s")
-    sys.excepthook = handler
+        # Setup Logging
+        logging.basicConfig(filename="{}/cyckei.log".format(record_dir),
+                            level=config["verbosity"],
+                            format="%(asctime)s \t %(message)s")
+        sys.excepthook = handler
+    except Exception as e:
+        print("An error occured before logging began.")
+        print(e)
+
     logging.info("cyckei.main: Initializing Cyckei version {}".format(
         config["version"]))
     logging.debug("cyckei.main: Logging at debug level")
@@ -119,4 +124,5 @@ def handler(type, value, tb):
 
 
 if __name__ == "__main__":
+    print("Starting Cyckei...")
     sys.exit(main())
