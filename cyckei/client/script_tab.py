@@ -1,10 +1,8 @@
 """Tab to view and edit scripts, also has access to checking procedure"""
 
-from PySide2.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel,\
-    QPlainTextEdit, QPushButton, QListWidget, QFileDialog, QMessageBox,\
-    QWidget, QStyleOption, QStyle
-from PySide2.QtCore import Qt
-from PySide2.QtGui import QPainter
+from PySide2.QtWidgets import QVBoxLayout, QHBoxLayout, \
+    QPlainTextEdit, QListWidget, QFileDialog, QWidget
+
 from . import scripts
 from .workers import Check
 
@@ -38,22 +36,12 @@ class ScriptEditor(QWidget):
         controls = QHBoxLayout()
         edit_rows.addLayout(controls)
 
-        buttons = []
-        buttons.append(QPushButton())
-        buttons[-1].setText("Open")
-        buttons[-1].clicked.connect(self.open)
-        buttons.append(QPushButton())
-        buttons[-1].setText("Remove")
-        buttons[-1].clicked.connect(self.remove)
-        buttons.append(QPushButton())
-        buttons[-1].setText("New")
-        buttons[-1].clicked.connect(self.new)
-        buttons.append(QPushButton())
-        buttons[-1].setText("Save")
-        buttons[-1].clicked.connect(self.save)
-        buttons.append(QPushButton())
-        buttons[-1].setText("Check")
-        buttons[-1].clicked.connect(self.check)
+        buttons = [
+            ["Open", self.open],
+            ["New", self.new],
+            ["Save", self.save],
+            ["Check", self.check],
+        ]
         for button in buttons:
             controls.addWidget(button)
 
@@ -83,21 +71,7 @@ class ScriptEditor(QWidget):
         if script_file[0]:
             self.add(script_file)
 
-    def remove(self):
-        """Remove script from list and channel selector"""
-        self.scripts.script_list.pop(self.file_list.currentRow())
-        for channel in self.channels:
-            channel.settings[1].removeItem(channel.settings[1].findText(
-                    self.file_list.currentItem().title,
-                    Qt.MatchFixedString
-                ))
-        self.file_list.takeItem(self.file_list.currentRow())
-        try:
-            self.list_clicked()
-        except AttributeError:
-            pass
-
-    def new(self):
+    def new(self, text):
         """Create new file and add to list as script"""
         script_file = QFileDialog.getSaveFileName(QWidget(),
                                                   "Select Directory")[0]

@@ -1,5 +1,9 @@
 import json
 import logging
+import os
+import tempfile
+import time
+from datetime import date
 
 from PySide2.QtCore import QRunnable, Slot, Signal, QObject
 from os.path import exists
@@ -10,18 +14,27 @@ from pkg_resources import resource_filename
 from .socket import Socket
 
 
-def not_none(value):
-    """Sets a None value to "None" string"""
-    return "None" if value is None else str(value)
+def prepare_json(channel, function, protocol, temp):
+    """Sets the channel's json script to current values"""
+    with open(func.find_path("assets/default_packet.json")) as file:
+        packet = json.load(file)
 
+    packet["function"] = function
+    for key, value in channel.attributes.items():
+        packet["kwargs"]["meta"][key] = value
+    packet["kwargs"]["channel"] = channel.attributes["channel"]
+    packet["kwargs"]["protocol"] = protocol
+    packet["kwargs"]["meta"]["protocol"] = protocol
 
-def send(json):
-    """Sends json to server and updates status with response"""
-    # TODO: Load info from config
-    resp = Socket("tcp://localhost", 5556).send(json)["response"]
-    logging.info(resp)
-    return resp
+    if temp:
+        dir = tempfile.mkdtemp()
+    else:
+        dir = os.path.join(channel.attributes["record_folder"],
+                           str(date.today()))
+        os.makedirs(dir, exist_ok=True)
 
+    packet["kwargs"]["meta"]["path"] \
+        = os.path.join(dir, channel.attributes["path"])
 
 def prepare_json(channel, function, scripts):
     """Sets the channel's json script to current values"""
@@ -61,7 +74,6 @@ def prepare_json(channel, function, scripts):
 
 
 class Signals(QObject):
-    # TODO: Standardize signals and alerts
     alert = Signal(object)
     status = Signal(object, object)
 
@@ -73,35 +85,43 @@ class Ping(QRunnable):
 
     @Slot()
     def run(self):
-        # TODO: Load info from config
-        response = Socket("tcp://localhost", 5556).ping()
+        response = Socket(self.config).ping()
         self.signals.alert.emit(response)
 
 
 class UpdateStatus(QRunnable):
     """Update status shown below controls by contacting server"""
-    def __init__(self, channel):
+    def __init__(self, channels, config):
         super(UpdateStatus, self).__init__()
-        self.channel = channel
-        self.signals = Signals()
+        self.channels = channels
+        self.config = config
 
     @Slot()
     def run(self):
-        # TODO: Utilize configuration
-        info_channel = Socket("tcp://localhost", 5556).info_channel(
-            self.channel.attributes["channel"])["response"]
-        channel_status = Socket("tcp://localhost", 5556).channel_status(
-            self.channel.attributes["channel"])["response"]
-        try:
-            status = (channel_status
-                      + " - " + not_none(info_channel["state"])
-                      + " | C: " + not_none(info_channel["current"])
-                      + ", V: " + not_none(info_channel["voltage"]))
-        except TypeError:
-            status = info_channel
-        logging.debug("Updating channel {} with satus {}".format(
-            self.channel.attributes["channel"], status))
-        self.signals.status.emit(status, self.channel)
+        info_all = Socket(self.config).info_all_channels()
+        for channel in self.channels:
+            try:
+                info = info_all[channel.attributes["channel"]]
+                status = (func.not_none(info["status"])
+                          + " - " + func.not_none(info["state"])
+                          + " | C: " + func.not_none(info["current"])
+                          + ", V: " + func.not_none(info["voltage"]))
+            except (TypeError, KeyError):
+                status = "Could not get status!"
+            logging.debug("Updating channel {} with satus {}".format(
+                channel.attributes["channel"], status))
+            channel.status.setText(status)
+            # Make cleaner
+            try:
+                if info["status"] == "started":
+                    channel.divider.setStyleSheet(
+                        "background-color: {}".format(func.orange))
+                else:
+                    channel.divider.setStyleSheet(
+                        "background-color: {}".format(func.grey))
+            except UnboundLocalError:
+                channel.divider.setStyleSheet(
+                    "background-color: {}".format(func.grey))
 
 
 class AutoFill(QRunnable):
@@ -126,50 +146,51 @@ class Read(QRunnable):
 
     @Slot()
     def run(self):
-        package = json.load(open(
-            resource_filename("cyckei.client", "res/defaultJSON.json")))
-        package["function"] = "start"
-        package["kwargs"]["channel"] = self.channel.attributes["channel"]
-        package["kwargs"]["meta"]["path"] = (
-            self.channel.attributes["record_folder"]
-            + "/{}.temp".format(self.channel.attributes["channel"])
-        )
-        package["kwargs"]["protocol"] = """Rest()"""
-        Socket("tcp://localhost", 5556).send(package)
-
-        info_channel = Socket("tcp://localhost", 5556).info_channel(
+        status = Socket(self.config).info_channel(
             self.channel.attributes["channel"])["response"]
-        try:
-            status = ("Voltage of cell: "
-                      + not_none(info_channel["voltage"]))
-        except Exception:
-            status = "Could not read cell voltage."
-
-        package["function"] = "stop"
-        Socket("tcp://localhost", 5556).send(package)
+        if status["status"] == "available":
+            script = """Rest(ends=(("time", ">", "::3"),))"""
+            Control(self.config, self.channel, "start", script=script,
+                    temp=True).run()
+            time.sleep(1)
+            info_channel = Socket(self.config).info_channel(
+                self.channel.attributes["channel"])["response"]
+            try:
+                status = ("Voltage of cell: "
+                          + func.not_none(info_channel["voltage"]))
+            except Exception:
+                status = "Could not read cell voltage."
+        else:
+            status = "Cannot read voltage during cycle"
 
         self.signals.status.emit(status, self.channel)
 
 
 class Control(QRunnable):
     """Update json and send "start" function to server"""
-    def __init__(self, channel, command, scripts):
+    def __init__(self, config, channel, command, scripts=None,
+                 script=None, temp=False):
         super(Control, self).__init__()
         self.channel = channel
         self.command = command
         self.scripts = scripts
+        self.script = script
         self.signals = Signals()
+        self.temp = temp
 
     @Slot()
     def run(self):
-        if self.command == "start":
-            script_ok, msg = Check(self.scripts.get_script_by_title(
-                    self.channel.attributes["script_title"]).content).run()
+        if self.command == "start" and self.script is None:
+            self.script = self.scripts.by_title(
+                self.channel.attributes["protocol_name"]).content
+            script_ok, msg = Check(self.config, self.script).run()
             if script_ok is False:
-                self.signals.status.emit("Script Check Failed", self.channel)
+                self.signals.status.emit("Script Failed", self.channel)
                 return
 
-        response = send(prepare_json(self.channel, self.command, self.scripts))
+        packet = prepare_json(self.channel, self.command,
+                              self.script, self.temp)
+        response = Socket(self.config).send(packet)["response"]
         self.signals.status.emit(response, self.channel)
 
 

@@ -4,7 +4,7 @@ import time
 import traceback
 from collections import OrderedDict
 import logging
-from os.path import isfile
+import os
 
 import zmq
 from visa import VisaIOError
@@ -15,8 +15,7 @@ from .protocols import CellRunner, STATUS
 
 def main(config, socket):
     """Main start method and loop for server application"""
-    # Initialize the channels from a config file
-    logging.info("cyckei.server.server.main: Initializing...")
+    logging.info("cyckei.server.server.main: Starting server")
 
     # Create list of sources (outputs)
     keithleys = []
@@ -34,7 +33,7 @@ def main(config, socket):
             try:
                 keithley = Keithley2602(gpib_addr)
             except (ValueError, VisaIOError) as e:
-                logging.error("Could not esablish connection: "
+                logging.error("Could not establish connection: "
                               "Channel {}, GPIB {}.".format(
                                 chd["channel"],
                                 chd["gpib_address"])
@@ -69,7 +68,6 @@ def main(config, socket):
         # check messages on the socket and execute necessary tasks
         # ideally this would happen on a separate thread
         # but it might not be necessary
-        # TODO verify this is fast enough to be blocking
         # main loop without problem
         logging.debug("cyckei.server.server.main: Processing socket messages")
         process_socket(socket, runners, sources, current_time)
@@ -139,7 +137,7 @@ def process_socket(socket, runners, sources, server_time):
         try:
             # a message has been received
             fun = msg["function"]
-            logging.info("Packet request received: {}".format(fun))
+            logging.debug("Packet request received: {}".format(fun))
             kwargs = msg.get("kwargs", None)
             # response = {"version": __version__, "response": None}
             resp = "Unknown function"
@@ -159,9 +157,6 @@ def process_socket(socket, runners, sources, server_time):
 
             elif fun == "test":
                 resp = test(kwargs["protocol"])
-
-            elif fun == "channel_status":
-                resp = channel_status(kwargs["channel"], runners)
 
             elif fun == "time":
                 resp = str(server_time)
@@ -188,7 +183,10 @@ def process_socket(socket, runners, sources, server_time):
                 resp = info_all_channels(runners, sources)
 
             elif fun == "info_channel":
-                resp = info_channel(kwargs["channel"], runners)
+                resp = info_channel(kwargs["channel"], runners, sources)
+
+            elif fun == "info_all_channels":
+                resp = info_all_channels(runners, sources)
 
             response["response"] = resp
             socket.send_json(response)
@@ -206,14 +204,15 @@ def process_socket(socket, runners, sources, server_time):
 
 def info_all_channels(runners, sources):
     """Return info on all channels"""
-    infos = OrderedDict()
+    info = {}
     for source in sources:
-        infos[source.channel] = info_channel(source.channel, runners)
+        info[str(source.channel)] \
+            = info_channel(source.channel, runners, sources)
 
-    return infos
+    return info
 
 
-def info_channel(channel, runners):
+def info_channel(channel, runners, sources):
     """Return info on specified channels"""
     info = OrderedDict(channel=channel, status=None, state=None,
                        current=None, voltage=None)
@@ -221,13 +220,12 @@ def info_channel(channel, runners):
     if runner:
         info["status"] = STATUS.string_map[runner.status]
         info["state"] = runner.step.state_str
-        data = runner.last_data
-        if data:
-            info["current"] = data[1]
-            info["voltage"] = data[2]
     else:
-        info["statuses"] = STATUS.string_map[STATUS.available]
-
+        info["status"] = STATUS.string_map[STATUS.available]
+    for src in sources:
+        if int(src.channel) == int(channel):
+            info["current"], info["voltage"] = src.read_iv()
+            break
     return info
 
 
@@ -237,14 +235,11 @@ def start(channel, meta, protocol, runners, sources):
     # check to see if there is a already a runner on that channel
     meta["channel"] = channel
     if get_runner_by_channel(channel, runners):
-        return "Failed to start channel {}, already in use.".format(channel)
+        return "Channel {} already in use.".format(channel)
 
-    # check if log file is being used
     path = meta["path"]
-    if isfile(path):
-        return(
-            "Failed to start channel, log file '{}' already in use."
-        ).format(path)
+    if os.path.isfile(path):
+        return("Log file '{}' already in use.").format(os.path.basename(path))
 
     runner = CellRunner(**meta)
     # Set the channel source
@@ -307,15 +302,6 @@ def test(protocol):
         return "Passed"
     except Exception as e:
         return str(e).splitlines()[-1]
-
-
-def channel_status(channel, runners):
-    """Get current state of channel"""
-    status = STATUS.string_map[STATUS.available]
-    runner = get_runner_by_channel(channel, runners)
-    if runner:
-        status = STATUS.string_map[runner.status]
-    return status
 
 
 def get_runner_by_channel(channel, runners, status=None):
