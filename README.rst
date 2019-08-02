@@ -23,4 +23,4 @@ Cyckei is currently developed and maintained by Gabriel Ewig and Vincent Chevrie
   Screen shot of Cyckei channel tab on Mac OS.
 
 .. _cyclikal.com: http://cyclikal.com
-.. _documentation: https://docs.cyclikal.com/en/stable/
+.. _documentation: https://docs.cyclikal.com/projects/cyckei/en/stable/
