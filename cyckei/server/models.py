@@ -189,10 +189,8 @@ smu{ch}.source.output = smu{ch}.OUTPUT_ON""".format(ch=self.kch,
         # if asked to e.g. charge to 3.9V when the cell is already at 4.2V
         # It is basically its way of saying the condition cannot be achieved
         # The actual current sent is 0.0 A.
-        if abs(current) > 1.0e10 or abs(current) < 1.0e-8:
+        if abs(current) > 1.0e10:
             current = 0.0
-        if abs(voltage) < 5.0e-4:
-            voltage = 0.0
         return current, voltage
 
     def read_data(self):

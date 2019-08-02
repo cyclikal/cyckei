@@ -2,6 +2,10 @@ import zmq
 import json
 import logging
 
+from PySide2.QtWidgets import QMessageBox, QWidget
+
+TIMEOUT = 3  # Seconds for listening to server before giving up.
+
 
 class Socket(object):
     """Handles connection, communication, and control of server over ZMQ"""
@@ -20,7 +24,7 @@ class Socket(object):
         self.socket.send_json(to_send)
         poller = zmq.Poller()
         poller.register(self.socket, zmq.POLLIN)
-        if poller.poll(self.config["zmq"]["timeout"]*1000):
+        if poller.poll(TIMEOUT*1000):
             response = self.socket.recv_json()
         else:
             response = (
@@ -45,6 +49,31 @@ class Socket(object):
         script = json.load(open(file))
         return self.send(script)
 
+    def channel_status(self, channel):
+        """Asks server for "channel_status" information"""
+        script = json.loads(
+            """{"function": "channel_status", "kwargs": {"channel": """
+            + str(channel)
+            + """}}""")
+        return self.send(script)
+
+    def kill_server(self):
+        """Tells server to kill itself and closes connection"""
+        reply = QMessageBox.question(
+            QWidget(),
+            "Message",
+            "Kill server?\nAll jobs will be cancelled.",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No
+        )
+
+        if reply == QMessageBox.Yes:
+            script = json.loads('{"function": "kill_server"}')
+            self.send(script)
+            self.close_socket()
+        else:
+            pass
+
     def ping(self):
         """Send "ping" to server"""
         script = json.loads('{"function": "ping"}')
@@ -60,6 +89,6 @@ class Socket(object):
         return self.send(script)
 
     def info_all_channels(self):
-        """Send "info_all_channel" to server"""
-        script = json.loads("""{"function": "info_all_channels"}""")
-        return self.send(script)["response"]
+        """Send "info_all_channels" to server"""
+        script = json.loads('{"function": "info_all_channels"}')
+        return self.send(script)

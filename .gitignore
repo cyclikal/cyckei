@@ -6,4 +6,3 @@ build
 venv
 .vscode
 .eggs
-docs/_build

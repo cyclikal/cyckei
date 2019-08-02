@@ -65,7 +65,7 @@ class CellRunner(object):
         "comment": None,
         "requester": None,
         "cycler": None,
-        "celltype": None,
+        "cell_type": None,
         "package": None,
         "start_cycle": None
     }
@@ -77,8 +77,8 @@ class CellRunner(object):
 
         if self.meta["cycler"] is None:
             self.meta["cycler"] = "Keithley2602"
-        if self.meta["celltype"] is None:
-            self.meta["celltype"] = "unknown"
+        if self.meta["cell_type"] is None:
+            self.meta["cell_type"] = "unknown"
 
         # Enforce a str channel
         self.meta["channel"] = str(self.meta["channel"])
@@ -104,15 +104,15 @@ class CellRunner(object):
         self.source = source
         if self.channel != source.channel:
             raise ValueError(
-                "the runner channel ({}) and the source"
-                "channel ({}) should be identical".format(
-                    self.channel, source.channel
-                ))
+                "the runner channel ({}) and the source \
+                    channel ({}) should be identical".format(
+                        self.channel, source.channel
+                    ))
 
     def set_cap_signs(self, direction=None):
         """
         Go through the steps and set their .cap_sign attribute
-        based on the "direction" of the cell.
+        based on the "direction" of teh cell.
         This decides whether charging yields positive or negative capacities
         and vice versa for discharge.
 
@@ -120,7 +120,7 @@ class CellRunner(object):
         ----------
         direction: str or None
             direction for the cell can be "pos", "neg", or None
-            if it is None, the "celltype" in teh meta data is used,
+            if it is None, the "cell_type" in teh meta data is used,
             if this is not set it defaults to "pos"
 
 
@@ -131,13 +131,12 @@ class CellRunner(object):
         valid_directions = ["pos", "neg", None]
         if direction not in valid_directions:
             raise ValueError(
-                "received unsupported direction argument:"
-                "{}, must be one of {}".format(direction, valid_directions)
-            )
+                "received unsupported direction argument:\
+                {}, must be one of {}".format(direction, valid_directions))
 
         if direction is None:
             direction = 'pos'
-            if "anode" in self.meta["celltype"].lower():
+            if "anode" in self.meta["cell_type"].lower():
                 direction = 'neg'
 
         if direction == "pos":
@@ -205,10 +204,8 @@ class CellRunner(object):
         -------
         None
         """
-        logging.info(
-            "cyckei.server.protocols.CellRunner._start:"
-            "Starting cellrunner instance (channel: {})".format(self.channel)
-        )
+        logging.info("cyckei.server.protocols.CellRunner._start: \
+            Starting cellrunner instance (channel: {})".format(self.channel))
 
         self.i_current_step = 0
         self.status = STATUS.started
@@ -247,8 +244,8 @@ class CellRunner(object):
             False if it is complete
 
         """
-        logging.debug("cyckei.server.protocols.CellRunner.run: "
-                      "Entering method for channel {}".format(self.channel))
+        logging.debug("cyckei.server.protocols.CellRunner.run: \
+            Entering method for channel {}".format(self.channel))
         if self.status == STATUS.completed:
             return False
 
@@ -456,10 +453,9 @@ class ProtocolStep(object):
 
         """
         logging.debug(
-            "cyckei.server.protocols.ProtocolStep.run:"
-            "running {} protocol on channel {}".format(self.state_str,
-                                                       self.parent.channel)
-        )
+            "cyckei.server.protocols.ProtocolStep.run: \
+            running {} protocol on channel {}".format(self.state_str,
+                                                      self.parent.channel))
         if self.status == STATUS.paused:
             self.next_time = NEVER
             return None
@@ -931,9 +927,9 @@ class ConditionDelta(Condition):
                                                  self.index)
                     step.next_time = min(next_time, step.next_time)
 
-                logging.debug("cyckei.server.protocols.ConditionDelta: "
-                              "{}, set next_time to {}".format(self.value_str,
-                                                               step.next_time))
+                logging.debug("cyckei.server.protocols.ConditionDelta: \
+                {}, set next_time to {}".format(self.value_str,
+                                                step.next_time))
 
                 if self.comparison(abs(val - step.report[-1][self.index]),
                                    self.delta):
@@ -1002,9 +998,9 @@ class ConditionTotalTime(ConditionTotalDelta):
                 next_time = self.delta - delta + time.time()
                 step.next_time = min(step.next_time, next_time)
                 logging.debug(
-                    "cyckei.server.protocols.ConditionTotalTime: "
-                    "{}, set next_time to {}".format(self.value_str,
-                                                     step.next_time))
+                    "cyckei.server.protocols.ConditionTotalTime: \
+                    {}, set next_time to {}".format(self.value_str,
+                                                    step.next_time))
                 return False
         except IndexError:
             return False
@@ -1054,9 +1050,9 @@ class ConditionAbsolute(Condition):
                                                  self.index)
                     step.next_time = min(next_time, step.next_time)
                     logging.debug(
-                        "cyckei.server.protocols.ConditionTotalTime: "
-                        "{}, set next_time to {}".format(self.value_str,
-                                                         step.next_time))
+                        "cyckei.server.protocols.ConditionTotalTime: \
+                        {}, set next_time to {}".format(self.value_str,
+                                                        step.next_time))
                     return False
             else:
                 return False
@@ -1121,8 +1117,8 @@ def extrapolate_time(data, target, index):
         next_time = time.time()
 
     logging.debug(
-        "cyckei.server.protocols.extrapolate_time: "
-        "Extrapolated time {} using {} index and target value {}".format(
+        "cyckei.server.protocols.extrapolate_time: \
+        Extrapolated time {} using {} index and target value {}".format(
             next_time, DATA_NAME_MAP[index], target)
         )
 
