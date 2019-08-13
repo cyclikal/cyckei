@@ -85,6 +85,26 @@ Release Candidates
 -  0.2rc4, 7/31/2019 -- Fix file naming while reading cell, unify versioning
 -  0.2rc5, 8/01/2019 -- Report pre-logging runtime errors
 
+0.2.1
+----------
+
+Hotfix updates to Alviss
+
+Notable Changes
+^^^^^^^^^^^^^^^
+
+-  None, yet
+
+Development Releases
+^^^^^^^^^^^^^^^^^^^^
+
+-  0.2.1.dev1, 0/00/0000 -- None
+
+Release Candidates
+^^^^^^^^^^^^^^^^^^
+
+-  0.2.1rc1, 0/00/0000 -- None
+
 0.3 Tenjin
 ----------
 
