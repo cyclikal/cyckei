@@ -31,7 +31,7 @@ help:
 
 setup: ${VENV}/bin/activate
 ${VENV}/bin/activate: requirements.txt
-	python3 -m pip install virtualenv
+	python -m pip install virtualenv
 	test -d ${VENV} || virtualenv ${VENV}
 	${LIB}/pip install -Ur requirements.txt
 
