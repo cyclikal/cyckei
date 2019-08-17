@@ -1,7 +1,7 @@
 .PHONY: help update clean clean-all run build count docs read lint
 
 VENV=venv
-LIB=${VENV}/Scripts
+LIB=${VENV}/bin
 PYTHON=${LIB}/python
 DOCS=docs
 
@@ -31,7 +31,7 @@ help:
 
 setup: ${VENV}/bin/activate
 ${VENV}/bin/activate: requirements.txt
-	python -m pip install virtualenv
+	python3 -m pip install virtualenv
 	test -d ${VENV} || virtualenv ${VENV}
 	${LIB}/pip install -Ur requirements.txt
 
