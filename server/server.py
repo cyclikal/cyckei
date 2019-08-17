@@ -130,61 +130,66 @@ def process_socket(socket, runners, sources, server_time):
 
     """
 
-    msg = socket.recv_json()
+    # Check to see if there are new events on the socket
+    # only waits 10 millisecond on the polling
+    events = socket.poll(10)
+    
+    if events > 0:
+        msg = socket.recv_json()
+    
+        if msg is not None:
+            response = {"response": None, "message": None}
+            try:
+                # a message has been received
+                fun = msg["function"]
+                logging.debug("Packet request received: {}".format(fun))
+                kwargs = msg.get("kwargs", None)
+                # response = {"version": __version__, "response": None}
+                resp = "Unknown function"
+                if fun == "start":
+                    try:
+                        resp = start(kwargs["channel"], kwargs["meta"],
+                                    kwargs["protocol"], runners, sources)
+                    except Exception:
+                        resp = "Error occured when running script."
+                        logging.warning("Error occured when running script.")
 
-    if msg is not None:
-        response = {"response": None, "message": None}
-        try:
-            # a message has been received
-            fun = msg["function"]
-            logging.debug("Packet request received: {}".format(fun))
-            kwargs = msg.get("kwargs", None)
-            # response = {"version": __version__, "response": None}
-            resp = "Unknown function"
-            if fun == "start":
-                try:
-                    resp = start(kwargs["channel"], kwargs["meta"],
-                                 kwargs["protocol"], runners, sources)
-                except Exception:
-                    resp = "Error occured when running script."
-                    logging.warning("Error occured when running script.")
+                elif fun == "pause":
+                    resp = pause(kwargs["channel"], runners)
 
-            elif fun == "pause":
-                resp = pause(kwargs["channel"], runners)
+                elif fun == "resume":
+                    resp = resume(kwargs["channel"], runners)
 
-            elif fun == "resume":
-                resp = resume(kwargs["channel"], runners)
+                elif fun == "test":
+                    resp = test(kwargs["protocol"])
 
-            elif fun == "test":
-                resp = test(kwargs["protocol"])
+                elif fun == "stop":
+                    resp = stop(kwargs["channel"], runners)
 
-            elif fun == "stop":
-                resp = stop(kwargs["channel"], runners)
+                elif fun == "ping":
+                    port = socket.getsockopt_string(
+                        zmq.LAST_ENDPOINT
+                    ).split(":")[-1]
+                    resp = "True: server is running on port {}".format(port)
 
-            elif fun == "ping":
-                port = socket.getsockopt_string(
-                    zmq.LAST_ENDPOINT
-                ).split(":")[-1]
-                resp = "True: server is running on port {}".format(port)
+                elif fun == "info_channel":
+                    resp = info_channel(kwargs["channel"], runners, sources)
 
-            elif fun == "info_channel":
-                resp = info_channel(kwargs["channel"], runners, sources)
+                elif fun == "info_all_channels":
+                    resp = info_all_channels(runners, sources)
 
-            elif fun == "info_all_channels":
-                resp = info_all_channels(runners, sources)
-
-            response["response"] = resp
-            socket.send_json(response)
-        except (IndexError, ValueError, TypeError, NameError) as exception:
-            response["response"] = (
-                "Call failed with error: {}\ntraceback:\n{}".format(
-                    exception,
-                    traceback.format_exc()
+                response["response"] = resp
+                socket.send_json(response)
+            except (IndexError, ValueError, TypeError, NameError) as exception:
+                response["response"] = (
+                    "Call failed with error: {}\ntraceback:\n{}".format(
+                        exception,
+                        traceback.format_exc()
+                    )
                 )
-            )
-            response["message"] = msg
-            logging.debug("cyckei.server.server.process_socket: Sent response")
-            socket.send_json(response)
+                response["message"] = msg
+                logging.debug("cyckei.server.server.process_socket: Sent response")
+                socket.send_json(response)
 
 
 def info_all_channels(runners, sources):
