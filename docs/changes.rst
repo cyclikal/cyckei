@@ -88,22 +88,23 @@ Release Candidates
 0.2.1
 ----------
 
-Hotfix updates to Alviss
+Hotfix updates to Alviss. Includes fixes to delay and improper current measurement and a basic test suite.
 
 Notable Changes
 ^^^^^^^^^^^^^^^
 
--  None, yet
+-  Fixes to measurement and report timing
+-  Basic test suite
 
 Development Releases
 ^^^^^^^^^^^^^^^^^^^^
 
--  0.2.1.dev1, 0/00/0000 -- None
+-  0.2.1.dev1, 8/19/2019 -- Fix issues with delay and improper current measurement
 
 Release Candidates
 ^^^^^^^^^^^^^^^^^^
 
--  0.2.1rc1, 0/00/0000 -- None
+-  0.2.1rc1, 0/00/0000 -- TBD
 
 0.3 Tenjin
 ----------
