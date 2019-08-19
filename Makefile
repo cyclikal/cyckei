@@ -49,7 +49,7 @@ run:
 
 build:
 	${LIB}/pip install pycrypto PyInstaller
-	${PYTHON} -m PyInstaller --debug all --windowed --noconfirm cyckei.spec
+	${PYTHON} -m PyInstaller --onefile --windowed --noconfirm cyckei.spec
 
 count:
 	find . -name '*.py' -o -path ./${VENV} -prune | xargs wc -l
