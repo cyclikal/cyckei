@@ -1,1 +1,23 @@
-*{font:None;font-size:16px;selection-background-color:#f05f40}* ChannelWidget{border-bottom:2px solid #f05f40}* QLabel#id_label{color:#f05f40;font-weight:bold}* QPushButton:pressed{background-color:#f05f40}* QPlainTextEdit:focus,* QListWidget:focus{border:1px solid #f05f40}
+* {
+  font: None;
+  font-size: 16px;
+  selection-background-color: #f05f40;
+}
+
+* ChannelWidget {
+  border-bottom: 2px solid #f05f40;
+}
+
+* QLabel#id_label {
+  color: #f05f40;
+  font-weight: bold;
+}
+
+* QPushButton:pressed {
+  background-color: #f05f40;
+}
+
+* QPlainTextEdit:focus,
+* QListWidget:focus {
+  border: 1px solid #f05f40;
+}

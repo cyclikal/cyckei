@@ -50,8 +50,8 @@ Release Candidates
 -  0.1rc2, 06/29/2019 -- Fixed some bugs, enable MenuBar on Windows, and added exception logging
 
 
-0.2 Alviss
-----------
+0.2 Alviss - 8/01/2019
+----------------------
 
 Smaller update focused on simplifying the code to aid in further
 development. This includes unifying as many commonly used functions as
@@ -86,7 +86,7 @@ Release Candidates
 -  0.2rc5, 8/01/2019 -- Report pre-logging runtime errors
 
 0.2.1
-----------
+-----
 
 Hotfix updates to Alviss. Includes fixes to delay and improper current measurement and a basic test suite.
 
