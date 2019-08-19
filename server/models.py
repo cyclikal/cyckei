@@ -101,7 +101,16 @@ class Source(object):
         return min([c for c in self.current_ranges if c > abs(current)])
 
     def set_current(self, current, v_limit):
+        """
+        Set the current on the Source
 
+        Parameters
+        ----------
+        current: float
+            desired current in Amps
+        v_limit: float
+            voltage limit for source. This is currently hard coded to 5V. ANY VALUES GIVEN WILL BE IGNORED
+        """
         script = """display.screen = display.SMUA_SMUB
 display.smu{ch}.measure.func = display.MEASURE_DCVOLTS
 smu{ch}.source.func = smu{ch}.OUTPUT_DCAMPS
@@ -110,7 +119,8 @@ smu{ch}.source.leveli = {current}
 smu{ch}.source.limitv = {v_limit}
 smu{ch}.source.output = smu{ch}.OUTPUT_ON""".format(ch=self.kch,
                                                     current=current,
-                                                    v_limit=v_limit)
+                                                    v_limit=5.0)
+
         self._run_script(script, "setcurrent")
 
     def rest(self, v_limit=5.0):
