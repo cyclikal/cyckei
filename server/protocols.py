@@ -527,7 +527,7 @@ class ProtocolStep(object):
                         * self.cap_sign
                         * (current + self.data[-1][1])
                         / 2.0
-                        / 1000.)
+                        * 1000.)
         else:
             capacity = self.starting_capacity
 
