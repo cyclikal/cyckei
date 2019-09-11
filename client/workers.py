@@ -26,8 +26,9 @@ def prepare_json(channel, function, protocol, temp):
     if temp:
         dir = tempfile.mkdtemp()
     else:
-        dir = os.path.join(channel.attributes["record_folder"],
-                           str(date.today()))
+        # dir = os.path.join(channel.attributes["record_folder"],
+        #                   str(date.today()))
+        dir = os.path.abspath(channel.attributes["record_folder"])
         os.makedirs(dir, exist_ok=True)
 
     packet["kwargs"]["meta"]["path"] \
