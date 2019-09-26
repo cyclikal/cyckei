@@ -17,9 +17,9 @@ UPDATE_INTERVAL = 12000
 
 
 class ChannelTab(QWidget):
-    def __init__(self, config, resource):
+    def __init__(self, config, resource, parent):
         """Setup each channel widget and place in QVBoxlayout"""
-        QWidget.__init__(self)
+        QWidget.__init__(self, parent)
         self.config = config
         self.resource = resource
 
@@ -177,24 +177,9 @@ class ChannelWidget(QWidget):
             ["Cell ID", "Cell identification", "cellid"],
             ["Log file", "File to log to, placed in specified logs folder",
                 "path"],
-            ["Mass", "Mass of Cell", "mass"],
-            ["Comment", "Unparsed Comment", "comment"],
         ]
         for line in editables:
             elements.append(func.line_edit(*line, self.set))
-
-        # Combo Boxes
-        selectables = [
-            [["Pouch", "Coin", "Cylindrical", "Unknown"],
-                "Package Type", "package"],
-            [["Full",  "Half", "AnodeHalf", "CathodeHalf", "LithiumLithium",
-                "Symmetric", "Unknown"],
-                "Cell Type", "celltype"],
-            [["Unspecified", "VC", "GE", "LK"],
-                "Requester", "requester"],
-        ]
-        for box in selectables:
-            elements.append(func.combo_box(*box, self.set))
 
         return elements
 

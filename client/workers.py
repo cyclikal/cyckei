@@ -88,20 +88,6 @@ class UpdateStatus(QRunnable):
                 channel.divider.setStyleSheet(
                     "background-color: {}".format(func.grey))
 
-
-class AutoFill(QRunnable):
-    """Fill log text with value derived from cell identification"""
-    def __init__(self, channel):
-        super(AutoFill, self).__init__()
-        self.channel = channel
-
-    @Slot()
-    def run(self):
-        if self.channel.settings[2].text():
-            self.channel.settings[3].setText(
-                "{}A.pyb".format(self.channel.settings[2].text()))
-
-
 class Read(QRunnable):
     """Tell channel to Rest() long enough to get voltage reading on cell"""
     def __init__(self, config, channel):
