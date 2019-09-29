@@ -202,7 +202,7 @@ class ChannelWidget(QWidget):
             self,
             "Open Script",
             self.config["record_dir"] + "/scripts")
-        print(filename)
+
         filepath = Path(filename[0]).resolve().absolute()
         self.attributes['script_path'] = str(filepath)
         try:
