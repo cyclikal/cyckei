@@ -10,6 +10,7 @@ from PySide2.QtCore import QRunnable, Slot, Signal, QObject
 from .socket import Socket
 import functions as func
 
+logger = logging.getLogger('cyckei')
 
 def prepare_json(channel, function, protocol, temp):
     """Sets the channel's json script to current values"""
@@ -74,7 +75,7 @@ class UpdateStatus(QRunnable):
                           + ", V: " + func.not_none(info["voltage"]))
             except (TypeError, KeyError):
                 status = "Could not get status!"
-            logging.debug("Updating channel {} with satus {}".format(
+            logger.debug("cyckei.client.workers.UpdateStatus.run: Updating channel {} with status {}".format(
                 channel.attributes["channel"], status))
             channel.status.setText(status)
             # Make cleaner

@@ -9,7 +9,9 @@ from client import client
 
 logger = logging.getLogger('cyckei')
 
-
+def handle_exception(exc_type, exc_value, exc_traceback):
+    logger.error("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
+sys.excepthook = handle_exception
 
 class Icon(QSystemTrayIcon):
     def __init__(self, config):

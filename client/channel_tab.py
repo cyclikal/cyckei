@@ -4,6 +4,7 @@ Listed in the channel tab of the main window.
 """
 
 import json
+import logging
 
 from PySide2.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, \
      QScrollArea, QStyleOption, QStyle
@@ -14,6 +15,7 @@ from . import workers
 import functions as func
 
 UPDATE_INTERVAL = 12000
+logger = logging.getLogger('cyckei')
 
 
 class ChannelTab(QWidget):

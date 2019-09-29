@@ -13,6 +13,9 @@ import functions as func
 
 logger = logging.getLogger('cyckei')
 
+def handle_exception(exc_type, exc_value, exc_traceback):
+    logger.error("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
+sys.excepthook = handle_exception
 def help():
     """Direct to help"""
     msg = "For help refer to the HELP.md and README.md files located in" \

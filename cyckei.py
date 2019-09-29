@@ -18,7 +18,9 @@ from client import client
 from applet import applet
 import functions as func
 
-sys.excepthook = func.handle_exception
+def handle_exception(exc_type, exc_value, exc_traceback):
+    logger.error("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
+sys.excepthook = handle_exception 
 
 
 def main(record_dir="Cyckei"):

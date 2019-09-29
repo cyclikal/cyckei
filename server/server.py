@@ -1,6 +1,7 @@
 """Main script run by server application"""
 
 import logging
+import sys
 import os
 import time
 import traceback
@@ -9,11 +10,15 @@ from collections import OrderedDict
 import zmq
 from visa import VisaIOError
 
-from ..functions import handle_exception
 from .models import Keithley2602
 from .protocols import STATUS, CellRunner
 
 logger = logging.getLogger('cyckei')
+
+def handle_exception(exc_type, exc_value, exc_traceback):
+    logger.error("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
+sys.excepthook = handle_exception
+
 
 def main(config, socket):
     try:
@@ -23,7 +28,7 @@ def main(config, socket):
         # Create list of sources (outputs)
         keithleys = []
         sources = []
-        raise ValueError
+
         # Initialize sources
         logger.info("Attemping {} channels.".format(len(config["channels"])))
         for chd in config["channels"]:
@@ -73,7 +78,7 @@ def main(config, socket):
             # ideally this would happen on a separate thread
             # but it might not be necessary
             # main loop without problem
-            logger.debug("cyckei.server.server.main: Processing socket messages")
+            # logger.debug("cyckei.server.server.main: Processing socket messages")
             process_socket(socket, runners, sources, current_time)
 
             # execute runners or sleep if none
@@ -148,7 +153,7 @@ def process_socket(socket, runners, sources, server_time):
             try:
                 # a message has been received
                 fun = msg["function"]
-                logger.debug("Packet request received: {}".format(fun))
+                logger.debug("cyckei.server.server.process_socket: Packet request received: {}".format(fun))
                 kwargs = msg.get("kwargs", None)
                 # response = {"version": __version__, "response": None}
                 resp = "Unknown function"
@@ -185,6 +190,7 @@ def process_socket(socket, runners, sources, server_time):
                     resp = info_all_channels(runners, sources)
 
                 response["response"] = resp
+                logger.debug("cyckei.server.server.process_socket: Sending response: {}".format(response))
                 socket.send_json(response)
             except (IndexError, ValueError, TypeError, NameError) as exception:
                 logger.exception(exception)

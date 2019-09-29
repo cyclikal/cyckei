@@ -1,7 +1,5 @@
 import os
 import sys
-import logging
-logger = logging.getLogger('cyckei')
 
 from PySide2.QtWidgets import QMessageBox
 
@@ -29,8 +27,5 @@ def find_path(path):
 def not_none(value):
     """Sets a None value to "None" string"""
     return "None" if value is None else str(value)
-
-def handle_exception(exc_type, exc_value, exc_traceback):
-    logger.error("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
 
 
