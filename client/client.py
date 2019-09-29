@@ -11,6 +11,7 @@ from . import workers
 from .scripts import ScriptList
 import functions as func
 
+logger = logging.getLogger('cyckei')
 
 def help():
     """Direct to help"""
@@ -47,7 +48,7 @@ class MainWindow(QMainWindow):
         # Setup ThreadPool
         resource["threadpool"] = QThreadPool()
         self.threadpool = resource["threadpool"]
-        logging.info("Multithreading set with maximum {} threads".format(
+        logger.info("Multithreading set with maximum {} threads".format(
             resource["threadpool"].maxThreadCount()
         ))
 

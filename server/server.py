@@ -1,119 +1,125 @@
 """Main script run by server application"""
 
+import logging
+import os
 import time
 import traceback
 from collections import OrderedDict
-import logging
-import os
 
 import zmq
 from visa import VisaIOError
 
+from ..functions import handle_exception
 from .models import Keithley2602
-from .protocols import CellRunner, STATUS
+from .protocols import STATUS, CellRunner
 
+logger = logging.getLogger('cyckei')
 
 def main(config, socket):
-    """Main start method and loop for server application"""
-    logging.info("cyckei.server.server.main: Starting server")
+    try:
+        """Main start method and loop for server application"""
+        logger.info("cyckei.server.server.main: Starting server")
 
-    # Create list of sources (outputs)
-    keithleys = []
-    sources = []
+        # Create list of sources (outputs)
+        keithleys = []
+        sources = []
+        raise ValueError
+        # Initialize sources
+        logger.info("Attemping {} channels.".format(len(config["channels"])))
+        for chd in config["channels"]:
+            gpib_addr = chd["gpib_address"]
+            keithley = None
+            for k in keithleys:
+                if gpib_addr == k.gpib_addr:
+                    keithley = k
+            if keithley is None:
+                try:
+                    keithley = Keithley2602(gpib_addr)
+                except (ValueError, VisaIOError) as e:
+                    logger.error("Could not establish connection: "
+                                "Channel {}, GPIB {}.".format(
+                                    chd["channel"],
+                                    chd["gpib_address"])
+                                )
+                    logger.exception(e)
+                    continue
 
-    # Initialize sources
-    logging.info("Attemping {} channels.".format(len(config["channels"])))
-    for chd in config["channels"]:
-        gpib_addr = chd["gpib_address"]
-        keithley = None
-        for k in keithleys:
-            if gpib_addr == k.gpib_addr:
-                keithley = k
-        if keithley is None:
-            try:
-                keithley = Keithley2602(gpib_addr)
-            except (ValueError, VisaIOError) as e:
-                logging.error("Could not establish connection: "
-                              "Channel {}, GPIB {}.".format(
-                                chd["channel"],
-                                chd["gpib_address"])
-                              )
-                logging.error(e)
-                continue
+                keithleys.append(keithley)
 
-            keithleys.append(keithley)
+            source = keithley.get_source(chd["keithley_channel"],
+                                        channel=chd["channel"])
+            sources.append(source)
 
-        source = keithley.get_source(chd["keithley_channel"],
-                                     channel=chd["channel"])
-        sources.append(source)
+        logger.info("Connected {} channels.".format(len(sources)))
 
-    logging.info("Connected {} channels.".format(len(sources)))
+        # Initialize socket
+        runners = []
 
-    # Initialize socket
-    runners = []
-
-    logging.info(
-        "Socket bound to port {}. Entering main loop.".format(
-            config["zmq"]["port"])
-    )
-
-    max_counter = 1e9
-    counter = 0
-    initial_time = time.time()
-    while True:
-        current_time = '{0:02.0f}.{1:02.0f}'.format(
-            *divmod((time.time() - initial_time) * 60, 60)
+        logger.info(
+            "Socket bound to port {}. Entering main loop.".format(
+                config["zmq"]["port"])
         )
 
-        # check messages on the socket and execute necessary tasks
-        # ideally this would happen on a separate thread
-        # but it might not be necessary
-        # main loop without problem
-        logging.debug("cyckei.server.server.main: Processing socket messages")
-        process_socket(socket, runners, sources, current_time)
+        max_counter = 1e9
+        counter = 0
+        initial_time = time.time()
+        logger.info("cyckei.server.server.main: Starting main server loop")
+        while True:
+            current_time = '{0:02.0f}.{1:02.0f}'.format(
+                *divmod((time.time() - initial_time) * 60, 60)
+            )
 
-        # execute runners or sleep if none
-        if runners:
-            logging.debug("cyckei.server.server.main: Looping over runners")
-            # Sort runners from most urgent to least urgent
-            runners = sorted(runners, key=lambda x: x.next_time)
+            # check messages on the socket and execute necessary tasks
+            # ideally this would happen on a separate thread
+            # but it might not be necessary
+            # main loop without problem
+            logger.debug("cyckei.server.server.main: Processing socket messages")
+            process_socket(socket, runners, sources, current_time)
 
-            channels_message = ""
-            timing_message = ""
-            for runner in runners:
+            # execute runners or sleep if none
+            if runners:
+                logger.debug("cyckei.server.server.main: Looping over runners")
+                # Sort runners from most urgent to least urgent
+                runners = sorted(runners, key=lambda x: x.next_time)
 
-                if runner.status == STATUS.pending:
-                    runner.run()
-                elif runner.status == STATUS.started:
-                    # Don't bother with runners more than 1 second out
-                    relative_next_time = runner.next_time - time.time()
-                    channels_message = channels_message + "/" + runner.channel
-                    timing_message = (timing_message
-                                      + "/"
-                                      + str(relative_next_time)[:5])
+                channels_message = ""
+                timing_message = ""
+                for runner in runners:
 
-                    if relative_next_time <= 0.0:
+                    if runner.status == STATUS.pending:
                         runner.run()
-            logging.debug(
-                "cyckei.server.server.main: "
-                + "channel {} will be checked in approx {} seconds...".format(
-                    channels_message[1:], timing_message[1:]
+                    elif runner.status == STATUS.started:
+                        # Don't bother with runners more than 1 second out
+                        relative_next_time = runner.next_time - time.time()
+                        channels_message = channels_message + "/" + runner.channel
+                        timing_message = (timing_message
+                                        + "/"
+                                        + str(relative_next_time)[:5])
+
+                        if relative_next_time <= 0.0:
+                            runner.run()
+                logger.debug(
+                    "cyckei.server.server.main: "
+                    + "channel {} will be checked in approx {} seconds...".format(
+                        channels_message[1:], timing_message[1:]
+                    )
                 )
-            )
 
-            ipop = sorted(
-                [i for i, p in enumerate(runners)
-                    if p.status == STATUS.completed],
-                reverse=True
-            )
-            for i in ipop:
-                runners.pop(i)
+                ipop = sorted(
+                    [i for i, p in enumerate(runners)
+                        if p.status == STATUS.completed],
+                    reverse=True
+                )
+                for i in ipop:
+                    runners.pop(i)
 
-        time.sleep(0.1)
+            time.sleep(0.1)
 
-        # mod it by a large value to avoid ever overflowing
-        counter = counter % max_counter + 1
-
+            # mod it by a large value to avoid ever overflowing
+            counter = counter % max_counter + 1
+    except Exception as e:
+        logger.error("cyckei.server.server.main: Failed with uncaught exception:")
+        logger.exception(e)
 
 def process_socket(socket, runners, sources, server_time):
     """
@@ -142,7 +148,7 @@ def process_socket(socket, runners, sources, server_time):
             try:
                 # a message has been received
                 fun = msg["function"]
-                logging.debug("Packet request received: {}".format(fun))
+                logger.debug("Packet request received: {}".format(fun))
                 kwargs = msg.get("kwargs", None)
                 # response = {"version": __version__, "response": None}
                 resp = "Unknown function"
@@ -152,7 +158,7 @@ def process_socket(socket, runners, sources, server_time):
                                     kwargs["protocol"], runners, sources)
                     except Exception:
                         resp = "Error occured when running script."
-                        logging.warning("Error occured when running script.")
+                        logger.warning("Error occured when running script.")
 
                 elif fun == "pause":
                     resp = pause(kwargs["channel"], runners)
@@ -181,6 +187,7 @@ def process_socket(socket, runners, sources, server_time):
                 response["response"] = resp
                 socket.send_json(response)
             except (IndexError, ValueError, TypeError, NameError) as exception:
+                logger.exception(exception)
                 response["response"] = (
                     "Call failed with error: {}\ntraceback:\n{}".format(
                         exception,
@@ -188,7 +195,7 @@ def process_socket(socket, runners, sources, server_time):
                     )
                 )
                 response["message"] = msg
-                logging.debug("cyckei.server.server.process_socket: Sent response")
+                logger.debug("cyckei.server.server.process_socket: Sent response")
                 socket.send_json(response)
 
 

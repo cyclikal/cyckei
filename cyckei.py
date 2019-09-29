@@ -3,6 +3,9 @@ import json
 import os
 import shutil
 import logging
+logger = logging.getLogger('cyckei')
+logger.setLevel(logging.DEBUG) # base level must be lower than all handlers
+
 import traceback
 import threading
 
@@ -14,6 +17,8 @@ from server import server
 from client import client
 from applet import applet
 import functions as func
+
+sys.excepthook = func.handle_exception
 
 
 def main(record_dir="Cyckei"):
@@ -40,34 +45,47 @@ def main(record_dir="Cyckei"):
         config["record_dir"] = record_dir
 
         # Setup Logging
-        logging.basicConfig(filename="{}/cyckei.log".format(record_dir),
-                            level=config["verbosity"],
-                            format="%(asctime)s \t %(message)s")
-        sys.excepthook = handler
+        # Create handlers
+        c_handler = logging.StreamHandler()
+        f_handler = logging.FileHandler("{}/cyckei.log".format(record_dir))
+        c_handler.setLevel(logging.DEBUG)
+        f_handler.setLevel(config["verbosity"])
+
+        # Create formatters and add it to handlers
+        # c_format = logging.Formatter('%(name)s - %(levelname)s - %(message)s')
+        f_format = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(threadName)s - %(message)s')
+        c_handler.setFormatter(f_format)
+        f_handler.setFormatter(f_format)
+
+        # Add handlers to the logger
+        logger.addHandler(c_handler)
+        logger.addHandler(f_handler)
+
+
     except Exception as e:
         print("An error occured before logging began.")
         print(e)
 
-    logging.info("cyckei.main: Initializing Cyckei version {}".format(
+    logger.info("cyckei.main: Initializing Cyckei version {}".format(
         config["version"]))
-    logging.debug("cyckei.main: Logging at debug level")
-
+    logger.debug("cyckei.main: Logging at debug level")
+    
     # Create QApplication
-    logging.debug("cyckei.main: Creating QApplication")
+    logger.debug("cyckei.main: Creating QApplication")
     app = QApplication(sys.argv)
     app.setStyle("fusion")
     app.setQuitOnLastWindowClosed(False)
     app.setWindowIcon(QIcon(func.find_path("assets/cyckei.png")))
 
     # Create Server's ZMQ Socket
-    logging.debug("cyckei.server.server.main: Binding socket")
+    logger.debug("cyckei.server.server.main: Binding socket")
     try:
         context = zmq.Context(1)
         socket = context.socket(zmq.REP)
         socket.bind("{}:{}".format(config["zmq"]["server-address"],
                                    config["zmq"]["port"]))
     except zmq.error.ZMQError as error:
-        logging.critical(
+        logger.critical(
             "It appears the server is already running: ".format(error))
         msg = [
             "Cyckei Instance Already Running!",
@@ -79,22 +97,22 @@ def main(record_dir="Cyckei"):
         ]
         func.message(*msg)
         return
-    logging.debug("cyckei.server.server.main: Socket bound successfully")
+    logger.debug("cyckei.server.server.main: Socket bound successfully")
 
     # Start Server
-    logging.debug("cyckei.main: Starting Server")
+    logger.debug("cyckei.main: Starting Server")
     server_thread = threading.Thread(target=server.main,
                                      args=(config, socket,),
                                      daemon=True)
     server_thread.start()
 
     # Create Applet
-    logging.debug("cyckei.main: Creating Applet")
+    logger.debug("cyckei.main: Creating Applet")
     applet_object = applet.Icon(config)
     applet_object.show()
 
     # Create Client
-    logging.debug("cyckei.main: Creating Initial Client")
+    logger.debug("cyckei.main: Creating Initial Client")
     main_window = client.MainWindow(config)
     main_window.show()
 
@@ -115,12 +133,12 @@ def file_structure(path):
                     path + "/scripts/example")
 
 
-def handler(type, value, tb):
-    """Handler which writes exceptions to log and terminal"""
-    list = traceback.format_exception(type, value, tb)
-    text = "".join(str(l) for l in list)
-    logging.exception(text)
-    print(text)
+# def handler(exception_type, value, tb):
+#     """Handler which writes exceptions to log and terminal"""
+#     exception_list = traceback.format_exception(exception_type, value, tb)
+#     text = "".join(str(l) for l in exception_list)
+#     logger.exception(text)
+#     print(text)
 
 
 if __name__ == "__main__":

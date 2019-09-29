@@ -1,11 +1,14 @@
-import sys
 import logging
+import sys
 
 from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import QMenu, QSystemTrayIcon
 
-from client import client
 import functions as func
+from client import client
+
+logger = logging.getLogger('cyckei')
+
 
 
 class Icon(QSystemTrayIcon):
@@ -47,5 +50,5 @@ class Icon(QSystemTrayIcon):
         }
 
         if func.message(**msg):
-            logging.warning("applet.applet.Icon.stop: Shutting down\n")
+            logger.warning("applet.applet.Icon.stop: Shutting down\n")
             sys.exit()
