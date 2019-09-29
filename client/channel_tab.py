@@ -5,9 +5,10 @@ Listed in the channel tab of the main window.
 
 import json
 import logging
+from pathlib import Path
 
 from PySide2.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, \
-     QScrollArea, QStyleOption, QStyle
+     QScrollArea, QStyleOption, QStyle, QFileDialog
 from PySide2.QtCore import QTimer, Qt
 from PySide2.QtGui import QPainter, QPalette
 
@@ -97,12 +98,13 @@ class ChannelWidget(QWidget):
             "path": "default.pyb",
             "mass": 1,
             "requester": "Unspecified",
-            "protocol_name": None,
+            "script_path": None,
+            "script_content": None
         }
         self.config = config
 
         self.threadpool = resource["threadpool"]
-        self.scripts = resource["scripts"]
+        # self.scripts = resource["scripts"]
 
         self.setMinimumSize(1050, 110)
 
@@ -127,6 +129,10 @@ class ChannelWidget(QWidget):
         self.settings = self.get_settings()
         for element in self.settings:
             settings.addWidget(element)
+
+        # Script
+        self.script_label = func.label("Script: None", "Current script loaded")
+        left.addWidget(self.script_label)
 
         # Status
         args = ["Loading Status...", "Current Cell Status"]
@@ -162,28 +168,51 @@ class ChannelWidget(QWidget):
         elements.append(func.label(*args))
         elements[-1].setMinimumSize(25, 25)
 
-        # Script selection box
-        available_scripts = []
-        if self.scripts.script_list:
-            self.attributes["protocol_name"] \
-                = self.scripts.script_list[0].title
-            for script in self.scripts.script_list:
-                available_scripts.append(script.title)
-        elements.append(func.combo_box(available_scripts,
-                                       "Select scripts to run",
-                                       "protocol_name",
-                                       self.set))
+        # Script File Dialog
+        elements.append(func.button('Script','Open Script file', connect=self.set_script))
 
         # Line Edits
         editables = [
             ["Cell ID", "Cell identification", "cellid"],
             ["Log file", "File to log to, placed in specified logs folder",
                 "path"],
+            ["Mass", "Mass of Cell", "mass"],
+            ["Comment", "Unparsed Comment", "comment"], 
         ]
         for line in editables:
             elements.append(func.line_edit(*line, self.set))
 
+        # Combo Boxes
+        selectables = [
+            [["Pouch", "Coin", "Cylindrical", "Unknown"],
+                "Package Type", "package"],
+            [["Full",  "Half", "AnodeHalf", "CathodeHalf", "LithiumLithium",
+                "Symmetric", "Unknown"],
+                "Cell Type", "celltype"],
+            [["Unspecified", "VC", "GE", "LK"],
+                "Requester", "requester"],
+        ]
+        for box in selectables:
+            elements.append(func.combo_box(*box, self.set))
+
         return elements
+
+    def set_script(self, button_text):
+        filename = QFileDialog.getOpenFileName(
+            self,
+            "Open Script",
+            self.config["record_dir"] + "/scripts")
+        print(filename)
+        filepath = Path(filename[0]).resolve().absolute()
+        self.attributes['script_path'] = str(filepath)
+        try:
+            self.attributes['script_content'] = open(self.attributes['script_path'], "r").read()
+            self.script_label.setText(f'Script: {filepath.name}')
+        except (UnicodeDecodeError, PermissionError) as error:
+            logger.error(f"cyckei.client.channel_tab.ChannelWidget.set_script: Could not read file: {self.attributes['script_path']}")
+            logger.exception(error)
+        
+
 
     def get_controls(self):
         buttons = [
@@ -205,7 +234,7 @@ class ChannelWidget(QWidget):
             worker = workers.Read(self.config, self)
         else:
             worker = workers.Control(
-                self.config, self, text.lower(), self.scripts, temp=False)
+                self.config, self, text.lower(), temp=False)
         worker.signals.status.connect(func.feedback)
         self.threadpool.start(worker)
 
