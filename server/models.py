@@ -190,8 +190,8 @@ smu{ch}.source.output = smu{ch}.OUTPUT_ON""".format(ch=self.kch,
         self.source_meter.write(
             "current, voltage = smu{}.measure.iv()".format(self.kch)
         )
-        current = float(self.source_meter.ask("print(current)"))
-        voltage = float(self.source_meter.ask("print(voltage)"))
+        current = float(self.source_meter.query("print(current)"))
+        voltage = float(self.source_meter.query("print(voltage)"))
 
         # The Keithley will report totally out of range numbers like 9.91e+37
         # if asked to e.g. charge to 3.9V when the cell is already at 4.2V
@@ -208,8 +208,8 @@ smu{ch}.source.output = smu{ch}.OUTPUT_ON""".format(ch=self.kch,
         self.source_meter.write(
             "current, voltage = smu{}.measure.iv()".format(self.kch)
         )
-        current = float(self.source_meter.ask("print(current)"))
-        voltage = float(self.source_meter.ask("print(voltage)"))
+        current = float(self.source_meter.query("print(current)"))
+        voltage = float(self.source_meter.query("print(voltage)"))
         self.data.append([t, current, voltage])
 
         if len(self.data) > self.data_max_len:
@@ -252,5 +252,5 @@ smu{ch}.source.output = smu{ch}.OUTPUT_ON""".format(ch=self.kch,
     def write(self, *args, **kwargs):
         self.source_meter.write(*args, **kwargs)
 
-    def ask(self, *args, **kwargs):
-        self.source_meter.ask(*args, **kwargs)
+    def query(self, *args, **kwargs):
+        self.source_meter.query(*args, **kwargs)
