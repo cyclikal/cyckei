@@ -17,6 +17,8 @@ logger = logging.getLogger('cyckei')
 def handle_exception(exc_type, exc_value, exc_traceback):
     logger.error("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
 sys.excepthook = handle_exception
+
+
 def help():
     """Direct to help"""
     msg = "For help refer to the HELP.md and README.md files located in" \
@@ -56,20 +58,18 @@ class MainWindow(QMainWindow):
             resource["threadpool"].maxThreadCount()
         ))
 
-        # Load scripts
-        resource["scripts"] = ScriptList(config)
+        # # Load scripts
+        # resource["scripts"] = ScriptList(config)
 
         # Create menu and status bar
         self.create_menu()
         self.status_bar = self.statusBar()
 
-        # Create Tabs
-        layout = QHBoxLayout()
-        self.setLayout(layout)
+        # Create ChannelTab
         self.channelView = ChannelTab(config, resource, self)
-        layout.addWidget(self.channelView)
-        self.threadpool = resource["threadpool"]
         self.channels = self.channelView.channels
+        self.setCentralWidget(self.channelView)
+
 
     def create_menu(self):
         """Setup menu bar"""
