@@ -122,22 +122,19 @@ class Read(QRunnable):
 
 class Control(QRunnable):
     """Update json and send "start" function to server"""
-    def __init__(self, config, channel, command, scripts=None,
-                 script=None, temp=False):
+    def __init__(self, config, channel, command, temp=False):
         super(Control, self).__init__()
         self.channel = channel
+        self.script = None
         self.config = config
         self.command = command
-        self.scripts = scripts
-        self.script = script
         self.signals = Signals()
         self.temp = temp
 
     @Slot()
     def run(self):
-        if self.command == "start" and self.script is None:
-            self.script = self.scripts.by_title(
-                self.channel.attributes["protocol_name"]).content
+        if self.command == "start" and self.channel.attributes['script_content'] is not None:
+            self.script = self.channel.attributes['script_content']
             script_ok, msg = Check(self.config, self.script).run()
             if script_ok is False:
                 self.signals.status.emit("Script Failed", self.channel)
