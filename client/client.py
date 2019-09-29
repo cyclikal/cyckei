@@ -2,13 +2,14 @@
 
 import logging
 import functools
+import sys
 
-from PySide2.QtWidgets import QMainWindow, QTabWidget, QHBoxLayout
+from PySide2.QtWidgets import QMainWindow, QTabWidget, QHBoxLayout, QVBoxLayout
 from PySide2.QtCore import QThreadPool
 
 from .channel_tab import ChannelTab
 from . import workers
-from .scripts import ScriptList
+# from .scripts import ScriptList
 import functions as func
 
 logger = logging.getLogger('cyckei')
