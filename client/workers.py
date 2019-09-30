@@ -29,7 +29,7 @@ def prepare_json(channel, function, protocol, temp):
     else:
         dir = os.path.join(channel.attributes["record_folder"],
                           str(date.today().year))
-        
+
         os.makedirs(dir, exist_ok=True)
 
     packet["kwargs"]["meta"]["path"] \
@@ -122,7 +122,8 @@ class Read(QRunnable):
 
 class Control(QRunnable):
     """Update json and send "start" function to server"""
-    def __init__(self, config, channel, command, temp=False):
+    def __init__(self, config, channel, command, script=None, temp=False):
+        # TODO: Make sure read passes correct script
         super(Control, self).__init__()
         self.channel = channel
         self.script = None
