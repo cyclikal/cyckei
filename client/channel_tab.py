@@ -173,27 +173,11 @@ class ChannelWidget(QWidget):
 
         # Line Edits
         editables = [
-            ["Cell ID", "Cell identification", "cellid"],
             ["Log file", "File to log to, placed in specified logs folder",
                 "path"],
-            ["Mass", "Mass of Cell", "mass"],
-            ["Comment", "Unparsed Comment", "comment"], 
         ]
         for line in editables:
             elements.append(func.line_edit(*line, self.set))
-
-        # Combo Boxes
-        selectables = [
-            [["Pouch", "Coin", "Cylindrical", "Unknown"],
-                "Package Type", "package"],
-            [["Full",  "Half", "AnodeHalf", "CathodeHalf", "LithiumLithium",
-                "Symmetric", "Unknown"],
-                "Cell Type", "celltype"],
-            [["Unspecified", "VC", "GE", "LK"],
-                "Requester", "requester"],
-        ]
-        for box in selectables:
-            elements.append(func.combo_box(*box, self.set))
 
         return elements
 
@@ -211,7 +195,7 @@ class ChannelWidget(QWidget):
         except (UnicodeDecodeError, PermissionError) as error:
             logger.error(f"cyckei.client.channel_tab.ChannelWidget.set_script: Could not read file: {self.attributes['script_path']}")
             logger.exception(error)
-        
+
 
 
     def get_controls(self):
