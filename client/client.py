@@ -18,25 +18,6 @@ def handle_exception(exc_type, exc_value, exc_traceback):
     logger.error("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
 sys.excepthook = handle_exception
 
-
-def help():
-    """Direct to help"""
-    msg = "For help refer to the HELP.md and README.md files located in" \
-          "the cyckei install location, or online on our GitLab page." \
-          "\n\ngitlab.com/cyclikal/cyckei"
-    func.message(msg)
-
-
-def about(version):
-    """Display basic information about cyckei"""
-    msg = "Cyckei version {}\n\n" \
-          "Cyckei is developed by Gabriel Ewig and Vincent Chevrier " \
-          "at Cyclikal, LLC.\n\n Updates and source code can be found " \
-          "on GitLab at gitlab.com/cyclikal/cyckei. \n\nFor information" \
-          "about Cyclikal, visit cyclikal.com.".format(version)
-    func.message(msg)
-
-
 class MainWindow(QMainWindow):
     """Main Window class which is and sets up itself"""
     # Setup main windows
@@ -72,11 +53,6 @@ class MainWindow(QMainWindow):
         """Setup menu bar"""
 
         entries = {
-            "Client": [
-                ["&Info", functools.partial(about, self.config["version"]),
-                    "About Cyckei"],
-                ["&Help", help, "Help Using Cyckei"]
-            ],
             "Server": [
                 ["&Ping", self.ping_server, "Test Connection to Server"]
             ],
