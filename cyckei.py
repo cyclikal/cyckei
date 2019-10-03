@@ -20,7 +20,7 @@ import functions as func
 
 def handle_exception(exc_type, exc_value, exc_traceback):
     logger.error("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
-sys.excepthook = handle_exception 
+sys.excepthook = handle_exception
 
 
 def main(record_dir="Cyckei"):
@@ -71,11 +71,10 @@ def main(record_dir="Cyckei"):
     logger.info("cyckei.main: Initializing Cyckei version {}".format(
         config["version"]))
     logger.debug("cyckei.main: Logging at debug level")
-    
+
     # Create QApplication
     logger.debug("cyckei.main: Creating QApplication")
     app = QApplication(sys.argv)
-    app.setStyle("fusion")
     app.setQuitOnLastWindowClosed(False)
     app.setWindowIcon(QIcon(func.find_path("assets/cyckei.png")))
 
