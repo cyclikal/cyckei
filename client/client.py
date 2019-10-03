@@ -47,9 +47,6 @@ class MainWindow(QMainWindow):
         self.config = config
         self.resize(1100, 600)
 
-        self.setStyleSheet(
-            open(func.find_path("assets/style.css"), "r").read())
-
         resource = {}
         # Setup ThreadPool
         resource["threadpool"] = QThreadPool()
