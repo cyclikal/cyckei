@@ -200,7 +200,6 @@ class ChannelWidget(QWidget):
 
     def get_controls(self):
         buttons = [
-            ["Read Cell", "Read Voltage of Connected Cell"],
             ["Start", "Start Cycle"],
             ["Pause", "Pause Cycle"],
             ["Resume", "Resume Cycle"],
