@@ -203,8 +203,6 @@ class ChannelWidget(QWidget):
     def get_controls(self):
         buttons = [
             ["Start", "Start Cycle"],
-            ["Pause", "Pause Cycle"],
-            ["Resume", "Resume Cycle"],
             ["Stop", "Stop Cycle"],
         ]
         elements = []
