@@ -175,6 +175,8 @@ class ChannelWidget(QWidget):
         editables = [
             ["Log file", "File to log to, placed in specified logs folder",
                 "path"],
+            ["Cell ID", "Cell identification", "cellid"],
+            ["Comment", "Unparsed Comment", "comment"],
         ]
         for line in editables:
             elements.append(func.line_edit(*line, self.set))
