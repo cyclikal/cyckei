@@ -50,7 +50,7 @@ def main(record_dir="Cyckei"):
         # Create handlers
         c_handler = logging.StreamHandler()
         f_handler = logging.FileHandler("{}/cyckei.log".format(record_dir))
-        c_handler.setLevel(logging.DEBUG)
+        c_handler.setLevel(logging.INFO)
         f_handler.setLevel(config["verbosity"])
 
         # Create formatters and add it to handlers
