@@ -38,3 +38,12 @@ loadandrunscript startupscript()
     setup.save(1)
     setup.poweron = 1
 endscript
+
+loadscript safety()
+    function safetycutoff(t)
+        delay(t)
+        smua.source.output = smua.OUTPUT_OFF
+        smub.source.output = smub.OUTPUT_OFF
+    end
+endscript
+safety()
