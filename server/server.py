@@ -68,6 +68,9 @@ def main(config, socket):
         max_counter = 1e9
         counter = 0
         initial_time = time.time()
+        last_heartbeat = time.time()
+        heartbeat_delta = 60 # seconds
+
         logger.info("cyckei.server.server.main: Starting main server loop")
         while True:
             current_time = '{0:02.0f}.{1:02.0f}'.format(
@@ -89,6 +92,7 @@ def main(config, socket):
 
                 channels_message = ""
                 timing_message = ""
+
                 for runner in runners:
 
                     if runner.status == STATUS.pending:
@@ -117,6 +121,11 @@ def main(config, socket):
                 )
                 for i in ipop:
                     runners.pop(i)
+
+                # if time.time() - last_heartbeat > heartbeat_delta:
+                #     for runner in runners:
+                #         runner.heartbeat()
+                #     last_heartbeat = time.time()
 
             time.sleep(0.1)
 
