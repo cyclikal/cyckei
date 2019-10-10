@@ -15,6 +15,16 @@ def source_from_gpib(gpib_address, channel):
     return Source(source_meter, channel)
 
 
+def with_safety():
+    def decorator(fn):
+        def decorated(self, *args, **kwargs):
+            self.write('abort')
+            response = fn(self, *args, **kwargs)
+            self.write(f'safetycutoff({self.safety_reset_seconds})')
+            return response
+        return decorated
+    return decorator
+
 class Keithley2602(object):
     """Represents a single keithley Interface"""
 
@@ -25,7 +35,7 @@ class Keithley2602(object):
                       100e-6, 1e-3, 0.01,
                       0.1, 1.0, 3.0]
 
-    def __init__(self, gpib_addr, load_scripts=True):
+    def __init__(self, gpib_addr, load_scripts=True, safety_reset_seconds=120):
         resource_manager = visa.ResourceManager()
         self.gpib_addr = gpib_addr
         self.source_meter = resource_manager.open_resource(
@@ -35,6 +45,23 @@ class Keithley2602(object):
         self.source_meter.write("reset()")
         if load_scripts:
             self.source_meter.write(self.script_startup)
+        else:
+            # No matter what we need the safety shutoff script
+            safety_shutoff_script = \
+'''
+loadscript safety()
+    function safetycutoff(t)
+        delay(t)
+        smua.source.output = smua.OUTPUT_OFF
+        smub.source.output = smub.OUTPUT_OFF
+    end
+endscript
+safety()
+'''
+            self.source_meter.write(safety_shutoff_script)
+        
+        self.safety_reset_seconds = safety_reset_seconds
+
 
     def get_source(self, kch, channel=None):
         """Get source object of Keithley"""
@@ -93,6 +120,7 @@ class Source(object):
             self.set_text(text1="Channel {}".format(self.channel))
 
     def off(self):
+        self.write('abort')
         self.source_meter.write(
             "smu{ch}.source.output = smu{ch}.OUTPUT_OFF".format(ch=self.kch)
         )
@@ -100,6 +128,7 @@ class Source(object):
     def get_range(self, current):
         return min([c for c in self.current_ranges if c > abs(current)])
 
+    @with_safety
     def set_current(self, current, v_limit):
         """
         Set the current on the Source
@@ -123,6 +152,7 @@ smu{ch}.source.output = smu{ch}.OUTPUT_ON""".format(ch=self.kch,
 
         self._run_script(script, "setcurrent")
 
+    @with_safety
     def rest(self, v_limit=5.0):
         self.set_current(0.0, v_limit)
 
@@ -133,6 +163,7 @@ smu{ch}.source.output = smu{ch}.OUTPUT_ON""".format(ch=self.kch,
         return self.source_meter.write(instruction)
 
     def pause(self):
+        self.write('abort')
         self.write(
             "smu{ch}.source.output = smu{ch}.OUTPUT_OFF".format(ch=self.kch)
         )
@@ -174,6 +205,7 @@ smu{ch}.source.output = smu{ch}.OUTPUT_ON""".format(ch=self.kch,
             self.write("display.setcursor(2,{})".format(startpos))
             self.write('display.settext("{}")'.format(text2.ljust(16)))
 
+    @with_safety
     def set_voltage(self, voltage, i_limit):
         script = \
             """display.screen = display.SMUA_SMUB
@@ -186,6 +218,7 @@ smu{ch}.source.output = smu{ch}.OUTPUT_ON""".format(ch=self.kch,
             """.format(ch=self.kch, voltage=voltage, current=i_limit)
         self._run_script(script, "setvoltage")
 
+    @with_safety
     def read_iv(self):
         self.source_meter.write(
             "current, voltage = smu{}.measure.iv()".format(self.kch)
@@ -203,6 +236,7 @@ smu{ch}.source.output = smu{ch}.OUTPUT_ON""".format(ch=self.kch,
             voltage = 0.0
         return current, voltage
 
+    @with_safety
     def read_data(self):
         t = time.time()
         self.source_meter.write(
