@@ -5,7 +5,7 @@ import operator
 import logging
 
 DATETIME_FORMAT = '%Y-%m-%d_%H:%M:%S.%f'
-NEVER = 2 * time.time()
+NEVER = float('inf')
 
 OPERATOR_MAP = {
     "<": operator.lt,
@@ -93,12 +93,24 @@ class CellRunner(object):
         else:
             self.cycle = 0
         self.prev_cycle = None
-        self.next_time = -1
+        self._next_time = -1
         self.channel = self.meta["channel"]
         self.data_format = "    " + ",".join(["{:0.8g}"] * 4) + "\n"
         self.last_data = None
         self.total_pause_time = 0.0
         self.source = None
+        self.safety_reset_seconds = None
+
+    @property
+    def next_time(self):
+        return self._next_time
+
+    @next_time.setter
+    def next_time(self, value):
+        if self.safety_reset_seconds and value < NEVER:
+            self._next_time = min(time.time()+self.safety_reset_seconds, value)
+        else:
+            self._next_time = value
 
     def set_source(self, source):
         self.source = source
@@ -108,6 +120,8 @@ class CellRunner(object):
                 "channel ({}) should be identical".format(
                     self.channel, source.channel
                 ))
+        self.safety_reset_seconds = source.safety_reset_seconds * 0.5
+        
 
     def set_cap_signs(self, direction=None):
         """
@@ -429,6 +443,7 @@ class ProtocolStep(object):
         self.report_conditions = []
 
         self.parent.add_step(self)
+
 
     def _start(self):
         raise NotImplementedError
