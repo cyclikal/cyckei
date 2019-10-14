@@ -1,4 +1,6 @@
 loadandrunscript startupscript()
+    -- abort in case anything else is already running
+    abort
     -- Turn off beeper
     beeper.enable = beeper.OFF
     --
@@ -46,4 +48,6 @@ loadscript safety()
         smub.source.output = smub.OUTPUT_OFF
     end
 endscript
+display.setcursor(1,1)
+display.settext("safety")
 safety()
