@@ -4,6 +4,10 @@ from datetime import datetime
 import operator
 import logging
 
+
+logger = logging.getLogger('cyckei')
+
+
 DATETIME_FORMAT = '%Y-%m-%d_%H:%M:%S.%f'
 NEVER = float('inf')
 
@@ -219,7 +223,7 @@ class CellRunner(object):
         -------
         None
         """
-        logging.info(
+        logger.info(
             "cyckei.server.protocols.CellRunner._start:"
             "Starting cellrunner instance (channel: {})".format(self.channel)
         )
@@ -261,7 +265,7 @@ class CellRunner(object):
             False if it is complete
 
         """
-        logging.debug("cyckei.server.protocols.CellRunner.run: "
+        logger.debug("cyckei.server.protocols.CellRunner.run: "
                       "Entering method for channel {}".format(self.channel))
         if self.status == STATUS.completed:
             return False
@@ -470,7 +474,7 @@ class ProtocolStep(object):
             returns non if no data to report
 
         """
-        logging.debug(
+        logger.debug(
             "cyckei.server.protocols.ProtocolStep.run:"
             "running {} protocol on channel {}".format(self.state_str,
                                                        self.parent.channel)
@@ -951,9 +955,9 @@ class ConditionDelta(Condition):
                                                  self.index)
                     step.next_time = min(next_time, step.next_time)
 
-                logging.debug("cyckei.server.protocols.ConditionDelta: "
-                              "{}, set next_time to {}".format(self.value_str,
-                                                               step.next_time))
+                logger.debug("cyckei.server.protocols.ConditionDelta: "
+                              "{}, set next_time to {:.2f} (in {:.2f} sec)".format(self.value_str,
+                                                               step.next_time, step.next_time-time.time()))
 
                 if self.comparison(abs(val - step.report[-1][self.index]),
                                    self.delta):
@@ -1021,7 +1025,7 @@ class ConditionTotalTime(ConditionTotalDelta):
             else:
                 next_time = self.delta - delta + time.time()
                 step.next_time = min(step.next_time, next_time)
-                logging.debug(
+                logger.debug(
                     "cyckei.server.protocols.ConditionTotalTime: "
                     "{}, set next_time to {}".format(self.value_str,
                                                      step.next_time))
@@ -1073,7 +1077,7 @@ class ConditionAbsolute(Condition):
                                                  self.value,
                                                  self.index)
                     step.next_time = min(next_time, step.next_time)
-                    logging.debug(
+                    logger.debug(
                         "cyckei.server.protocols.ConditionTotalTime: "
                         "{}, set next_time to {}".format(self.value_str,
                                                          step.next_time))
@@ -1136,15 +1140,21 @@ def extrapolate_time(data, target, index):
         next_time = ((target - d1[index])
                      / (d1[index] - d0[index])
                      * (d1[0] - d0[0]) + d1[0])
+        current_time=time.time()
+        logger.debug(
+            "cyckei.server.protocols.extrapolate_time: "
+            "Current time {:.2f} Extrapolated time {:.2f} (in {:.2f} sec) using {} index and target value {}".format(
+                current_time, next_time, next_time-current_time, DATA_NAME_MAP[index], target)
+            )
 
     except (NameError, IndexError, ZeroDivisionError):
-        next_time = time.time()
+        next_time = NEVER
+        logger.debug(
+            "cyckei.server.protocols.extrapolate_time: "
+            "Failed extrapolating, next_time: {}".format(next_time)
+            )
 
-    logging.debug(
-        "cyckei.server.protocols.extrapolate_time: "
-        "Extrapolated time {} using {} index and target value {}".format(
-            next_time, DATA_NAME_MAP[index], target)
-        )
+
 
     return next_time
 
