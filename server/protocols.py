@@ -941,8 +941,13 @@ class ConditionDelta(Condition):
                     step.next_time = min(next_time, step.next_time)
                 else:
                     val = step.data[-1][self.index]
+                    if step.state_str.lower().startswith('discharge') and self.value_str == 'voltage':
+                        target_value = val - self.delta
+                    else:
+                        target_value = val + self.delta
+
                     next_time = extrapolate_time(step.data,
-                                                 val + self.delta,
+                                                 target_value,
                                                  self.index)
                     step.next_time = min(next_time, step.next_time)
 
