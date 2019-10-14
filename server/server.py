@@ -6,7 +6,6 @@ import os
 import time
 import traceback
 from collections import OrderedDict
-
 import zmq
 from visa import VisaIOError
 
@@ -65,11 +64,10 @@ def main(config, socket):
                 config["zmq"]["port"])
         )
 
+        time.sleep(2)
         max_counter = 1e9
         counter = 0
         initial_time = time.time()
-        last_heartbeat = time.time()
-        heartbeat_delta = 60 # seconds
 
         logger.info("cyckei.server.server.main: Starting main server loop")
         while True:
@@ -121,11 +119,6 @@ def main(config, socket):
                 )
                 for i in ipop:
                     runners.pop(i)
-
-                # if time.time() - last_heartbeat > heartbeat_delta:
-                #     for runner in runners:
-                #         runner.heartbeat()
-                #     last_heartbeat = time.time()
 
             time.sleep(0.1)
 
