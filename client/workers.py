@@ -35,6 +35,10 @@ def prepare_json(channel, function, protocol, temp):
     packet["kwargs"]["meta"]["path"] \
         = os.path.join(dir, channel.attributes["path"])
 
+    # Force the file extension to be .pyb by simply adding it (not replacing)
+    if not packet["kwargs"]["meta"]["path"].lower().endswith('.pyb'):
+        packet["kwargs"]["meta"]["path"] += '.pyb'
+
     return packet
 
 
