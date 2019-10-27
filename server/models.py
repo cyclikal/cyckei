@@ -149,7 +149,7 @@ class Source(object):
         current: float
             desired current in Amps
         v_limit: float
-            voltage limit for source. This is currently hard coded to 5V. ANY VALUES GIVEN WILL BE IGNORED
+            voltage limit for source. This is not a voltage cutoff condition. It is the maximum voltage allowed by the Keithley under any condition
         """
         script = """display.screen = display.SMUA_SMUB
 display.smu{ch}.measure.func = display.MEASURE_DCVOLTS
@@ -159,7 +159,7 @@ smu{ch}.source.leveli = {current}
 smu{ch}.source.limitv = {v_limit}
 smu{ch}.source.output = smu{ch}.OUTPUT_ON""".format(ch=self.kch,
                                                     current=current,
-                                                    v_limit=5.0)
+                                                    v_limit=v_limit)
 
         self._run_script(script, "setcurrent")
 
