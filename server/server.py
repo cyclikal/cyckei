@@ -156,35 +156,46 @@ def process_socket(socket, runners, sources, server_time):
             try:
                 # a message has been received
                 fun = msg["function"]
-                logger.debug("cyckei.server.server.process_socket: Packet request received: {}".format(fun))
+                
                 kwargs = msg.get("kwargs", None)
                 # response = {"version": __version__, "response": None}
                 resp = "Unknown function"
                 if fun == "start":
+                    logger.debug("cyckei.server.server.process_socket: Packet request received: {}".format(fun))
                     try:
                         resp = start(kwargs["channel"], kwargs["meta"],
                                     kwargs["protocol"], runners, sources)
                     except Exception:
                         resp = "Error occured when running script."
-                        logger.warning("Error occured when running script.")
+                     logger.debug("cyckei.server.server.process_socket: Sending response: {}".format(resp))
 
                 elif fun == "pause":
+                    logger.debug("cyckei.server.server.process_socket: Packet request received: {}".format(fun))
                     resp = pause(kwargs["channel"], runners)
+                    logger.debug("cyckei.server.server.process_socket: Sending response: {}".format(resp))
 
                 elif fun == "resume":
+                    logger.debug("cyckei.server.server.process_socket: Packet request received: {}".format(fun))
                     resp = resume(kwargs["channel"], runners)
+                    logger.debug("cyckei.server.server.process_socket: Sending response: {}".format(resp))
 
                 elif fun == "test":
+                    logger.debug("cyckei.server.server.process_socket: Packet request received: {}".format(fun))
                     resp = test(kwargs["protocol"])
+                    logger.debug("cyckei.server.server.process_socket: Sending response: {}".format(resp))
 
                 elif fun == "stop":
+                    logger.debug("cyckei.server.server.process_socket: Packet request received: {}".format(fun))
                     resp = stop(kwargs["channel"], runners)
+                    logger.debug("cyckei.server.server.process_socket: Sending response: {}".format(resp))
 
                 elif fun == "ping":
+                    logger.debug("cyckei.server.server.process_socket: Packet request received: {}".format(fun))
                     port = socket.getsockopt_string(
                         zmq.LAST_ENDPOINT
                     ).split(":")[-1]
                     resp = "True: server is running on port {}".format(port)
+                    logger.debug("cyckei.server.server.process_socket: Sending response: {}".format(resp))
 
                 elif fun == "info_channel":
                     resp = info_channel(kwargs["channel"], runners, sources)
@@ -193,7 +204,7 @@ def process_socket(socket, runners, sources, server_time):
                     resp = info_all_channels(runners, sources)
 
                 response["response"] = resp
-                logger.debug("cyckei.server.server.process_socket: Sending response: {}".format(response))
+                
                 socket.send_json(response)
             except (IndexError, ValueError, TypeError, NameError) as exception:
                 logger.exception(exception)
@@ -204,7 +215,7 @@ def process_socket(socket, runners, sources, server_time):
                     )
                 )
                 response["message"] = msg
-                logger.debug("cyckei.server.server.process_socket: Sent response")
+                logger.debug(f"cyckei.server.server.process_socket: Error occurred, sent response: {response['response']}")
                 socket.send_json(response)
 
 
