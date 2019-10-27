@@ -9,7 +9,7 @@ import functions as func
 
 logger = logging.getLogger('cyckei')
 
-
+SCRIPT_RUN_TIME_BUFFER = 2 # seconds, extra time to give the Keithley to load the program
 
 def source_from_gpib(gpib_address, channel):
     """Opens GPIB resource and returns as Source object"""
@@ -165,7 +165,7 @@ smu{ch}.source.output = smu{ch}.OUTPUT_ON""".format(ch=self.kch,
 
         # If the keithley gets hit with a "read" (and hence an abort) too quickly after trying to load the 
         # script it will fail to load it
-        time.sleep(1)
+        time.sleep(SCRIPT_RUN_TIME_BUFFER)
 
 
     @with_safety
@@ -233,7 +233,7 @@ smu{ch}.source.output = smu{ch}.OUTPUT_ON""".format(ch=self.kch,
             smu{ch}.source.output = smu{ch}.OUTPUT_ON
             """.format(ch=self.kch, voltage=voltage, current=i_limit)
         self._run_script(script, "setvoltage")
-        time.sleep(1)
+        time.sleep(SCRIPT_RUN_TIME_BUFFER)
 
     @with_safety
     def read_iv(self):
