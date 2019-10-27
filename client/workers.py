@@ -79,8 +79,8 @@ class UpdateStatus(QRunnable):
                           + ", V: " + func.not_none(info["voltage"]))
             except (TypeError, KeyError):
                 status = "Could not get status!"
-            logger.debug("cyckei.client.workers.UpdateStatus.run: Updating channel {} with status {}".format(
-                channel.attributes["channel"], status))
+            # logger.debug("cyckei.client.workers.UpdateStatus.run: Updating channel {} with status {}".format(
+            #     channel.attributes["channel"], status))
             channel.status.setText(status)
             # Make cleaner
             try:
