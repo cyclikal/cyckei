@@ -49,13 +49,15 @@ STATUS.started = 1
 STATUS.paused = 2
 STATUS.completed = 3
 STATUS.unknown = 4
+STATUS.nocontrol = 5
 STATUS.string_map = {
     STATUS.pending: "pending",
     STATUS.started: "started",
     STATUS.paused: "paused",
     STATUS.completed: "completed",
     STATUS.unknown: "unknown",
-    STATUS.available: "available"
+    STATUS.available: "available",
+    STATUS.nocontrol: "no control"
 }
 
 
@@ -270,6 +272,9 @@ class CellRunner(object):
         if self.status == STATUS.completed:
             return False
 
+        if self.status == STATUS.nocontrol:
+            return False
+
         if self.status == STATUS.paused:
             return False
 
@@ -280,6 +285,10 @@ class CellRunner(object):
             self.write_step_header()
 
         self.read_and_write(force_report=force_report)
+
+        if self.step.status == STATUS.nocontrol:
+            self.close()
+            self.status = STATUS.nocontrol
 
         if self.step.status == STATUS.completed:
             self.next_step()
@@ -446,6 +455,10 @@ class ProtocolStep(object):
         self.end_conditions = []
         self.report_conditions = []
 
+        # Boolean indicating if the protocol step is occurring within
+        # it's designed parameters
+        self.in_control = True
+
         self.parent.add_step(self)
 
 
@@ -494,11 +507,12 @@ class ProtocolStep(object):
 
         self.check_end_conditions()
 
-        if self.status == STATUS.completed:
+        if self.status == STATUS.completed or self.status == STATUS.nocontrol:
             report_data = True
 
         else:
             report_data = self.check_report_conditions()
+
 
         if report_data or force_report:
             self.report.append(self.data[-1])
@@ -531,9 +545,30 @@ class ProtocolStep(object):
                 return True
         return False
 
+    def check_in_control(self, last_time, current, voltage):
+        '''
+        Method for checking if the desired condition is actually met
+        For example
+            - constant current : check current is correct
+            - constant voltage: check voltage is correct
+        
+        Parameters
+        ----------
+        last_time: float
+            timestamp of last measurement
+        current: float
+            current in amps. NOTE THAT THIS IS NOT ABSOLUTE CURRENT
+            IT IS THE CURRENT DIRECTLY REPORTED FROM THE INSTRUMENT
+        voltage: float
+            Voltage in volts
+        '''
+        raise NotImplementedError("Please Implement this method")
+
     def read_data(self, force_report=False):
         self.last_time = time.time()
         current, voltage = self.parent.source.read_iv()
+
+        self.check_in_control(self.last_time, current, voltage)
 
         # Currents are reported only in absolute values
         current = abs(current)
@@ -649,10 +684,13 @@ class CurrentStep(ProtocolStep):
             raise ValueError("current argument should be non-zero")
         self.current = current
 
-        self.v_limit = sign * 5.0
-        for e in ends:
-            if e[0] == "voltage":
-                self.v_limit = e[2] + sign * 0.1
+        self.v_limit = 5.0
+        # The concept of v_limit for the Keithley only applies for charge
+        # Here we give ourselves a 0.1 V margin
+        if current > 0:
+            for e in ends:
+                if e[0] == "voltage":
+                    self.v_limit = min(e[2] + 0.1, self.v_limit)
 
         self.report_conditions = process_reports(reports)
         self.end_conditions = process_ends(ends)
@@ -667,6 +705,27 @@ class CurrentStep(ProtocolStep):
                           "date_start_timestr": datetime.now().strftime(
                                 DATETIME_FORMAT)}
                           )
+
+    def check_in_control(self, last_time, current, voltage):
+        '''
+        Method for checking if the desired condition is actually met
+        Returning False will completely kill the cell
+
+        Returns
+        -------
+        bool: True of cell is in control, False otherwise        
+
+        Modifies
+        --------
+        self.in_control
+        '''
+        if self.data:
+            self.in_control = abs((current-self.current)/self.current) < 0.95
+        
+        if not self.in_control:
+            self.status = STATUS.nocontrol
+
+        return self.in_control
 
 
 class CCCharge(CurrentStep):
@@ -730,6 +789,34 @@ class VoltageStep(ProtocolStep):
                             DATETIME_FORMAT)}
                           )
 
+    def check_in_control(self, last_time, current, voltage):
+        '''
+        Method for checking if the desired condition is actually met
+        Returning False will completely kill the cell
+
+        Returns
+        -------
+        bool: True of cell is in control, False otherwise
+
+        Modifies
+        --------
+        self.in_control
+        '''
+        if self.data:
+
+            # Give some leeway if the protocol has just been started
+            tolerance = 0.1
+            dt = last_time - self.data[0][0]
+            if dt > 5:
+                tolerance = 0.01
+
+            # This one is a little loose as the voltage  can take a few steps to stabilize
+            self.in_control = abs((voltage-self.voltage)) < tolerance
+        
+        if not self.in_control:
+            self.status = STATUS.nocontrol
+
+        return self.in_control
 
 class CVCharge(VoltageStep):
     def __init__(self, voltage,
