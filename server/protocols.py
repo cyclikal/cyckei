@@ -857,6 +857,8 @@ class AdvanceCycle(ProtocolStep):
         self.parent.advance_cycle()
         self.status = STATUS.completed
 
+    def check_in_control(self, *args):
+        return True
 
 class Rest(ProtocolStep):
     def __init__(self,
@@ -877,6 +879,26 @@ class Rest(ProtocolStep):
                           "date_start_timestr": datetime.now().strftime(
                             DATETIME_FORMAT)}
                           )
+
+    def check_in_control(self, last_time, current, voltage):
+        '''
+        Method for checking if the desired condition is actually met
+        Returning False will completely kill the cell
+
+        Returns
+        -------
+        bool: True of cell is in control, False otherwise        
+
+        Modifies
+        --------
+        self.in_control
+        '''
+        self.in_control = abs(current) < 0.00001
+        
+        if not self.in_control:
+            self.status = STATUS.nocontrol
+
+        return self.in_control
 
 
 class Pause(ProtocolStep):
@@ -906,6 +928,8 @@ class Pause(ProtocolStep):
     def resume(self):
         self.status = STATUS.completed
 
+    def check_in_control(self, *args):
+        return True
 
 class Sleep(ProtocolStep):
     def __init__(self,
@@ -982,6 +1006,25 @@ class Sleep(ProtocolStep):
         else:
             return None
 
+    def check_in_control(self, last_time, current, voltage):
+        '''
+        Method for checking if the desired condition is actually met
+        Returning False will completely kill the cell
+
+        Returns
+        -------
+        bool: True of cell is in control, False otherwise        
+
+        Modifies
+        --------
+        self.in_control
+        '''
+        self.in_control = abs(current) < 0.00001
+        
+        if not self.in_control:
+            self.status = STATUS.nocontrol
+
+        return self.in_control
 
 class Condition(object):
     """
