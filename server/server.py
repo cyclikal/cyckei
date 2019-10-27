@@ -112,6 +112,7 @@ def main(config, socket):
                     )
                 )
 
+                # Discard completed runners
                 ipop = sorted(
                     [i for i, p in enumerate(runners)
                         if p.status == STATUS.completed],
@@ -144,8 +145,8 @@ def process_socket(socket, runners, sources, server_time):
     """
 
     # Check to see if there are new events on the socket
-    # only waits 10 millisecond on the polling
-    events = socket.poll(10)
+    # only waits 1 millisecond on the polling
+    events = socket.poll(1)
     
     if events > 0:
         msg = socket.recv_json()
@@ -225,12 +226,19 @@ def info_channel(channel, runners, sources):
     if runner:
         info["status"] = STATUS.string_map[runner.status]
         info["state"] = runner.step.state_str
+        try:
+            info["current"] = runner.last_data[1]
+            info["voltage"] = runner.last_data[2]
+        except (TypeError):
+            info["current"] = "Not Available"
+            info["voltage"] = "Not Available"
+
     else:
         info["status"] = STATUS.string_map[STATUS.available]
-    for src in sources:
-        if int(src.channel) == int(channel):
-            info["current"], info["voltage"] = src.read_iv()
-            break
+    # for src in sources:
+    #     if int(src.channel) == int(channel):
+    #         info["current"], info["voltage"] = src.read_iv()
+    #         break
     return info
 
 
