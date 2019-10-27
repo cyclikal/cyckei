@@ -167,7 +167,7 @@ def process_socket(socket, runners, sources, server_time):
                                     kwargs["protocol"], runners, sources)
                     except Exception:
                         resp = "Error occured when running script."
-                     logger.debug("cyckei.server.server.process_socket: Sending response: {}".format(resp))
+                    logger.debug("cyckei.server.server.process_socket: Sending response: {}".format(resp))
 
                 elif fun == "pause":
                     logger.debug("cyckei.server.server.process_socket: Packet request received: {}".format(fun))
