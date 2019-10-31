@@ -132,9 +132,8 @@ class Source(object):
 
     def off(self):
         self.write('abort')
-        self.source_meter.write(
-            "smu{ch}.source.output = smu{ch}.OUTPUT_OFF".format(ch=self.kch)
-        )
+        self.write(f"smu{self.kch}.source.offmode = smu{self.kch}.OUTPUT_HIGH_Z")
+        self.write(f"smu{self.kch}.source.output = smu{self.kch}.OUTPUT_OFF")
 
     def get_range(self, current):
         return min([c for c in self.current_ranges if c > abs(current)])
@@ -150,18 +149,20 @@ class Source(object):
             desired current in Amps
         v_limit: float
             voltage limit for source. This is not a voltage cutoff condition. It is the maximum voltage allowed by the Keithley under any condition
+            The Keithley enforces +/- v_limit
+            Having a battery with a voltage outside of +/- v_limit could damage the Keithley
         """
-        script = """display.screen = display.SMUA_SMUB
+        ch = self.kch
+        script = f"""display.screen = display.SMUA_SMUB
 display.smu{ch}.measure.func = display.MEASURE_DCVOLTS
 smu{ch}.source.func = smu{ch}.OUTPUT_DCAMPS
-smu{ch}.source.autorangei = smu{ch}.AUTORANGE_ON
 smu{ch}.source.leveli = {current}
+smu{ch}.source.sink = smu{ch}.{'ENABLE' if current < 0.0 else 'DISABLE'}
 smu{ch}.source.limitv = {v_limit}
-smu{ch}.source.output = smu{ch}.OUTPUT_ON""".format(ch=self.kch,
-                                                    current=current,
-                                                    v_limit=v_limit)
+smu{ch}.source.output = smu{ch}.OUTPUT_ON"""
 
-        self._run_script(script, "setcurrent")
+        self.source_meter.write(script)
+        # self._run_script(script, "setcurrent")
 
         # If the keithley gets hit with a "read" (and hence an abort) too quickly after trying to load the 
         # script it will fail to load it
@@ -173,9 +174,11 @@ smu{ch}.source.output = smu{ch}.OUTPUT_ON""".format(ch=self.kch,
         self.set_current(0.0, v_limit)
 
     def _run_script(self, script, scriptname):
-        instruction = "loadscript {}()\n{}\nendscript\n{}()".format(
-            scriptname, script, scriptname
-        )
+        instruction = \
+f"""loadscript {scriptname}()
+{script}
+endscript
+{scriptname}()"""
         return self.source_meter.write(instruction)
 
     def pause(self):
