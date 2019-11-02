@@ -10,6 +10,7 @@ logger = logging.getLogger('cyckei')
 
 DATETIME_FORMAT = '%Y-%m-%d_%H:%M:%S.%f'
 NEVER = float('inf')
+MIN_WAIT_TIME = 1.0 # minimum number of seconds between voltage measurements
 
 OPERATOR_MAP = {
     "<": operator.lt,
@@ -113,6 +114,10 @@ class CellRunner(object):
 
     @next_time.setter
     def next_time(self, value):
+        # Enforce at least minimum wait time
+        value = max(MIN_WAIT_TIME, value)
+
+        # Enforce at most the safety_reset
         if self.safety_reset_seconds and value < NEVER:
             self._next_time = min(time.time()+self.safety_reset_seconds, value)
         else:
