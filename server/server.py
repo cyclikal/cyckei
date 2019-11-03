@@ -84,7 +84,7 @@ def main(config, socket):
 
             # execute runners or sleep if none
             if runners:
-                logger.debug("cyckei.server.server.main: Looping over runners")
+                # logger.debug("cyckei.server.server.main: Looping over runners")
                 # Sort runners from most urgent to least urgent
                 runners = sorted(runners, key=lambda x: x.next_time)
 
@@ -105,12 +105,12 @@ def main(config, socket):
 
                         if relative_next_time <= 0.0:
                             runner.run()
-                logger.debug(
-                    "cyckei.server.server.main: "
-                    + "channel {} will be checked in approx {} seconds...".format(
-                        channels_message[1:], timing_message[1:]
-                    )
-                )
+               # logger.debug(
+               #     "cyckei.server.server.main: "
+               #     + "channel {} will be checked in approx {} seconds...".format(
+               #         channels_message[1:], timing_message[1:]
+               #     )
+               # )
 
                 # Discard completed runners
                 ipop = sorted(
