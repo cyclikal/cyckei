@@ -239,8 +239,10 @@ def info_channel(channel, runners, sources):
         info["state"] = runner.step.state_str
         try:
             try:
+                # this will be the latest measured point
                 last_data = runner.step.data[-1]
             except (TypeError, IndexError):
+                # this will be the latest reported (written to file) point
                 last_data = runner.last_data
             
             info["current"] = last_data[1]

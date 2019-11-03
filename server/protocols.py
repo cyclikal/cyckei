@@ -251,13 +251,7 @@ class CellRunner(object):
             return self.steps[self.i_current_step]
         except IndexError:
             return None
-
-            # TODO should next_time be a property?
-            # currently there is a protocol.next_time and a step.next_time.
-            # TODO Not sure if this is redundant
-            #    @property
-            #    def next_time(self):
-            #        return self.step.next_time
+            
 
     def run(self, force_report=False):
         """
