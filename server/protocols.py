@@ -10,7 +10,7 @@ logger = logging.getLogger('cyckei')
 
 DATETIME_FORMAT = '%Y-%m-%d_%H:%M:%S.%f'
 NEVER = float('inf')
-MIN_WAIT_TIME = 1.0 # minimum number of seconds between voltage measurements
+MIN_WAIT_TIME = 1.0 # minimum number of seconds between current,voltage measurements
 
 OPERATOR_MAP = {
     "<": operator.lt,
@@ -408,7 +408,7 @@ class ProtocolStep(object):
         Parameters
         ----------
         wait_time: float
-            default waiting time in seconds
+            default waiting time in seconds. If no other conditions are met, the step will check voltage and current at this interval
         """
         # the parent is the CellRunner
         if cellrunner_parent is None:
@@ -1181,7 +1181,7 @@ class ConditionAbsolute(Condition):
             See DATA_INDEX_MAP module variable
             for valid values
         operator_str: str
-            String indicating the ocmparison operator.
+            String indicating the comparison operator.
             See OPERATOR_MAP module variable for valid values
         value: float
             Actual value to compare against
@@ -1193,7 +1193,7 @@ class ConditionAbsolute(Condition):
         self.index = DATA_INDEX_MAP[value_str]
         self.comparison = OPERATOR_MAP[operator_str]
         # at what timestamp do we expect the condition to be met
-        self.next_time = 1e30
+        self.next_time = NEVER
         self.min_time = min_time
 
     def check(self, step):
@@ -1213,9 +1213,7 @@ class ConditionAbsolute(Condition):
                                                  self.index)
                     step.next_time = min(next_time, step.next_time)
                     logger.debug(
-                        "cyckei.server.protocols.ConditionTotalTime: "
-                        "{}, set next_time to {}".format(self.value_str,
-                                                         step.next_time))
+                        f"cyckei.server.protocols.ConditionAbsolute: {self.value_str} set next_time to {step.next_time:.2f} (in {step.next_time - time.time():.2f} sec)")
                     return False
             else:
                 return False
