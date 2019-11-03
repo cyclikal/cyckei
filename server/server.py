@@ -238,8 +238,14 @@ def info_channel(channel, runners, sources):
         info["status"] = STATUS.string_map[runner.status]
         info["state"] = runner.step.state_str
         try:
-            info["current"] = runner.last_data[1]
-            info["voltage"] = runner.last_data[2]
+            try:
+                last_data = runner.step.data[-1]
+            except (TypeError, IndexError):
+                last_data = runner.last_data
+            
+            info["current"] = last_data[1]
+            info["voltage"] = last_data[2]                
+
         except (TypeError):
             info["current"] = "Not Available"
             info["voltage"] = "Not Available"
