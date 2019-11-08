@@ -39,6 +39,12 @@
 --     setup.poweron = 1
 -- endscript
 
+loadandrunscript startupscript()
+    -- Four wire sensing ChA and ChB (4W).
+    smua.sense = smua.SENSE_REMOTE
+    smub.sense = smub.SENSE_REMOTE
+endscript
+
 loadscript safety()
     function safetycutoff(t)
         delay(t)
