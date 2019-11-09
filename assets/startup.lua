@@ -43,6 +43,10 @@ loadandrunscript startupscript()
     -- Four wire sensing ChA and ChB (4W).
     smua.sense = smua.SENSE_REMOTE
     smub.sense = smub.SENSE_REMOTE
+    smua.source.output = smua.OUTPUT_HIGH_Z
+    smub.source.output = smub.OUTPUT_HIGH_Z
+    smua.source.offmode = smua.OUTPUT_HIGH_Z
+    smub.source.offmode = smub.OUTPUT_HIGH_Z
 endscript
 
 loadscript safety()
