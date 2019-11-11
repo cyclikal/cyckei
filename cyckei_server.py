@@ -6,16 +6,11 @@ import logging
 logger = logging.getLogger('cyckei')
 logger.setLevel(logging.DEBUG) # base level must be lower than all handlers
 
-import traceback
-import threading
 
 import zmq
-from PySide2.QtWidgets import QApplication
-from PySide2.QtGui import QIcon
 
 from server import server
-from client import client
-from applet import applet
+
 import functions as func
 
 def handle_exception(exc_type, exc_value, exc_traceback):
@@ -68,56 +63,37 @@ def main(record_dir="Cyckei"):
         print("An error occured before logging began.")
         print(e)
 
-    logger.info("cyckei.main: Initializing Cyckei version {}".format(
+    logger.info("cyckei_server.main: Initializing Cyckei Server version {}".format(
         config["version"]))
     logger.debug("cyckei.main: Logging at debug level")
 
-    # Create QApplication
-    logger.debug("cyckei.main: Creating QApplication")
-    app = QApplication(sys.argv)
-    app.setQuitOnLastWindowClosed(False)
-    app.setWindowIcon(QIcon(func.find_path("assets/cyckei.png")))
+    # Create Server's ZMQ Socket
+    logger.debug("cyckei.server.server.main: Binding socket")
+    try:
+        context = zmq.Context(1)
+        socket = context.socket(zmq.REP)
+        socket.bind("{}:{}".format(config["zmq"]["server-address"],
+                                   config["zmq"]["port"]))
 
-    # # Create Server's ZMQ Socket
-    # logger.debug("cyckei.server.server.main: Binding socket")
-    # try:
-    #     context = zmq.Context(1)
-    #     socket = context.socket(zmq.REP)
-    #     socket.bind("{}:{}".format(config["zmq"]["server-address"],
-    #                                config["zmq"]["port"]))
-    # except zmq.error.ZMQError as error:
-    #     logger.critical(
-    #         "It appears the server is already running: ".format(error))
-    #     msg = [
-    #         "Cyckei Instance Already Running!",
-    #         "To show client, open taskbar widget and click \"Launch Client\"",
-    #         func.Critical,
-    #         "Failed to initialize socket. "
-    #         "This indicates an existing server insance. "
-    #         "Error: {}".format(error)
-    #     ]
-    #     func.message(*msg)
-    #     return
-    # logger.debug("cyckei.server.server.main: Socket bound successfully")
+    except zmq.error.ZMQError as error:
+        logger.critical(
+            "It appears the server is already running: {}".format(error))
+        msg = [
+            "Cyckei Instance Already Running!",
+            "To show client, open taskbar widget and click \"Launch Client\"",
+            func.Critical,
+            "Failed to initialize socket. "
+            "This indicates an existing server insance. "
+            "Error: {}".format(error)
+        ]
+        func.message(*msg)
+        return
+    logger.debug("cyckei.server.server.main: Socket bound successfully")
 
-    # # Start Server
-    # logger.debug("cyckei.main: Starting Server")
-    # server_thread = threading.Thread(target=server.main,
-    #                                  args=(config, socket,),
-    #                                  daemon=True)
-    # server_thread.start()
+    # Start Server
+    logger.debug("cyckei.main: Starting Server")
 
-    # Create Applet
-    logger.debug("cyckei.main: Creating Applet")
-    applet_object = applet.Icon(config)
-    applet_object.show()
-
-    # Create Client
-    logger.debug("cyckei.main: Creating Initial Client")
-    main_window = client.MainWindow(config)
-    main_window.show()
-
-    return app.exec_()
+    server.main(config, socket)
 
 
 def file_structure(path):
@@ -143,5 +119,5 @@ def file_structure(path):
 
 
 if __name__ == "__main__":
-    print("Starting Cyckei...")
-    sys.exit(main())
+    print("Starting Cyckei Server...")
+    main()
