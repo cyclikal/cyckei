@@ -8,7 +8,7 @@ from datetime import date
 from PySide2.QtCore import QRunnable, Slot, Signal, QObject
 
 from .socket import Socket
-import functions as func
+import functions.gui as func
 
 logger = logging.getLogger('cyckei')
 

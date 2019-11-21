@@ -11,7 +11,7 @@ import zmq
 
 from server import server
 
-import functions as func
+import functions.processing as func
 
 def handle_exception(exc_type, exc_value, exc_traceback):
     logger.error("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))

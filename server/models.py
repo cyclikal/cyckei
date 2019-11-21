@@ -5,7 +5,7 @@ import time
 
 import visa
 
-import functions as func
+import functions.processing as func
 
 logger = logging.getLogger('cyckei')
 
@@ -68,7 +68,7 @@ safety()
 '''
             self.source_meter.write(safety_shutoff_script)
             time.sleep(1)
-        
+
         self.safety_reset_seconds = safety_reset_seconds
 
 
@@ -164,7 +164,7 @@ smu{ch}.source.output = smu{ch}.OUTPUT_ON"""
         self.source_meter.write(script)
         # self._run_script(script, "setcurrent")
 
-        # If the keithley gets hit with a "read" (and hence an abort) too quickly after trying to load the 
+        # If the keithley gets hit with a "read" (and hence an abort) too quickly after trying to load the
         # script it will fail to load it
         time.sleep(SCRIPT_RUN_TIME_BUFFER)
 

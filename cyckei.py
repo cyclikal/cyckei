@@ -16,7 +16,7 @@ from PySide2.QtGui import QIcon
 from server import server
 from client import client
 from applet import applet
-import functions as func
+import functions.gui as func
 
 def handle_exception(exc_type, exc_value, exc_traceback):
     logger.error("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))

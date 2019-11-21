@@ -10,7 +10,7 @@ from PySide2.QtCore import QThreadPool
 from .channel_tab import ChannelTab
 from . import workers
 # from .scripts import ScriptList
-import functions as func
+import functions.gui as func
 
 logger = logging.getLogger('cyckei')
 

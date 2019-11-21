@@ -4,7 +4,7 @@ import sys
 from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import QMenu, QSystemTrayIcon
 
-import functions as func
+import functions.gui as func
 from client import client
 
 logger = logging.getLogger('cyckei')

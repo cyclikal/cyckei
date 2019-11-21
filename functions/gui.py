@@ -3,6 +3,16 @@ import functools
 from PySide2.QtWidgets import QMessageBox, QPushButton, QComboBox, QLineEdit, \
      QLabel, QAction
 
+from functions.processing import find_path, not_none
+
+Question = QMessageBox.Question
+Information = QMessageBox.Information
+Warning = QMessageBox.Warning
+Critical = QMessageBox.Critical
+
+orange = "#f05f40"
+grey = "#a6a6a6"
+
 
 def message(text=None, info=None, icon=QMessageBox.Information,
             detail=None, confirm=False):
