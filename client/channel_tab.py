@@ -12,8 +12,8 @@ from PySide2.QtGui import QPainter, QPalette
 from PySide2.QtWidgets import (QFileDialog, QHBoxLayout, QScrollArea, QStyle,
                                QStyleOption, QVBoxLayout, QWidget)
 
-from .. import functions
-from ..functions import gui
+from . import functions
+from .functions import gui
 from . import workers
 
 UPDATE_INTERVAL = 1000 # milliseconds
