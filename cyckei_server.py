@@ -1,6 +1,6 @@
 import zmq
 
-import functions as func
+import functions.configuration
 from server import server
 
 
@@ -15,8 +15,8 @@ def main(record_dir="Cyckei"):
 
     """
     try:
-        config, record_dir = func.configuration.read_config(record_dir)
-        logger = func.configuration.setup_logging('cyckei', record_dir, config)
+        config, record_dir = functions.configuration.read_config(record_dir)
+        logger = functions.configuration.setup_logging('cyckei', record_dir, config)
 
     except Exception as e:
         print("An error occured before logging began.")
