@@ -7,13 +7,14 @@ import json
 import logging
 from pathlib import Path
 
-from PySide2.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, \
-     QScrollArea, QStyleOption, QStyle, QFileDialog
-from PySide2.QtCore import QTimer, Qt
+from PySide2.QtCore import Qt, QTimer
 from PySide2.QtGui import QPainter, QPalette
+from PySide2.QtWidgets import (QFileDialog, QHBoxLayout, QScrollArea, QStyle,
+                               QStyleOption, QVBoxLayout, QWidget)
 
+from .. import functions
+from .. import functions.gui
 from . import workers
-import functions as func
 
 UPDATE_INTERVAL = 1000 # milliseconds
 logger = logging.getLogger('cyckei')
@@ -131,12 +132,12 @@ class ChannelWidget(QWidget):
             settings.addWidget(element)
 
         # Script
-        self.script_label = func.label("Script: None", "Current script loaded")
+        self.script_label = functions.gui.label("Script: None", "Current script loaded")
         left.addWidget(self.script_label)
 
         # Status
         args = ["Loading Status...", "Current Cell Status"]
-        self.status = func.label(*args)
+        self.status = functions.gui.label(*args)
         left.addWidget(self.status)
 
         # Controls
@@ -147,13 +148,13 @@ class ChannelWidget(QWidget):
 
         # Feedback
         args = ["", "Server Response"]
-        self.feedback = func.label(*args)
+        self.feedback = functions.gui.label(*args)
         self.feedback.setAlignment(Qt.AlignCenter)
         right.addWidget(self.feedback)
 
         # Load default JSON
         self.json = json.load(open(
-            func.find_path("assets/default_packet.json")))
+            functions.find_path("assets/default_packet.json")))
 
     def get_settings(self):
         """Creates all UI elements and adds them to elements list"""
@@ -165,11 +166,11 @@ class ChannelWidget(QWidget):
             "Channel {}".format(self.attributes["channel"]),
             "id_label"
         ]
-        elements.append(func.label(*args))
+        elements.append(functions.gui.label(*args))
         elements[-1].setMinimumSize(25, 25)
 
         # Script File Dialog
-        elements.append(func.button('Script','Open Script file', connect=self.set_script))
+        elements.append(functions.gui.button('Script','Open Script file', connect=self.set_script))
 
         # Line Edits
         editables = [
@@ -179,7 +180,7 @@ class ChannelWidget(QWidget):
             ["Comment", "Unparsed Comment", "comment"],
         ]
         for line in editables:
-            elements.append(func.line_edit(*line, self.set))
+            elements.append(functions.gui.line_edit(*line, self.set))
 
         return elements
 
@@ -207,18 +208,18 @@ class ChannelWidget(QWidget):
         ]
         elements = []
         for but in buttons:
-            elements.append(func.button(*but, self.button))
+            elements.append(functions.gui.button(*but, self.button))
 
         return elements
 
     def button(self, text):
-        func.feedback("{} in progress...".format(text), self)
+        functions.gui.feedback("{} in progress...".format(text), self)
         if text == "Read Cell":
             worker = workers.Read(self.config, self)
         else:
             worker = workers.Control(
                 self.config, self, text.lower(), temp=False)
-        worker.signals.status.connect(func.feedback)
+        worker.signals.status.connect(functions.gui.feedback)
         self.threadpool.start(worker)
 
     def set(self, key, text):

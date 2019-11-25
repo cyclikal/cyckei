@@ -1,7 +1,16 @@
 import functools
 
-from PySide2.QtWidgets import QMessageBox, QPushButton, QComboBox, QLineEdit, \
-     QLabel, QAction
+from PySide2.QtWidgets import (QAction, QComboBox, QLabel, QLineEdit,
+                               QMessageBox, QPushButton)
+
+
+orange = "#f05f40"
+grey = "#a6a6a6"
+
+Question = QMessageBox.Question
+Information = QMessageBox.Information
+Warning = QMessageBox.Warning
+Critical = QMessageBox.Critical
 
 
 def message(text=None, info=None, icon=QMessageBox.Information,
