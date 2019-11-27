@@ -1,6 +1,5 @@
 """Methods and object to handle scripts"""
 
-import os
 from os import listdir
 
 from PySide2.QtWidgets import QListWidgetItem
@@ -33,21 +32,21 @@ class Script(QListWidgetItem):
         self.title = title
         self.path = path
         try:
-            self.content = open(os.path.join(self.path, self.title), "r").read()
+            self.content = open(self.path + "/" + self.title, "r").read()
         except (UnicodeDecodeError, PermissionError) as error:
             self.content = "Could not read file: {}".format(error)
         self.setText(self.title)
 
     def save(self):
         """Saves script to file"""
-        with open(os.path.join(self.path, self.title), "w") as file:
+        with open(self.path + "/" + self.title, "w") as file:
             file.write(self.content)
         self.update_status()
 
     def update_status(self):
         """Updates title with '*' if script has been edited"""
         try:
-            file_content = open(os.path.join(self.path, self.title), "r").read()
+            file_content = open(self.path + "/" + self.title, "r").read()
         except UnicodeDecodeError as error:
             file_content = "Could not decode: {}".format(error)
 

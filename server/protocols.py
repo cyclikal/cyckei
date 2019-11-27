@@ -107,7 +107,6 @@ class CellRunner(object):
         self.total_pause_time = 0.0
         self.source = None
         self.safety_reset_seconds = None
-        self.buffer = '' # Writing attempts to the file go through a buffer. If a writing attempt fails the buffer just keeps growing 
 
     @property
     def next_time(self):
@@ -252,7 +251,7 @@ class CellRunner(object):
             return self.steps[self.i_current_step]
         except IndexError:
             return None
-
+            
 
     def run(self, force_report=False):
         """
@@ -268,7 +267,7 @@ class CellRunner(object):
 
         """
         logger.debug("cyckei.server.protocols.CellRunner.run: "
-                     "Entering method for channel {}".format(self.channel))
+                      "Entering method for channel {}".format(self.channel))
         if self.status == STATUS.completed:
             return False
 
@@ -311,14 +310,15 @@ class CellRunner(object):
             fo.write(header + "\n")
 
     def write_cycle_header(self):
-        self.buffer += json.dumps({"cycle": self.cycle}) + "\n"
-        self.flush()
+        with open(self.fpath, 'a') as fo:
+            cycle_header = json.dumps({"cycle": self.cycle}) + "\n"
+            fo.write(cycle_header)
 
     def write_step_header(self):
         header = self.step.header()
         if header:
-            self.buffer += "  " + header + "\n"
-            self.flush()
+            with open(self.fpath, 'a') as fo:
+                fo.write("  " + header + "\n")
 
     def read_and_write(self, force_report=False):
         data = self.step.run(force_report=force_report)
@@ -328,18 +328,11 @@ class CellRunner(object):
             self.last_data = data
 
     def write_data(self, timestamp, current, voltage, capacity):
-        self.buffer += self.data_format.format(
-            timestamp - self.start_time - self.total_pause_time,
-            current, voltage, capacity)
-        self.flush()
-
-    def flush(self):
-        try:
-            with open(self.fpath, 'a') as fo:
-                fo.write(self.buffer)
-            self.buffer = ''
-        except PermissionError:
-            logger.exception('Failed flushing buffer, will try again next time', exc_info=True)
+        with open(self.fpath, 'a') as fo:
+            fo.write(self.data_format.format(
+                timestamp - self.start_time - self.total_pause_time,
+                current, voltage, capacity)
+            )
 
     def pause(self):
         """

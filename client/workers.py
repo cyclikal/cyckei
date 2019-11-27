@@ -5,16 +5,16 @@ import tempfile
 import time
 from datetime import date
 
-from PySide2.QtCore import QObject, QRunnable, Signal, Slot
+from PySide2.QtCore import QRunnable, Slot, Signal, QObject
 
-import functions
 from .socket import Socket
+import functions.gui as func
 
 logger = logging.getLogger('cyckei')
 
 def prepare_json(channel, function, protocol, temp):
     """Sets the channel's json script to current values"""
-    with open(functions.find_path("assets/default_packet.json")) as file:
+    with open(func.find_path("assets/default_packet.json")) as file:
         packet = json.load(file)
 
     packet["function"] = function
@@ -73,10 +73,10 @@ class UpdateStatus(QRunnable):
         for channel in self.channels:
             try:
                 info = info_all[channel.attributes["channel"]]
-                status = (functions.not_none(info["status"])
-                          + " - " + functions.not_none(info["state"])
-                          + " | C: " + functions.not_none(info["current"])
-                          + ", V: " + functions.not_none(info["voltage"]))
+                status = (func.not_none(info["status"])
+                          + " - " + func.not_none(info["state"])
+                          + " | C: " + func.not_none(info["current"])
+                          + ", V: " + func.not_none(info["voltage"]))
             except (TypeError, KeyError):
                 status = "Could not get status!"
             # logger.debug("cyckei.client.workers.UpdateStatus.run: Updating channel {} with status {}".format(
@@ -86,13 +86,13 @@ class UpdateStatus(QRunnable):
             try:
                 if info["status"] == "started":
                     channel.divider.setStyleSheet(
-                        "background-color: {}".format(functions.gui.orange))
+                        "background-color: {}".format(func.orange))
                 else:
                     channel.divider.setStyleSheet(
-                        "background-color: {}".format(functions.gui.grey))
+                        "background-color: {}".format(func.grey))
             except UnboundLocalError:
                 channel.divider.setStyleSheet(
-                    "background-color: {}".format(functions.gui.grey))
+                    "background-color: {}".format(func.grey))
 
 class Read(QRunnable):
     """Tell channel to Rest() long enough to get voltage reading on cell"""
@@ -115,7 +115,7 @@ class Read(QRunnable):
                 self.channel.attributes["channel"])["response"]
             try:
                 status = ("Voltage of cell: "
-                          + functions.not_none(info_channel["voltage"]))
+                          + func.not_none(info_channel["voltage"]))
             except Exception:
                 status = "Could not read cell voltage."
         else:
@@ -207,7 +207,7 @@ class Check(QRunnable):
     def prepare_json(self, protocol):
         """create json to send to server"""
         packet = json.load(
-            open(functions.find_path("assets/default_packet.json")))
+            open(func.find_path("assets/default_packet.json")))
 
         packet["function"] = "test"
         packet["kwargs"]["protocol"] = protocol

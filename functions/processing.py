@@ -1,10 +1,6 @@
 import os
 import sys
 
-<<<<<<< HEAD:functions/processing.py
-=======
-
->>>>>>> ba156f7cd847635083df9b99e0cae7c10a8ecfb5:functions/__init__.py
 def find_path(path):
     if hasattr(sys, '_MEIPASS'):
         return os.path.join(sys._MEIPASS, path)
