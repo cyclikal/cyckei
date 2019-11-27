@@ -4,7 +4,8 @@ import sys
 from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import QMenu, QSystemTrayIcon
 
-import functions.gui as func
+import functions
+import functions.gui
 from client import client
 
 logger = logging.getLogger('cyckei')
@@ -17,7 +18,7 @@ class Icon(QSystemTrayIcon):
     def __init__(self, config):
         """Create tray applet and self.controls"""
         # TODO: Make icon visible on all backgrounds
-        super(Icon, self).__init__(QIcon(func.find_path("assets/bolt.png")))
+        super(Icon, self).__init__(QIcon(functions.find_path("assets/bolt.png")))
 
         self.config = config
         self.menu = QMenu()
@@ -32,7 +33,7 @@ class Icon(QSystemTrayIcon):
         ]
 
         for action in actions:
-            self.controls.append(func.action(**action))
+            self.controls.append(functions.gui.action(**action))
             self.menu.addAction(self.controls[-1])
 
         # Add the self.menu to the tray
@@ -47,10 +48,10 @@ class Icon(QSystemTrayIcon):
             "text": "Are you sure you want to quit Cyckei?",
             "info": "This will stop any current cycles and "
                     "release control of all channels.",
-            "icon": func.Warning,
+            "icon": functions.gui.Warning,
             "confirm": True
         }
 
-        if func.message(**msg):
+        if functions.gui.message(**msg):
             logger.warning("applet.applet.Icon.stop: Shutting down\n")
             sys.exit()

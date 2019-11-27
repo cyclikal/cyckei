@@ -1,16 +1,16 @@
 """Main window for the cyckei client."""
 
-import logging
 import functools
+import logging
 import sys
 
-from PySide2.QtWidgets import QMainWindow, QTabWidget, QHBoxLayout, QVBoxLayout
 from PySide2.QtCore import QThreadPool
+from PySide2.QtWidgets import QHBoxLayout, QMainWindow, QTabWidget, QVBoxLayout
 
-from .channel_tab import ChannelTab
+import functions.gui
+
 from . import workers
-# from .scripts import ScriptList
-import functions.gui as func
+from .channel_tab import ChannelTab
 
 logger = logging.getLogger('cyckei')
 
@@ -61,9 +61,9 @@ class MainWindow(QMainWindow):
         for key, items in entries.items():
             menu = self.menuBar().addMenu(key)
             for item in items:
-                menu.addAction(func.action(*item, parent=self))
+                menu.addAction(functions.gui.action(*item, parent=self))
 
     def ping_server(self):
         worker = workers.Ping(self.config)
-        worker.signals.alert.connect(func.message)
+        worker.signals.alert.connect(functions.gui.message)
         self.threadpool.start(worker)
