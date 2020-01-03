@@ -78,35 +78,6 @@ def main(record_dir="Cyckei"):
     app.setQuitOnLastWindowClosed(False)
     app.setWindowIcon(QIcon(func.find_path("assets/cyckei.png")))
 
-    # # Create Server's ZMQ Socket
-    # logger.debug("cyckei.server.server.main: Binding socket")
-    # try:
-    #     context = zmq.Context(1)
-    #     socket = context.socket(zmq.REP)
-    #     socket.bind("{}:{}".format(config["zmq"]["server-address"],
-    #                                config["zmq"]["port"]))
-    # except zmq.error.ZMQError as error:
-    #     logger.critical(
-    #         "It appears the server is already running: ".format(error))
-    #     msg = [
-    #         "Cyckei Instance Already Running!",
-    #         "To show client, open taskbar widget and click \"Launch Client\"",
-    #         func.Critical,
-    #         "Failed to initialize socket. "
-    #         "This indicates an existing server insance. "
-    #         "Error: {}".format(error)
-    #     ]
-    #     func.message(*msg)
-    #     return
-    # logger.debug("cyckei.server.server.main: Socket bound successfully")
-
-    # # Start Server
-    # logger.debug("cyckei.main: Starting Server")
-    # server_thread = threading.Thread(target=server.main,
-    #                                  args=(config, socket,),
-    #                                  daemon=True)
-    # server_thread.start()
-
     # Create Applet
     logger.debug("cyckei.main: Creating Applet")
     applet_object = applet.Icon(config)

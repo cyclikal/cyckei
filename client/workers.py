@@ -12,6 +12,7 @@ import functions.gui as func
 
 logger = logging.getLogger('cyckei')
 
+
 def prepare_json(channel, function, protocol, temp):
     """Sets the channel's json script to current values"""
     with open(func.find_path("assets/default_packet.json")) as file:
@@ -28,7 +29,7 @@ def prepare_json(channel, function, protocol, temp):
         dir = tempfile.mkdtemp()
     else:
         dir = os.path.join(channel.attributes["record_folder"],
-                          str(date.today().year))
+                           str(date.today().year))
 
         os.makedirs(dir, exist_ok=True)
 
@@ -79,7 +80,8 @@ class UpdateStatus(QRunnable):
                           + ", V: " + func.not_none(info["voltage"]))
             except (TypeError, KeyError):
                 status = "Could not get status!"
-            # logger.debug("cyckei.client.workers.UpdateStatus.run: Updating channel {} with status {}".format(
+            # logger.debug("cyckei.client.workers.UpdateStatus.run:
+            # Updating channel {} with status {}".format(
             #     channel.attributes["channel"], status))
             channel.status.setText(status)
             # Make cleaner
@@ -93,6 +95,7 @@ class UpdateStatus(QRunnable):
             except UnboundLocalError:
                 channel.divider.setStyleSheet(
                     "background-color: {}".format(func.grey))
+
 
 class Read(QRunnable):
     """Tell channel to Rest() long enough to get voltage reading on cell"""
@@ -138,7 +141,8 @@ class Control(QRunnable):
 
     @Slot()
     def run(self):
-        if self.command == "start" and self.channel.attributes['script_content'] is not None:
+        if self.command == "start" \
+          and self.channel.attributes['script_content'] is not None:
             self.script = self.channel.attributes['script_content']
             script_ok, msg = Check(self.config, self.script).run()
             if script_ok is False:

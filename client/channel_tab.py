@@ -15,7 +15,7 @@ from PySide2.QtGui import QPainter, QPalette
 from . import workers
 import functions.gui as func
 
-UPDATE_INTERVAL = 1000 # milliseconds
+UPDATE_INTERVAL = 1000  # milliseconds
 logger = logging.getLogger('cyckei')
 
 
@@ -169,7 +169,8 @@ class ChannelWidget(QWidget):
         elements[-1].setMinimumSize(25, 25)
 
         # Script File Dialog
-        elements.append(func.button('Script','Open Script file', connect=self.set_script))
+        elements.append(func.button("Script", "Open Script file",
+                                    connect=self.set_script))
 
         # Line Edits
         editables = [
@@ -192,13 +193,13 @@ class ChannelWidget(QWidget):
         filepath = Path(filename[0]).resolve().absolute()
         self.attributes['script_path'] = str(filepath)
         try:
-            self.attributes['script_content'] = open(self.attributes['script_path'], "r").read()
+            self.attributes['script_content'] \
+                = open(self.attributes['script_path'], "r").read()
             self.script_label.setText(f'Script: {filepath.name}')
         except (UnicodeDecodeError, PermissionError) as error:
-            logger.error(f"cyckei.client.channel_tab.ChannelWidget.set_script: Could not read file: {self.attributes['script_path']}")
+            logger.error(f"cyckei.client.channel_tab.ChannelWidget.set_script: \
+                Could not read file: {self.attributes['script_path']}")
             logger.exception(error)
-
-
 
     def get_controls(self):
         buttons = [

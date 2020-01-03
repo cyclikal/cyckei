@@ -1,7 +1,5 @@
 """Methods and object to handle scripts"""
 
-from os import listdir
-
 from PySide2.QtWidgets import QListWidgetItem
 
 
