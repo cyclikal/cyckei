@@ -9,7 +9,8 @@ import functions as func
 
 logger = logging.getLogger('cyckei')
 
-SCRIPT_RUN_TIME_BUFFER = 2 # seconds, extra time to give the Keithley to load the program
+SCRIPT_RUN_TIME_BUFFER = 2  # seconds, extra time for Keithley to load program
+
 
 def source_from_gpib(gpib_address, channel):
     """Opens GPIB resource and returns as Source object"""
@@ -32,6 +33,7 @@ def with_safety(fn):
         return response
     return decorated
 
+
 class Keithley2602(object):
     """Represents a single keithley Interface"""
     script_startup = open(func.find_path("assets/startup.lua")).read()
@@ -49,32 +51,34 @@ class Keithley2602(object):
         self.source_meter.write("abort")
         self.source_meter.write("reset()")
         if load_scripts:
-            logger.info(f'Initializing Keithley at GPIB {gpib_addr} with {self.script_startup}')
+            logger.info(f'Initializing Keithley at GPIB {gpib_addr} with \
+                        {self.script_startup}')
             self.source_meter.write(self.script_startup)
             time.sleep(1)
         else:
             # No matter what we need the safety shutoff script
-            logger.info(f'Initializing Keithley at GPIB {gpib_addr} with hardcoded safety script')
+            logger.info(f'Initializing Keithley at GPIB {gpib_addr} with \
+                        hardcoded safety script')
             safety_shutoff_script = \
-'''
-loadscript safety()
-    function safetycutoff(t)
-        delay(t)
-        smua.source.output = smua.OUTPUT_OFF
-        smub.source.output = smub.OUTPUT_OFF
-    end
-endscript
-safety()
-'''
+                """
+                loadscript safety()
+                    function safetycutoff(t)
+                        delay(t)
+                        smua.source.output = smua.OUTPUT_OFF
+                        smub.source.output = smub.OUTPUT_OFF
+                    end
+                endscript
+                safety()
+                """
             self.source_meter.write(safety_shutoff_script)
             time.sleep(1)
 
         self.safety_reset_seconds = safety_reset_seconds
 
-
     def get_source(self, kch, channel=None):
         """Get source object of Keithley"""
-        return Source(self.source_meter, kch, channel=channel, safety_reset_seconds=self.safety_reset_seconds)
+        return Source(self.source_meter, kch, channel=channel,
+                      safety_reset_seconds=self.safety_reset_seconds)
 
 
 class Source(object):
@@ -83,7 +87,8 @@ class Source(object):
                       100e-6, 1e-3, 0.01,
                       0.1, 1.0, 3.0]
 
-    def __init__(self, source_meter, kch, channel=None, safety_reset_seconds=120):
+    def __init__(self, source_meter, kch, channel=None,
+                 safety_reset_seconds=120):
         """
 
         Parameters
@@ -132,7 +137,8 @@ class Source(object):
 
     def off(self):
         self.write('abort')
-        self.write(f"smu{self.kch}.source.offmode = smu{self.kch}.OUTPUT_HIGH_Z")
+        self.write(f"smu{self.kch}.source.offmode \
+                   = smu{self.kch}.OUTPUT_HIGH_Z")
         self.write(f"smu{self.kch}.source.output = smu{self.kch}.OUTPUT_OFF")
 
     def get_range(self, current):
@@ -148,9 +154,11 @@ class Source(object):
         current: float
             desired current in Amps
         v_limit: float
-            voltage limit for source. This is not a voltage cutoff condition. It is the maximum voltage allowed by the Keithley under any condition
-            The Keithley enforces +/- v_limit
-            Having a battery with a voltage outside of +/- v_limit could damage the Keithley
+            voltage limit for source. This is not a voltage cutoff condition.
+            It is the maximum voltage allowed by the Keithley under any
+            condition. The Keithley enforces +/- v_limit.
+            Having a battery with a voltage outside of +/- v_limit could
+            damage the Keithley.
         """
         ch = self.kch
         script = f"""display.screen = display.SMUA_SMUB
@@ -164,10 +172,10 @@ smu{ch}.source.output = smu{ch}.OUTPUT_ON"""
         self.source_meter.write(script)
         # self._run_script(script, "setcurrent")
 
-        # If the keithley gets hit with a "read" (and hence an abort) too quickly after trying to load the
+        # If the keithley gets hit with a "read" (and hence an abort)
+        # too quickly after trying to load the
         # script it will fail to load it
         time.sleep(SCRIPT_RUN_TIME_BUFFER)
-
 
     @with_safety
     def rest(self, v_limit=5.0):
@@ -175,10 +183,12 @@ smu{ch}.source.output = smu{ch}.OUTPUT_ON"""
 
     def _run_script(self, script, scriptname):
         instruction = \
-f"""loadscript {scriptname}()
-{script}
-endscript
-{scriptname}()"""
+            f"""
+            loadscript {scriptname}()
+            {script}
+            endscript
+            {scriptname}()
+            """
         return self.source_meter.write(instruction)
 
     def pause(self):
@@ -246,7 +256,8 @@ endscript
         current = float(self.source_meter.query("print(current)"))
         voltage = float(self.source_meter.query("print(voltage)"))
 
-        logger.debug(f'models.Source.read_iv: current:{current}, voltage:{voltage}')
+        logger.debug(f'models.Source.read_iv: current:{current}, \
+                     voltage:{voltage}')
         # The Keithley will report totally out of range numbers like 9.91e+37
         # if asked to e.g. charge to 3.9V when the cell is already at 4.2V
         # It is basically its way of saying the condition cannot be achieved

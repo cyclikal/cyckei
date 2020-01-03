@@ -133,7 +133,6 @@ class CellRunner(object):
                 ))
         self.safety_reset_seconds = source.safety_reset_seconds * 0.5
 
-
     def set_cap_signs(self, direction=None):
         """
         Go through the steps and set their .cap_sign attribute
@@ -252,7 +251,6 @@ class CellRunner(object):
         except IndexError:
             return None
 
-
     def run(self, force_report=False):
         """
         Method called by the main loop to start and advance a protocol
@@ -266,8 +264,8 @@ class CellRunner(object):
             False if it is complete
 
         """
-        logger.debug("cyckei.server.protocols.CellRunner.run: "
-                      "Entering method for channel {}".format(self.channel))
+        logger.debug("cyckei.server.protocols.CellRunner.run: \
+                      Entering method for channel {}".format(self.channel))
         if self.status == STATUS.completed:
             return False
 
@@ -402,7 +400,9 @@ class ProtocolStep(object):
         Parameters
         ----------
         wait_time: float
-            default waiting time in seconds. If no other conditions are met, the step will check voltage and current at this interval
+            Default waiting time in seconds.
+            If no other conditions are met,
+                the step will check V & I at this interval
         """
         # the parent is the CellRunner
         if cellrunner_parent is None:
@@ -460,7 +460,6 @@ class ProtocolStep(object):
 
         self.parent.add_step(self)
 
-
     def _start(self):
         raise NotImplementedError
 
@@ -511,7 +510,6 @@ class ProtocolStep(object):
 
         else:
             report_data = self.check_report_conditions()
-
 
         if report_data or force_report:
             self.report.append(self.data[-1])
@@ -809,13 +807,14 @@ class VoltageStep(ProtocolStep):
             if dt > 5:
                 tolerance = 0.01
 
-            # This one is a little loose as the voltage  can take a few steps to stabilize
+            # This one is a little loose as V can take a few steps to stabilize
             self.in_control = abs((voltage-self.voltage)) < tolerance
 
         if not self.in_control:
             self.status = STATUS.nocontrol
 
         return self.in_control
+
 
 class CVCharge(VoltageStep):
     def __init__(self, voltage,
@@ -858,6 +857,7 @@ class AdvanceCycle(ProtocolStep):
 
     def check_in_control(self, *args):
         return True
+
 
 class Rest(ProtocolStep):
     def __init__(self,
@@ -929,6 +929,7 @@ class Pause(ProtocolStep):
 
     def check_in_control(self, *args):
         return True
+
 
 class Sleep(ProtocolStep):
     def __init__(self,
@@ -1025,6 +1026,7 @@ class Sleep(ProtocolStep):
 
         return self.in_control
 
+
 class Condition(object):
     """
     A Condition is an object which given a ProtocolStep
@@ -1074,7 +1076,8 @@ class ConditionDelta(Condition):
                     step.next_time = min(next_time, step.next_time)
                 else:
                     val = step.data[-1][self.index]
-                    if step.state_str.lower().startswith('discharge') and self.value_str == 'voltage':
+                    if step.state_str.lower().startswith('discharge') \
+                            and self.value_str == 'voltage':
                         target_value = val - self.delta
                     else:
                         target_value = val + self.delta
@@ -1084,9 +1087,10 @@ class ConditionDelta(Condition):
                                                  self.index)
                     step.next_time = min(next_time, step.next_time)
 
-                logger.debug("cyckei.server.protocols.ConditionDelta: "
-                              "{}, set next_time to {:.2f} (in {:.2f} sec)".format(self.value_str,
-                                                               step.next_time, step.next_time-time.time()))
+                logger.debug("cyckei.server.protocols.ConditionDelta: {}, \
+                              set next_time to {:.2f} (in {:.2f} sec)".format(
+                                self.value_str,
+                                step.next_time, step.next_time-time.time()))
 
                 if self.comparison(abs(val - step.report[-1][self.index]),
                                    self.delta):
@@ -1206,8 +1210,10 @@ class ConditionAbsolute(Condition):
                                                  self.value,
                                                  self.index)
                     step.next_time = min(next_time, step.next_time)
-                    logger.debug(
-                        f"cyckei.server.protocols.ConditionAbsolute: {self.value_str} set next_time to {step.next_time:.2f} (in {step.next_time - time.time():.2f} sec)")
+                    logger.debug(f"cyckei.server.protocols.ConditionAbsolute: \
+                                    {self.value_str} set next_time to \
+                                    {step.next_time:.2f} (in \
+                                    {step.next_time - time.time():.2f} sec)")
                     return False
             else:
                 return False
@@ -1267,12 +1273,13 @@ def extrapolate_time(data, target, index):
         next_time = ((target - d1[index])
                      / (d1[index] - d0[index])
                      * (d1[0] - d0[0]) + d1[0])
-        current_time=time.time()
+        current_time = time.time()
         logger.debug(
-            "cyckei.server.protocols.extrapolate_time: "
-            "Current time {:.2f} Extrapolated time {:.2f} (in {:.2f} sec) using {} index and target value {}".format(
-                current_time, next_time, next_time-current_time, DATA_NAME_MAP[index], target)
-            )
+            "cyckei.server.protocols.extrapolate_time: Current time {:.2f} \
+            Extrapolated time {:.2f} (in {:.2f} sec) using {} index and \
+            target value {}".format(current_time, next_time,
+                                    next_time-current_time,
+                                    DATA_NAME_MAP[index], target))
 
     except (NameError, IndexError, ZeroDivisionError):
         next_time = NEVER
@@ -1280,8 +1287,6 @@ def extrapolate_time(data, target, index):
             "cyckei.server.protocols.extrapolate_time: "
             "Failed extrapolating, next_time: {}".format(next_time)
             )
-
-
 
     return next_time
 
