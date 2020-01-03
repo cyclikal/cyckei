@@ -10,7 +10,7 @@ logger = logging.getLogger('cyckei')
 
 DATETIME_FORMAT = '%Y-%m-%d_%H:%M:%S.%f'
 NEVER = float('inf')
-MIN_WAIT_TIME = 1.0 # minimum number of seconds between current,voltage measurements
+MIN_WAIT_TIME = 1.0  # Minimum number of seconds between I/V measurements
 
 OPERATOR_MAP = {
     "<": operator.lt,
@@ -132,7 +132,7 @@ class CellRunner(object):
                     self.channel, source.channel
                 ))
         self.safety_reset_seconds = source.safety_reset_seconds * 0.5
-        
+
 
     def set_cap_signs(self, direction=None):
         """
@@ -251,7 +251,7 @@ class CellRunner(object):
             return self.steps[self.i_current_step]
         except IndexError:
             return None
-            
+
 
     def run(self, force_report=False):
         """
@@ -550,7 +550,7 @@ class ProtocolStep(object):
         For example
             - constant current : check current is correct
             - constant voltage: check voltage is correct
-        
+
         Parameters
         ----------
         last_time: float
@@ -712,7 +712,7 @@ class CurrentStep(ProtocolStep):
 
         Returns
         -------
-        bool: True of cell is in control, False otherwise        
+        bool: True of cell is in control, False otherwise
 
         Modifies
         --------
@@ -720,7 +720,7 @@ class CurrentStep(ProtocolStep):
         '''
         if self.data:
             self.in_control = abs((current-self.current)/self.current) < 0.95
-        
+
         if not self.in_control:
             self.status = STATUS.nocontrol
 
@@ -811,7 +811,7 @@ class VoltageStep(ProtocolStep):
 
             # This one is a little loose as the voltage  can take a few steps to stabilize
             self.in_control = abs((voltage-self.voltage)) < tolerance
-        
+
         if not self.in_control:
             self.status = STATUS.nocontrol
 
@@ -886,14 +886,14 @@ class Rest(ProtocolStep):
 
         Returns
         -------
-        bool: True of cell is in control, False otherwise        
+        bool: True of cell is in control, False otherwise
 
         Modifies
         --------
         self.in_control
         '''
         self.in_control = abs(current) < 0.00001
-        
+
         if not self.in_control:
             self.status = STATUS.nocontrol
 
@@ -1012,14 +1012,14 @@ class Sleep(ProtocolStep):
 
         Returns
         -------
-        bool: True of cell is in control, False otherwise        
+        bool: True of cell is in control, False otherwise
 
         Modifies
         --------
         self.in_control
         '''
         self.in_control = abs(current) < 0.00001
-        
+
         if not self.in_control:
             self.status = STATUS.nocontrol
 

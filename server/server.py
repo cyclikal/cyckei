@@ -5,21 +5,132 @@ import sys
 import os
 import time
 import traceback
+import json
+import shutil
 from collections import OrderedDict
+
 import zmq
 from visa import VisaIOError
 
-from .models import Keithley2602
-from .protocols import STATUS, CellRunner
+from models import Keithley2602
+from protocols import STATUS, CellRunner
+import functions as func
 
 logger = logging.getLogger('cyckei')
+logger.setLevel(logging.DEBUG)  # base level must be lower than all handlers
+
 
 def handle_exception(exc_type, exc_value, exc_traceback):
-    logger.error("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
+    logger.error("Uncaught exception", exc_info=(exc_type, exc_value,
+                 exc_traceback))
+
+
 sys.excepthook = handle_exception
 
 
-def main(config, socket):
+def main(record_dir="Cyckei"):
+    """
+    Begins execution of Cyckei.
+
+    Args:
+        record_dir: Optional path to recording directory.
+    Returns:
+        Result of app.exec_(), Qt's main event loop.
+
+    """
+    try:
+        # Ensure Recording Directory is Setup
+        record_dir = os.path.join(os.path.expanduser("~"), record_dir)
+        file_structure(record_dir)
+
+        # Setup Configuration
+        with open(record_dir + "/config.json") as file:
+            config = json.load(file)
+        with open(func.find_path("assets/variables.json")) as file:
+            var = json.load(file)
+        config["version"] = var["version"]
+        config["record_dir"] = record_dir
+
+        # Setup Logging
+        # Create handlers
+        c_handler = logging.StreamHandler()
+        f_handler = logging.FileHandler("{}/{}.log".format(record_dir,
+                                                           logger.name))
+        c_handler.setLevel(logging.INFO)
+        f_handler.setLevel(config["verbosity"])
+
+        # Create formatters and add it to handlers
+        # c_format = logging.Formatter("%(name)s - %(levelname)s \
+        #                               - %(message)s")
+        f_format = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s \
+                                      - %(threadName)s - %(message)s")
+        c_handler.setFormatter(f_format)
+        f_handler.setFormatter(f_format)
+
+        # Add handlers to the logger
+        logger.addHandler(c_handler)
+        logger.addHandler(f_handler)
+
+    except Exception as e:
+        print("An error occured before logging began.")
+        print(e)
+
+    logger.info("cyckei_server.main: Initializing Cyckei Server \
+                 version {}".format(config["version"]))
+    logger.debug("cyckei.main: Logging at debug level")
+
+    # Create Server's ZMQ Socket
+    logger.debug("cyckei.server.server.main: Binding socket")
+    try:
+        context = zmq.Context(1)
+        socket = context.socket(zmq.REP)
+        socket.bind("{}:{}".format(config["zmq"]["server-address"],
+                                   config["zmq"]["port"]))
+
+    except zmq.error.ZMQError as error:
+        logger.critical(
+            "It appears the server is already running: {}".format(error))
+        msg = [
+            "Cyckei Instance Already Running!",
+            "To show client, open taskbar widget and click \"Launch Client\"",
+            func.Critical,
+            "Failed to initialize socket. "
+            "This indicates an existing server insance. "
+            "Error: {}".format(error)
+        ]
+        func.message(*msg)
+        return
+    logger.debug("cyckei.server.server.main: Socket bound successfully")
+
+    # Start Server
+    logger.debug("cyckei.main: Starting Server")
+
+    event_loop(config, socket)
+
+
+def file_structure(path):
+    """Checks for existing folder structure and sets up if missing"""
+    os.makedirs(path, exist_ok=True)
+    os.makedirs(path + "/tests", exist_ok=True)
+    if not os.path.exists(path + "/config.json"):
+        shutil.copy(func.find_path("assets/default_config.json"),
+                    path + "/config.json")
+    open(path + "/batch.txt", "a")
+    if not os.path.exists(path + "/scripts"):
+        os.makedirs(path + "/scripts")
+        shutil.copy(func.find_path("assets/example-script"),
+                    path + "/scripts/example")
+
+
+# def handler(exception_type, value, tb):
+#     """Handler which writes exceptions to log and terminal"""
+#     exception_list = traceback.format_exception(exception_type, value, tb)
+#     text = "".join(str(l) for l in exception_list)
+#     logger.exception(text)
+#     print(text)
+
+
+def event_loop(config, socket):
     try:
         """Main start method and loop for server application"""
         logger.info("cyckei.server.server.main: Starting server")
@@ -41,17 +152,17 @@ def main(config, socket):
                     keithley = Keithley2602(gpib_addr)
                 except (ValueError, VisaIOError) as e:
                     logger.error("Could not establish connection: "
-                                "Channel {}, GPIB {}.".format(
+                                 "Channel {}, GPIB {}.".format(
                                     chd["channel"],
                                     chd["gpib_address"])
-                                )
+                                 )
                     logger.exception(e)
                     continue
 
                 keithleys.append(keithley)
 
             source = keithley.get_source(chd["keithley_channel"],
-                                        channel=chd["channel"])
+                                         channel=chd["channel"])
             sources.append(source)
 
         logger.info("Connected {} channels.".format(len(sources)))
@@ -79,12 +190,14 @@ def main(config, socket):
             # ideally this would happen on a separate thread
             # but it might not be necessary
             # main loop without problem
-            # logger.debug("cyckei.server.server.main: Processing socket messages")
+            # logger.debug("cyckei.server.server.main: \
+            #               Processing socket messages")
             process_socket(socket, runners, sources, current_time)
 
             # execute runners or sleep if none
             if runners:
-                # logger.debug("cyckei.server.server.main: Looping over runners")
+                # logger.debug("cyckei.server.server.main: \
+                #               Looping over runners")
                 # Sort runners from most urgent to least urgent
                 runners = sorted(runners, key=lambda x: x.next_time)
 
@@ -98,19 +211,20 @@ def main(config, socket):
                     elif runner.status == STATUS.started:
                         # Don't bother with runners more than 1 second out
                         relative_next_time = runner.next_time - time.time()
-                        channels_message = channels_message + "/" + runner.channel
+                        channels_message = channels_message + "/" \
+                            + runner.channel
                         timing_message = (timing_message
-                                        + "/"
-                                        + str(relative_next_time)[:5])
+                                          + "/"
+                                          + str(relative_next_time)[:5])
 
                         if relative_next_time <= 0.0:
                             runner.run()
-               # logger.debug(
-               #     "cyckei.server.server.main: "
-               #     + "channel {} will be checked in approx {} seconds...".format(
-               #         channels_message[1:], timing_message[1:]
-               #     )
-               # )
+                # logger.debug(
+                #    "cyckei.server.server.main: channel {} will be \
+                #     checked in approx {} seconds...".format(
+                #        channels_message[1:], timing_message[1:]
+                #     )
+                # )
 
                 # Discard completed runners
                 ipop = sorted(
@@ -126,8 +240,10 @@ def main(config, socket):
             # mod it by a large value to avoid ever overflowing
             counter = counter % max_counter + 1
     except Exception as e:
-        logger.error("cyckei.server.server.main: Failed with uncaught exception:")
+        logger.error("cyckei.server.server.main: \
+            Failed with uncaught exception:")
         logger.exception(e)
+
 
 def process_socket(socket, runners, sources, server_time):
     """
@@ -147,55 +263,67 @@ def process_socket(socket, runners, sources, server_time):
     # Check to see if there are new events on the socket
     # only waits 1 millisecond on the polling
     events = socket.poll(1)
-    
+
     if events > 0:
         msg = socket.recv_json()
-    
+
         if msg is not None:
             response = {"response": None, "message": None}
             try:
                 # a message has been received
                 fun = msg["function"]
-                
+
                 kwargs = msg.get("kwargs", None)
                 # response = {"version": __version__, "response": None}
                 resp = "Unknown function"
                 if fun == "start":
-                    logger.debug("cyckei.server.server.process_socket: Packet request received: {}".format(fun))
+                    logger.debug("cyckei.server.server.process_socket: \
+                        Packet request received: {}".format(fun))
                     try:
                         resp = start(kwargs["channel"], kwargs["meta"],
-                                    kwargs["protocol"], runners, sources)
+                                     kwargs["protocol"], runners, sources)
                     except Exception:
                         resp = "Error occured when running script."
-                    logger.debug("cyckei.server.server.process_socket: Sending response: {}".format(resp))
+                    logger.debug("cyckei.server.server.process_socket: \
+                        Sending response: {}".format(resp))
 
                 elif fun == "pause":
-                    logger.debug("cyckei.server.server.process_socket: Packet request received: {}".format(fun))
+                    logger.debug("cyckei.server.server.process_socket: \
+                        Packet request received: {}".format(fun))
                     resp = pause(kwargs["channel"], runners)
-                    logger.debug("cyckei.server.server.process_socket: Sending response: {}".format(resp))
+                    logger.debug("cyckei.server.server.process_socket: \
+                        Sending response: {}".format(resp))
 
                 elif fun == "resume":
-                    logger.debug("cyckei.server.server.process_socket: Packet request received: {}".format(fun))
+                    logger.debug("cyckei.server.server.process_socket: \
+                        Packet request received: {}".format(fun))
                     resp = resume(kwargs["channel"], runners)
-                    logger.debug("cyckei.server.server.process_socket: Sending response: {}".format(resp))
+                    logger.debug("cyckei.server.server.process_socket: \
+                        Sending response: {}".format(resp))
 
                 elif fun == "test":
-                    logger.debug("cyckei.server.server.process_socket: Packet request received: {}".format(fun))
+                    logger.debug("cyckei.server.server.process_socket: \
+                        Packet request received: {}".format(fun))
                     resp = test(kwargs["protocol"])
-                    logger.debug("cyckei.server.server.process_socket: Sending response: {}".format(resp))
+                    logger.debug("cyckei.server.server.process_socket: \
+                        Sending response: {}".format(resp))
 
                 elif fun == "stop":
-                    logger.debug("cyckei.server.server.process_socket: Packet request received: {}".format(fun))
+                    logger.debug("cyckei.server.server.process_socket: \
+                        Packet request received: {}".format(fun))
                     resp = stop(kwargs["channel"], runners)
-                    logger.debug("cyckei.server.server.process_socket: Sending response: {}".format(resp))
+                    logger.debug("cyckei.server.server.process_socket: \
+                        Sending response: {}".format(resp))
 
                 elif fun == "ping":
-                    logger.debug("cyckei.server.server.process_socket: Packet request received: {}".format(fun))
+                    logger.debug("cyckei.server.server.process_socket: \
+                        Packet request received: {}".format(fun))
                     port = socket.getsockopt_string(
                         zmq.LAST_ENDPOINT
                     ).split(":")[-1]
                     resp = "True: server is running on port {}".format(port)
-                    logger.debug("cyckei.server.server.process_socket: Sending response: {}".format(resp))
+                    logger.debug("cyckei.server.server.process_socket: \
+                        Sending response: {}".format(resp))
 
                 elif fun == "info_channel":
                     resp = info_channel(kwargs["channel"], runners, sources)
@@ -204,7 +332,7 @@ def process_socket(socket, runners, sources, server_time):
                     resp = info_all_channels(runners, sources)
 
                 response["response"] = resp
-                
+
                 socket.send_json(response)
             except (IndexError, ValueError, TypeError, NameError) as exception:
                 logger.exception(exception)
@@ -215,7 +343,8 @@ def process_socket(socket, runners, sources, server_time):
                     )
                 )
                 response["message"] = msg
-                logger.debug(f"cyckei.server.server.process_socket: Error occurred, sent response: {response['response']}")
+                logger.debug(f"cyckei.server.server.process_socket: \
+                    Error occurred, sent response: {response['response']}")
                 socket.send_json(response)
 
 
@@ -244,9 +373,9 @@ def info_channel(channel, runners, sources):
             except (TypeError, IndexError):
                 # this will be the latest reported (written to file) point
                 last_data = runner.last_data
-            
+
             info["current"] = last_data[1]
-            info["voltage"] = last_data[2]                
+            info["voltage"] = last_data[2]
 
         except (TypeError):
             info["current"] = "Not Available"
@@ -348,3 +477,8 @@ def get_runner_by_channel(channel, runners, status=None):
                 return runner
 
     return None
+
+
+if __name__ == "__main__":
+    print("Starting Cyckei Server...")
+    main()

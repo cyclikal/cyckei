@@ -4,7 +4,7 @@ import os
 import shutil
 import logging
 logger = logging.getLogger('cyckei')
-logger.setLevel(logging.DEBUG) # base level must be lower than all handlers
+logger.setLevel(logging.DEBUG)  # base level must be lower than all handlers
 
 import traceback
 import threading
