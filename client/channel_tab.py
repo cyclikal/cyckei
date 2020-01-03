@@ -12,8 +12,8 @@ from PySide2.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, \
 from PySide2.QtCore import QTimer, Qt
 from PySide2.QtGui import QPainter, QPalette
 
-from . import workers
-import functions.gui as func
+import workers
+import functions as func
 
 UPDATE_INTERVAL = 1000  # milliseconds
 logger = logging.getLogger('cyckei')

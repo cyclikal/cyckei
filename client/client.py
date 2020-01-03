@@ -10,7 +10,7 @@ from PySide2.QtWidgets import QApplication, QMainWindow
 from PySide2.QtCore import QThreadPool
 from PySide2.QtGui import QIcon
 
-from .channel_tab import ChannelTab
+from channel_tab import ChannelTab
 import workers
 import functions as func
 

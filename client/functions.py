@@ -1,9 +1,9 @@
 import functools
+import os
+import sys
 
 from PySide2.QtWidgets import QMessageBox, QPushButton, QComboBox, QLineEdit, \
      QLabel, QAction
-
-from functions.processing import find_path, not_none
 
 Question = QMessageBox.Question
 Information = QMessageBox.Information
@@ -12,6 +12,20 @@ Critical = QMessageBox.Critical
 
 orange = "#f05f40"
 grey = "#a6a6a6"
+
+
+def find_path(path):
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, path)
+    local = os.path.join(os.path.abspath('.'), path)
+    if os.path.exists(local):
+        return local
+    return os.path.join(os.path.abspath('..'), path)
+
+
+def not_none(value):
+    """Sets a None value to "None" string"""
+    return "None" if value is None else str(value)
 
 
 def message(text=None, info=None, icon=QMessageBox.Information,
