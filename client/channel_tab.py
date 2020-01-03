@@ -65,9 +65,9 @@ class ChannelTab(QWidget):
         text = self.palette().color(QPalette.WindowText)
         for channel in self.channels:
             if (int(channel.attributes["channel"]) % 2 == 0):
-                color = base.lighter(120)
+                color = base.lighter(110)
             else:
-                color = base.darker(120)
+                color = base.darker(110)
             channel.setStyleSheet(
                 "QComboBox {{"
                 "   color: {};"
@@ -106,7 +106,7 @@ class ChannelWidget(QWidget):
         self.threadpool = resource["threadpool"]
         # self.scripts = resource["scripts"]
 
-        self.setMinimumSize(1050, 110)
+        self.setMinimumSize(800, 150)
 
         # General UI
         sides = QHBoxLayout(self)
