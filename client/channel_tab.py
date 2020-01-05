@@ -52,13 +52,6 @@ class ChannelTab(QWidget):
         self.timer.timeout.connect(self.update_status)
         self.timer.start(UPDATE_INTERVAL)
 
-    def paintEvent(self, event):
-        option = QStyleOption()
-        option.initFrom(self)
-        painter = QPainter(self)
-        self.style().drawPrimitive(QStyle.PE_Widget, option, painter, self)
-        self.alternate_colors()
-
     def alternate_colors(self):
         # TODO: Make dark mode compatible with windows
         base = self.palette().color(QPalette.Window)
@@ -80,6 +73,13 @@ class ChannelTab(QWidget):
     def update_status(self):
         updater = workers.UpdateStatus(self.channels, self.config)
         self.resource["threadpool"].start(updater)
+
+    def paintEvent(self, event):
+        option = QStyleOption()
+        option.initFrom(self)
+        painter = QPainter(self)
+        self.style().drawPrimitive(QStyle.PE_Widget, option, painter, self)
+        self.alternate_colors()
 
 
 class ChannelWidget(QWidget):

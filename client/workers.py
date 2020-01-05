@@ -78,23 +78,21 @@ class UpdateStatus(QRunnable):
                           + " - " + func.not_none(info["state"])
                           + " | C: " + func.not_none(info["current"])
                           + ", V: " + func.not_none(info["voltage"]))
+
+                #if info["status"] == "started":
+                    #channel.divider.setStyleSheet(
+                    #    "background-color: {}".format(func.orange))
+                #else:
+                    #channel.divider.setStyleSheet(
+                    #    "background-color: {}".format(func.grey))
             except (TypeError, KeyError):
                 status = "Could not get status!"
+                channel.divider.setStyleSheet(
+                    "background-color: {}".format(func.grey))
             # logger.debug("cyckei.client.workers.UpdateStatus.run:
             # Updating channel {} with status {}".format(
             #     channel.attributes["channel"], status))
             channel.status.setText(status)
-            # Make cleaner
-            try:
-                if info["status"] == "started":
-                    channel.divider.setStyleSheet(
-                        "background-color: {}".format(func.orange))
-                else:
-                    channel.divider.setStyleSheet(
-                        "background-color: {}".format(func.grey))
-            except UnboundLocalError:
-                channel.divider.setStyleSheet(
-                    "background-color: {}".format(func.grey))
 
 
 class Read(QRunnable):
