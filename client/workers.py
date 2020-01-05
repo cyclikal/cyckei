@@ -79,12 +79,12 @@ class UpdateStatus(QRunnable):
                           + " | C: " + func.not_none(info["current"])
                           + ", V: " + func.not_none(info["voltage"]))
 
-                #if info["status"] == "started":
-                    #channel.divider.setStyleSheet(
-                    #    "background-color: {}".format(func.orange))
-                #else:
-                    #channel.divider.setStyleSheet(
-                    #    "background-color: {}".format(func.grey))
+                if info["status"] == "started":
+                    channel.divider.setStyleSheet(
+                        "background-color: {}".format(func.orange))
+                else:
+                    channel.divider.setStyleSheet(
+                        "background-color: {}".format(func.grey))
             except (TypeError, KeyError):
                 status = "Could not get status!"
                 channel.divider.setStyleSheet(

@@ -206,6 +206,7 @@ class ChannelWidget(QWidget):
         buttons = [
             ["Start", "Start Cycle"],
             ["Stop", "Stop Cycle"],
+            ["Check", "Attempt to Read Cell"]
         ]
         elements = []
         for but in buttons:
@@ -215,7 +216,7 @@ class ChannelWidget(QWidget):
 
     def button(self, text):
         func.feedback("{} in progress...".format(text), self)
-        if text == "Read Cell":
+        if text == "Check":
             worker = workers.Read(self.config, self)
         else:
             worker = workers.Control(
