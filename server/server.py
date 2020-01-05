@@ -343,8 +343,9 @@ def process_socket(socket, runners, sources, server_time):
                     )
                 )
                 response["message"] = msg
-                logger.debug(f"cyckei.server.server.process_socket: \
-                    Error occurred, sent response: {response['response']}")
+                logger.debug("cyckei.server.server.process_socket: Error \
+                             occurred, sent response: {}".format(
+                                response['response']))
                 socket.send_json(response)
 
 

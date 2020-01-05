@@ -121,6 +121,7 @@ class ChannelWidget(QWidget):
         self.divider = QWidget(self)
         self.divider.setMinimumWidth(2)
         self.divider.setMaximumWidth(2)
+        self.divider.setStyleSheet("background-color: {}".format(func.grey))
         middle.addWidget(self.divider)
 
         # Settings
