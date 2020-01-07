@@ -95,7 +95,7 @@ class ScriptEditor(QWidget):
     def alert_check(self, result, message):
         if result:
             msg = {
-                "text": "Passed!",
+                "text": message,
                 "info": "Script is good to go.",
             }
         else:

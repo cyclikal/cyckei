@@ -7,9 +7,8 @@ import os
 
 from PySide2.QtWidgets import QApplication, QMainWindow, QTabWidget
 from PySide2.QtCore import QThreadPool
-from PySide2.QtGui import QIcon
 
-import functions as func
+from .functions import gui
 from script_editor import ScriptEditor
 from log_viewer import LogViewer
 
@@ -79,8 +78,7 @@ def main(record_dir="Cyckei"):
     # Create QApplication
     logger.debug("explorer.main: Creating QApplication")
     app = QApplication(sys.argv)
-    app.setWindowIcon(QIcon(func.find_path("assets/explorer.png")))
-    app.setStyle("Fusion")
+    gui.style(app, "assets/explorer.png", "teal")
 
     # Create Client
     logger.debug("explorer.main: Creating Window")
@@ -96,7 +94,7 @@ class MainWindow(QMainWindow):
     def __init__(self, config):
         super(MainWindow, self).__init__()
         # Set basic window properties
-        self.setWindowTitle("Cyckei Client")
+        self.setWindowTitle("Cyckei Explorer")
         self.config = config
         self.resize(1100, 600)
 

@@ -23,10 +23,6 @@ class Check(QRunnable):
     def run(self):
         """Initiates checking tests"""
         passed, msg = self.legal_test(self.protocol)
-        if not passed:
-            self.signals.status.emit(passed, msg)
-            return passed, msg
-        passed, msg = self.run_test(self.protocol)
         self.signals.status.emit(passed, msg)
         return passed, msg
 
@@ -54,7 +50,7 @@ class Check(QRunnable):
             if not valid:
                 return False, "Illegal command: \"" + line + "\"."
 
-        return True, "Passed"
+        return True, "Passed 'Legal Arguments' Test"
 
 
 class Control(QRunnable):
