@@ -3,8 +3,8 @@
 from PySide2.QtWidgets import QVBoxLayout, QHBoxLayout, \
     QPlainTextEdit, QListWidget, QFileDialog, QWidget
 
-from . import scripts
-from .workers import Check
+import scripts
+from workers import Check
 import functions as func
 
 
@@ -12,8 +12,7 @@ class ScriptEditor(QWidget):
     """Main object of script tab"""
     def __init__(self, config, resource):
         QWidget.__init__(self)
-        self.channels = resource["tabs"].widget(0).channels
-        self.scripts = resource["scripts"]
+        self.scripts = []
         self.threadpool = resource["threadpool"]
         self.config = config
 

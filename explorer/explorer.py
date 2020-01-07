@@ -5,12 +5,13 @@ import sys
 import json
 import os
 
-from PySide2.QtWidgets import QApplication, QMainWindow
+from PySide2.QtWidgets import QApplication, QMainWindow, QTabWidget
 from PySide2.QtCore import QThreadPool
 from PySide2.QtGui import QIcon
 
-import workers
 import functions as func
+from script_editor import ScriptEditor
+from log_viewer import LogViewer
 
 logger = logging.getLogger('cyckei')
 logger.setLevel(logging.DEBUG)  # base level must be lower than all handlers
@@ -111,6 +112,12 @@ class MainWindow(QMainWindow):
 
         # Create menu and status bar
         self.status_bar = self.statusBar()
+
+        resource["tabs"] = QTabWidget(self)
+        self.setCentralWidget(resource["tabs"])
+
+        resource["tabs"].addTab(ScriptEditor(config, resource), "Scripts")
+        resource["tabs"].addTab(LogViewer(config, resource), "Logs")
 
 
 if __name__ == "__main__":
