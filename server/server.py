@@ -28,9 +28,9 @@ def handle_exception(exc_type, exc_value, exc_traceback):
 sys.excepthook = handle_exception
 
 
-def main(record_dir="Cyckei"):
+def main(record_dir):
     """
-    Begins execution of Cyckei.
+    Begins execution of Cyckei Server.
 
     Args:
         record_dir: Optional path to recording directory.
@@ -39,10 +39,6 @@ def main(record_dir="Cyckei"):
 
     """
     try:
-        # Ensure Recording Directory is Setup
-        record_dir = os.path.join(os.path.expanduser("~"), record_dir)
-        file_structure(record_dir)
-
         # Setup Configuration
         with open(record_dir + "/config.json") as file:
             config = json.load(file)
@@ -106,20 +102,6 @@ def main(record_dir="Cyckei"):
     logger.debug("cyckei.main: Starting Server")
 
     event_loop(config, socket)
-
-
-def file_structure(path):
-    """Checks for existing folder structure and sets up if missing"""
-    os.makedirs(path, exist_ok=True)
-    os.makedirs(path + "/tests", exist_ok=True)
-    if not os.path.exists(path + "/config.json"):
-        shutil.copy(func.find_path("assets/default_config.json"),
-                    path + "/config.json")
-    open(path + "/batch.txt", "a")
-    if not os.path.exists(path + "/scripts"):
-        os.makedirs(path + "/scripts")
-        shutil.copy(func.find_path("assets/example-script"),
-                    path + "/scripts/example")
 
 
 # def handler(exception_type, value, tb):
@@ -478,8 +460,3 @@ def get_runner_by_channel(channel, runners, status=None):
                 return runner
 
     return None
-
-
-if __name__ == "__main__":
-    print("Starting Cyckei Server...")
-    main()

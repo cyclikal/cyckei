@@ -19,5 +19,5 @@
         "server-address":"tcp://*",
         "timeout": 10
     },
-    "verbosity": 20
+    "verbosity": 30
 }

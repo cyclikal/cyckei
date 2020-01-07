@@ -117,8 +117,3 @@ class MainWindow(QMainWindow):
 
         resource["tabs"].addTab(ScriptEditor(config, resource), "Scripts")
         resource["tabs"].addTab(LogViewer(config, resource), "Logs")
-
-
-if __name__ == "__main__":
-    print("Starting Cyckei...")
-    sys.exit(main())
