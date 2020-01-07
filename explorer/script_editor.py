@@ -12,7 +12,7 @@ class ScriptEditor(QWidget):
     """Main object of script tab"""
     def __init__(self, config, resource):
         QWidget.__init__(self)
-        self.scripts = []
+        self.scripts = scripts.ScriptList(config)
         self.threadpool = resource["threadpool"]
         self.config = config
 

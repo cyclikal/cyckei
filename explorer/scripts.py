@@ -1,26 +1,27 @@
 """Methods and object to handle scripts"""
+from os import listdir
 
 from PySide2.QtWidgets import QListWidgetItem
 
 
-# class ScriptList(object):
-#     def __init__(self, config):
-#         self.script_list = []
-#         self.default_scripts(config["record_dir"] + "/scripts")
+class ScriptList(object):
+    def __init__(self, config):
+        self.script_list = []
+        self.default_scripts(config["record_dir"] + "/scripts")
 
-#     def default_scripts(self, path):
-#         """Load scripts from scripts folder"""
-#         files = listdir(path)
-#         if files is not None:
-#             for file in files:
-#                 self.script_list.append(Script(file, path))
+    def default_scripts(self, path):
+        """Load scripts from scripts folder"""
+        files = listdir(path)
+        if files is not None:
+            for file in files:
+                self.script_list.append(Script(file, path))
 
-#     def by_title(self, title):
-#         """Returns script object with given title"""
-#         for script in self.script_list:
-#             if script.title == title:
-#                 return script
-#         return None
+    def by_title(self, title):
+        """Returns script object with given title"""
+        for script in self.script_list:
+            if script.title == title:
+                return script
+        return None
 
 
 class Script(QListWidgetItem):
