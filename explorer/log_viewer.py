@@ -37,7 +37,7 @@ class LogViewer(QWidget):
         list_rows.setStretch(1, 3)
 
         # create edit_rows
-        self.title_bar = func.label("Select file on left to view log.")
+        self.title_bar = gui.label("Select file on left to view log.")
         edit_rows.addWidget(self.title_bar)
 
         self.editor = QPlainTextEdit()
@@ -53,7 +53,7 @@ class LogViewer(QWidget):
         ]
 
         for button in buttons:
-            controls.addWidget(func.button(*button))
+            controls.addWidget(gui.button(*button))
 
         self.reload()
 

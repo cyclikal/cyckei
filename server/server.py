@@ -112,7 +112,6 @@ def event_loop(config, socket):
         counter = 0
         initial_time = time.time()
 
-        logger.info("cyckei.server.server.main: Starting main server loop")
         while True:
             current_time = '{0:02.0f}.{1:02.0f}'.format(
                 *divmod((time.time() - initial_time) * 60, 60)

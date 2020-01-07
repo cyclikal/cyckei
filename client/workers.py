@@ -7,8 +7,8 @@ from datetime import date
 
 from PySide2.QtCore import QRunnable, Slot, Signal, QObject
 
-from socket import Socket
-import functions as func
+from .socket import Socket
+from functions import func, gui
 
 logger = logging.getLogger('cyckei')
 
@@ -81,14 +81,14 @@ class UpdateStatus(QRunnable):
 
                 if info["status"] == "started":
                     channel.divider.setStyleSheet(
-                        "background-color: {}".format(func.orange))
+                        "background-color: {}".format(gui.orange))
                 else:
                     channel.divider.setStyleSheet(
-                        "background-color: {}".format(func.grey))
+                        "background-color: {}".format(gui.gray))
             except (TypeError, KeyError):
                 status = "Could not get status!"
                 channel.divider.setStyleSheet(
-                    "background-color: {}".format(func.grey))
+                    "background-color: {}".format(gui.gray))
             # logger.debug("cyckei.client.workers.UpdateStatus.run:
             # Updating channel {} with status {}".format(
             #     channel.attributes["channel"], status))

@@ -26,7 +26,7 @@ class ScriptEditor(QWidget):
         columns.setStretch(1, 5)
 
         # Create edit_rows
-        self.title_bar = func.label("Select or open file to edit.")
+        self.title_bar = gui.label("Select or open file to edit.")
         edit_rows.addWidget(self.title_bar)
 
         self.editor = QPlainTextEdit()
@@ -43,7 +43,7 @@ class ScriptEditor(QWidget):
             ["Check", self.check],
         ]
         for button in buttons:
-            controls.addWidget(func.button(text=button[0], connect=button[1]))
+            controls.addWidget(gui.button(text=button[0], connect=button[1]))
 
     def setup_file_list(self):
         """Create list of script files"""

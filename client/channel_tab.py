@@ -12,8 +12,8 @@ from PySide2.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, \
 from PySide2.QtCore import QTimer, Qt
 from PySide2.QtGui import QPainter, QPalette
 
-import workers
-import functions as func
+from . import workers
+from functions import func, gui
 
 UPDATE_INTERVAL = 1000  # milliseconds
 logger = logging.getLogger('cyckei')
@@ -121,7 +121,7 @@ class ChannelWidget(QWidget):
         self.divider = QWidget(self)
         self.divider.setMinimumWidth(2)
         self.divider.setMaximumWidth(2)
-        self.divider.setStyleSheet("background-color: {}".format(func.grey))
+        self.divider.setStyleSheet("background-color: {}".format(gui.gray))
         middle.addWidget(self.divider)
 
         # Settings
@@ -132,12 +132,12 @@ class ChannelWidget(QWidget):
             settings.addWidget(element)
 
         # Script
-        self.script_label = func.label("Script: None", "Current script loaded")
+        self.script_label = gui.label("Script: None", "Current script loaded")
         left.addWidget(self.script_label)
 
         # Status
         args = ["Loading Status...", "Current Cell Status"]
-        self.status = func.label(*args)
+        self.status = gui.label(*args)
         left.addWidget(self.status)
 
         # Controls
@@ -148,7 +148,7 @@ class ChannelWidget(QWidget):
 
         # Feedback
         args = ["", "Server Response"]
-        self.feedback = func.label(*args)
+        self.feedback = gui.label(*args)
         self.feedback.setAlignment(Qt.AlignCenter)
         right.addWidget(self.feedback)
 
@@ -166,11 +166,11 @@ class ChannelWidget(QWidget):
             "Channel {}".format(self.attributes["channel"]),
             "id_label"
         ]
-        elements.append(func.label(*args))
+        elements.append(gui.label(*args))
         elements[-1].setMinimumSize(25, 25)
 
         # Script File Dialog
-        elements.append(func.button("Script", "Open Script file",
+        elements.append(gui.button("Script", "Open Script file",
                                     connect=self.set_script))
 
         # Line Edits
@@ -181,7 +181,7 @@ class ChannelWidget(QWidget):
             ["Comment", "Unparsed Comment", "comment"],
         ]
         for line in editables:
-            elements.append(func.line_edit(*line, self.set))
+            elements.append(gui.line_edit(*line, self.set))
 
         return elements
 
@@ -210,7 +210,7 @@ class ChannelWidget(QWidget):
         ]
         elements = []
         for but in buttons:
-            elements.append(func.button(*but, self.button))
+            elements.append(gui.button(*but, self.button))
 
         return elements
 
