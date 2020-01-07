@@ -11,7 +11,6 @@ from visa import VisaIOError
 
 from .models import Keithley2602
 from .protocols import STATUS, CellRunner
-from functions import func
 
 logger = logging.getLogger('cyckei')
 

@@ -5,7 +5,7 @@ from PySide2.QtWidgets import QVBoxLayout, QHBoxLayout, \
 
 from . import scripts
 from .workers import Check
-from functions import func, gui
+from functions import gui
 
 
 class ScriptEditor(QWidget):
