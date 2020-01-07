@@ -39,15 +39,6 @@ def main(config):
     except zmq.error.ZMQError as error:
         logger.critical(
             "It appears the server is already running: {}".format(error))
-        msg = [
-            "Cyckei Instance Already Running!",
-            "To show client, open taskbar widget and click \"Launch Client\"",
-            func.Critical,
-            "Failed to initialize socket. "
-            "This indicates an existing server insance. "
-            "Error: {}".format(error)
-        ]
-        func.message(*msg)
         return
     logger.debug("cyckei.server.server.main: Socket bound successfully")
 

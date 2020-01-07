@@ -103,9 +103,9 @@ class ScriptEditor(QWidget):
                 "text": "Failed!",
                 "info": "Script did not pass the check.",
                 "detail": message,
-                "icon": func.Warning
+                "icon": gui.Warning
             }
-        func.message(**msg)
+        gui.message(**msg)
 
     def add(self, file):
         """Add new script to list to make available"""
