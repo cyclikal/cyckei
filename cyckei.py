@@ -24,15 +24,15 @@ def main():
         config = make_config(args)
         start_logging(config)
         print("Done!")
+        logger.debug(f"Using configuration:\n{config}")
 
     except Exception:
         print("Error occured before logging began.")
         raise Exception
 
-    logging.info("Launching {} with record directory '{}'...".format(
+    logger.info("Launching {} with record directory '{}'...".format(
         config["component"], config["record_dir"]
     ))
-    logging.debug(f"Using configuration:\n{config}")
 
     if args.launch == "server":
         from server import server
@@ -43,9 +43,6 @@ def main():
     elif args.launch == "explorer":
         from explorer import explorer
         explorer.main(config)
-    else:
-        raise ValueError(
-            "Invalid component passed. Must be server, client, or explorer.")
 
 
 def parse_args():
@@ -59,6 +56,7 @@ def parse_args():
 
     parser = argparse.ArgumentParser()
     parser.add_argument('launch', metavar="{server | client | explorer}",
+                        choices=['server', 'client', 'explorer'],
                         type=str, help='Select which component to launch.')
     parser.add_argument('--dir', metavar="[dir]", default=default_path,
                         type=str, help='Recording directory')
@@ -112,7 +110,7 @@ def make_config(args):
 
     config = {**configuration, **variables}
     config["record_dir"] = args.dir
-    config["conponent"] = args.launch
+    config["component"] = args.launch
     config["verbose"] = args.v
     config["log_level"] = args.log_level
 
@@ -147,8 +145,8 @@ def start_logging(config):
     print(f"C:{c_handler.level}, F:{f_handler.level}...", end="")
 
     # Format individual loggers
-    f_format = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s \
-                                  - %(threadName)s - %(message)s")
+    f_format = logging.Formatter(
+      "%(asctime)s - %(name)s - %(levelname)s - %(threadName)s - %(message)s")
     c_handler.setFormatter(f_format)
     f_handler.setFormatter(f_format)
 
