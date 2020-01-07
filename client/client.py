@@ -5,11 +5,9 @@ import sys
 
 from PySide2.QtWidgets import QApplication, QMainWindow
 from PySide2.QtCore import QThreadPool
-from PySide2.QtGui import QIcon
-
 from .channel_tab import ChannelTab
 from . import workers
-from functions import func, gui
+from functions import gui
 
 logger = logging.getLogger('cyckei')
 

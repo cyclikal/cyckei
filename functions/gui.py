@@ -7,7 +7,7 @@ import sys
 
 from PySide2.QtWidgets import QMessageBox, QPushButton, QComboBox, QLineEdit, \
      QLabel, QAction
-from PySide2.QtGui import QIcon, QPalette
+from PySide2.QtGui import QIcon
 
 from functions import func
 

@@ -171,7 +171,7 @@ class ChannelWidget(QWidget):
 
         # Script File Dialog
         elements.append(gui.button("Script", "Open Script file",
-                                    connect=self.set_script))
+                                   connect=self.set_script))
 
         # Line Edits
         editables = [
