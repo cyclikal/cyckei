@@ -5,7 +5,7 @@ import time
 
 import visa
 
-import functions as func
+from functions import func
 
 logger = logging.getLogger('cyckei')
 

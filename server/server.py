@@ -1,34 +1,22 @@
 """Main script run by server application"""
 
 import logging
-import sys
 import os
 import time
 import traceback
-import json
-import shutil
 from collections import OrderedDict
 
 import zmq
 from visa import VisaIOError
 
-from models import Keithley2602
-from protocols import STATUS, CellRunner
-import functions as func
+from .models import Keithley2602
+from .protocols import STATUS, CellRunner
+from functions import func
 
 logger = logging.getLogger('cyckei')
-logger.setLevel(logging.DEBUG)  # base level must be lower than all handlers
 
 
-def handle_exception(exc_type, exc_value, exc_traceback):
-    logger.error("Uncaught exception", exc_info=(exc_type, exc_value,
-                 exc_traceback))
-
-
-sys.excepthook = handle_exception
-
-
-def main(record_dir):
+def main(config):
     """
     Begins execution of Cyckei Server.
 
@@ -38,45 +26,10 @@ def main(record_dir):
         Result of app.exec_(), Qt's main event loop.
 
     """
-    try:
-        # Setup Configuration
-        with open(record_dir + "/config.json") as file:
-            config = json.load(file)
-        with open(func.find_path("assets/variables.json")) as file:
-            var = json.load(file)
-        config["version"] = var["version"]
-        config["record_dir"] = record_dir
-
-        # Setup Logging
-        # Create handlers
-        c_handler = logging.StreamHandler()
-        f_handler = logging.FileHandler("{}/{}.log".format(record_dir,
-                                                           logger.name))
-        c_handler.setLevel(logging.INFO)
-        f_handler.setLevel(config["verbosity"])
-
-        # Create formatters and add it to handlers
-        # c_format = logging.Formatter("%(name)s - %(levelname)s \
-        #                               - %(message)s")
-        f_format = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s \
-                                      - %(threadName)s - %(message)s")
-        c_handler.setFormatter(f_format)
-        f_handler.setFormatter(f_format)
-
-        # Add handlers to the logger
-        logger.addHandler(c_handler)
-        logger.addHandler(f_handler)
-
-    except Exception as e:
-        print("An error occured before logging began.")
-        print(e)
-
-    logger.info("cyckei_server.main: Initializing Cyckei Server \
-                 version {}".format(config["version"]))
-    logger.debug("cyckei.main: Logging at debug level")
+    logger.info(f"Initializing Cyckei Server {config['version']}")
 
     # Create Server's ZMQ Socket
-    logger.debug("cyckei.server.server.main: Binding socket")
+    logger.debug("Binding socket")
     try:
         context = zmq.Context(1)
         socket = context.socket(zmq.REP)
@@ -98,9 +51,7 @@ def main(record_dir):
         return
     logger.debug("cyckei.server.server.main: Socket bound successfully")
 
-    # Start Server
-    logger.debug("cyckei.main: Starting Server")
-
+    # Start server event loop
     event_loop(config, socket)
 
 
@@ -115,7 +66,7 @@ def main(record_dir):
 def event_loop(config, socket):
     try:
         """Main start method and loop for server application"""
-        logger.info("cyckei.server.server.main: Starting server")
+        logger.debug("Starting server event loop")
 
         # Create list of sources (outputs)
         keithleys = []
@@ -138,11 +89,10 @@ def event_loop(config, socket):
                                     chd["channel"],
                                     chd["gpib_address"])
                                  )
-                    logger.exception(e)
+                    logger.error(e)
                     continue
 
                 keithleys.append(keithley)
-
             source = keithley.get_source(chd["keithley_channel"],
                                          channel=chd["channel"])
             sources.append(source)
