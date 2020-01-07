@@ -25,7 +25,7 @@ def style(app, icon="assets/cyckei.png", highlight="orange"):
     app.setStyle("Fusion")
     app.setWindowIcon(QIcon(func.find_path(icon)))
     palette = QPalette()
-    palette.setColor(QPalette.ButtonText, gui.teal)
+    palette.setColor(QPalette.ButtonText, teal)
     app.setPalette(palette)
 
 

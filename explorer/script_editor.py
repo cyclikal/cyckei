@@ -3,9 +3,9 @@
 from PySide2.QtWidgets import QVBoxLayout, QHBoxLayout, \
     QPlainTextEdit, QListWidget, QFileDialog, QWidget
 
-import scripts
-from workers import Check
-import functions as func
+from . import scripts
+from .workers import Check
+from functions import func, gui
 
 
 class ScriptEditor(QWidget):

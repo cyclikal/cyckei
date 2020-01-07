@@ -7,7 +7,7 @@ from PySide2.QtWidgets import QVBoxLayout, QHBoxLayout, \
     QListWidget, QListWidgetItem, QWidget, QPlainTextEdit
 from PySide2.QtCore import Slot, QRunnable
 
-import functions as func
+from functions import gui
 
 
 class LogViewer(QWidget):
