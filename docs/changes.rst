@@ -106,12 +106,11 @@ Release Candidates
 
 -  0.2.1rc1, 0/00/0000 -- TBD
 
-0.3 Tenjin
+0.3 Tenzin
 ----------
 
-Add significant features which make the platform more efficient. This
-includes automatic scripting, better batch management, pretty log view,
-multi-folder scripts, and more.
+Rebuilding existing interface after fixing an OS-level threading error.
+Also adds Cyckei Explorer for editing scripts and viewing recent log files.
 
 Development Releases
 ^^^^^^^^^^^^^^^^^^^^
@@ -135,7 +134,6 @@ Possible Features
 - Server Software
    - "Plug-in" style core (lua) script management for different devices
    - Implement Cython and threading for improved performance with massive cycles
-   - Auto shutoff due to crash or inactivity
    - Possibly better logging format, dependent on Cell Explorer
    - Stop all cycles on exit
 - Hardware Support
