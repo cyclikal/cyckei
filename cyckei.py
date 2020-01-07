@@ -19,12 +19,13 @@ def main():
     """
 
     try:
+        print()
         args = parse_args()
         file_structure(args.dir)
         config = make_config(args)
         start_logging(config)
         print("Done!")
-        logger.debug(f"Using configuration:\n{config}")
+        logger.debug(f"Using configuration: {config}")
 
     except Exception:
         print("Error occured before logging began.")
@@ -146,7 +147,7 @@ def start_logging(config):
 
     # Format individual loggers
     f_format = logging.Formatter(
-      "%(asctime)s - %(name)s - %(levelname)s - %(threadName)s - %(message)s")
+      "%(asctime)s - %(levelname)s - %(name)s.%(threadName)s - %(filename)s.%(funcName)s - %(message)s")
     c_handler.setFormatter(f_format)
     f_handler.setFormatter(f_format)
 
