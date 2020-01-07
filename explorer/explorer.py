@@ -80,6 +80,7 @@ def main(record_dir="Cyckei"):
     logger.debug("explorer.main: Creating QApplication")
     app = QApplication(sys.argv)
     app.setWindowIcon(QIcon(func.find_path("assets/explorer.png")))
+    app.setStyle("Fusion")
 
     # Create Client
     logger.debug("explorer.main: Creating Window")
