@@ -1,6 +1,7 @@
 import functools
 import os
 import sys
+import shutil
 
 from PySide2.QtWidgets import QMessageBox, QPushButton, QComboBox, QLineEdit, \
      QLabel, QAction
@@ -101,10 +102,10 @@ def file_structure(path):
     os.makedirs(path, exist_ok=True)
     os.makedirs(path + "/tests", exist_ok=True)
     if not os.path.exists(path + "/config.json"):
-        shutil.copy(func.find_path("assets/default_config.json"),
+        shutil.copy(find_path("assets/default_config.json"),
                     path + "/config.json")
     open(path + "/batch.txt", "a")
     if not os.path.exists(path + "/scripts"):
         os.makedirs(path + "/scripts")
-        shutil.copy(func.find_path("assets/example-script"),
+        shutil.copy(find_path("assets/example-script"),
                     path + "/scripts/example")

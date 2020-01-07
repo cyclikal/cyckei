@@ -110,25 +110,7 @@ class MainWindow(QMainWindow):
         # resource["scripts"] = ScriptList(config)
 
         # Create menu and status bar
-        self.create_menu()
         self.status_bar = self.statusBar()
-
-    def create_menu(self):
-        """Setup menu bar"""
-
-        entries = {
-            "File": [
-                ["&About", self.about, "About Cyckei Explorer"]
-            ],
-        }
-
-        for key, items in entries.items():
-            menu = self.menuBar().addMenu(key)
-            for item in items:
-                menu.addAction(func.action(*item, parent=self))
-
-    def about(self):
-        func.message(f"About Cyckei Explorer v. {self.config['version']}")
 
 
 if __name__ == "__main__":
