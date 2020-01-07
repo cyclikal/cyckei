@@ -31,8 +31,7 @@ def main(config):
     # Create QApplication
     logger.debug("cyckei.main: Creating QApplication")
     app = QApplication(sys.argv)
-    app.setWindowIcon(QIcon(func.find_path("assets/cyckei.png")))
-    app.setStyle("Fusion")
+    gui.style(app, "assets/cyckei.png", gui.orange)
 
     # Create Client
     logger.debug("cyckei.main: Creating Initial Client")

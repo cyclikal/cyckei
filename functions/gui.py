@@ -17,16 +17,30 @@ Warning = QMessageBox.Warning
 Critical = QMessageBox.Critical
 
 orange = "#f05f40"
-teal = "#f05f40"
+teal = "#3eb58a"
 gray = "#a6a6a6"
 
+css = """
+* {
+    font-size:16px;
+    selection-background-color: {color};
+} ChannelWidget {
+    border-bottom: 2px solid  {color};
+} QLabel#id_label {
+    color: {color};
+    font-weight:bold;
+} QPushButton:pressed {
+    background-color: {color};
+} QPlainTextEdit:focus, QListWidget:focus {
+    border:1px solid  {color}
+}
+"""
 
-def style(app, icon="assets/cyckei.png", highlight="orange"):
+
+def style(app, icon="assets/cyckei.png", highlight=orange):
     app.setStyle("Fusion")
     app.setWindowIcon(QIcon(func.find_path(icon)))
-    palette = QPalette()
-    palette.setColor(QPalette.ButtonText, teal)
-    app.setPalette(palette)
+    app.setStyleSheet(css.replace("{color}", highlight))
 
 
 def find_path(path):
