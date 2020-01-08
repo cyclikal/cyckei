@@ -1,10 +1,11 @@
 """Tab to view and edit scripts, also has access to checking procedure"""
 import logging
+from os.path import join
+from os import listdir
 
 from PySide2.QtWidgets import QVBoxLayout, QHBoxLayout, \
-    QPlainTextEdit, QListWidget, QFileDialog, QWidget
+    QPlainTextEdit, QListWidget, QFileDialog, QWidget, QListWidgetItem
 
-from . import scripts
 from .workers import Check
 from functions import gui
 
@@ -15,7 +16,7 @@ class ScriptEditor(QWidget):
     """Main object of script tab"""
     def __init__(self, config, resource):
         QWidget.__init__(self)
-        self.scripts = scripts.ScriptList(config)
+        self.scripts = ScriptList(config)
         self.threadpool = resource["threadpool"]
         self.config = config
 
@@ -38,13 +39,13 @@ class ScriptEditor(QWidget):
         edit_rows.addLayout(controls)
 
         buttons = [
-            ["Open", self.open],
-            ["New", self.new],
-            ["Save", self.save],
-            ["Check", self.check],
+            ["Open", "Open Another Script", self.open],
+            ["New", "Start New Script", self.new],
+            ["Save", "Save Current Script", self.save],
+            ["Check", "Check for Basic Syntax Errors", self.check],
         ]
         for button in buttons:
-            controls.addWidget(gui.button(text=button[0], connect=button[1]))
+            controls.addWidget(gui.button(*button))
 
         self.setup_file_list()
         columns.addWidget(self.file_list)
@@ -61,7 +62,8 @@ class ScriptEditor(QWidget):
     def list_clicked(self):
         """Display contents of script when clicked"""
         try:
-            self.title_bar.setText(self.file_list.currentItem().path)
+            item = self.file_list.currentItem()
+            self.title_bar.setText(join(item.path, item.title))
             self.editor.setPlainText(self.file_list.currentItem().content)
         except AttributeError:
             logger.warning("Cannot load scripts, none found.")
@@ -118,7 +120,58 @@ class ScriptEditor(QWidget):
 
     def add(self, file):
         """Add new script to list to make available"""
-        self.scripts.script_list.append(scripts.Script(file[1], file[0]))
+        self.scripts.script_list.append(Script(file[1], file[0]))
         self.file_list.addItem(self.scripts.script_list[-1])
         for channel in self.channels:
             channel.settings[1].addItem(self.scripts.script_list[-1].title)
+
+
+class Script(QListWidgetItem):
+    """Object to store and manipulate scripts"""
+    def __init__(self, title, path):
+        super(Script, self).__init__()
+        self.title = title
+        self.path = path
+        try:
+            self.content = open(self.path + "/" + self.title, "r").read()
+        except (UnicodeDecodeError, PermissionError) as error:
+            self.content = "Could not read file: {}".format(error)
+        self.setText(self.title)
+
+    def save(self):
+        """Saves script to file"""
+        with open(self.path + "/" + self.title, "w") as file:
+            file.write(self.content)
+        self.update_status()
+
+    def update_status(self):
+        """Updates title with '*' if script has been edited"""
+        try:
+            file_content = open(self.path + "/" + self.title, "r").read()
+        except UnicodeDecodeError as error:
+            file_content = "Could not decode: {}".format(error)
+
+        if self.content == file_content:
+            self.setText(self.title)
+        else:
+            self.setText("* " + self.title)
+
+
+class ScriptList(object):
+    def __init__(self, config):
+        self.script_list = []
+        self.default_scripts(config["record_dir"] + "/scripts")
+
+    def default_scripts(self, path):
+        """Load scripts from scripts folder"""
+        files = listdir(path)
+        if files is not None:
+            for file in files:
+                self.script_list.append(Script(file, path))
+
+    def by_title(self, title):
+        """Returns script object with given title"""
+        for script in self.script_list:
+            if script.title == title:
+                return script
+        return None

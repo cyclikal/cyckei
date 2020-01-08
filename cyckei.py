@@ -146,7 +146,8 @@ def start_logging(config):
 
     # Format individual loggers
     f_format = logging.Formatter(
-      "%(asctime)s - %(levelname)s - %(filename)s.%(funcName)s:\t\t%(message)s")
+      "%(asctime)s - %(levelname)s - %(filename)s.%(funcName)s:\t\t%(message)s"
+    )
     c_handler.setFormatter(f_format)
     f_handler.setFormatter(f_format)
 
