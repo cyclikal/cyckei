@@ -2,25 +2,27 @@
 
 import webbrowser
 from os import path, listdir
+import logging
 
 from PySide2.QtWidgets import QVBoxLayout, QHBoxLayout, \
     QListWidget, QListWidgetItem, QWidget, QPlainTextEdit
-from PySide2.QtCore import Slot, QRunnable
 
 from functions import gui
+
+logger = logging.getLogger('cyckei')
 
 
 class LogViewer(QWidget):
     """Object of log tab"""
     def __init__(self, config, resource):
         QWidget.__init__(self)
-        self.path = config["record_dir"] + "/tests"
+        self.path = path.join(config["record_dir"], "tests")
         self.threadpool = resource["threadpool"]
 
         self.log_list = QListWidget()
         self.log_list.itemClicked.connect(self.log_clicked)
         self.folder_list = QListWidget()
-        self.folder_list.itemClicked.connect(self.folder_clicked)
+        self.folder_list.itemClicked.connect(self.load_logs)
 
         # Create overall layout
         columns = QHBoxLayout(self)
@@ -55,23 +57,53 @@ class LogViewer(QWidget):
         for button in buttons:
             controls.addWidget(gui.button(*button))
 
-        self.reload()
-
-    def reload(self, text=None):
-        self.threadpool.start(Folders(self))
+        self.reload(None)
 
     def open_explorer(self, text=None):
         """Open logging folder in explorer"""
         webbrowser.open("file://{}".format(self.path))
 
-    def log_clicked(self, item):
+    def log_clicked(self):
         """Display text of clicked file in text box"""
-        self.title_bar.setText(item.path)
-        self.editor.setPlainText(item.content)
+        try:
+            self.title_bar.setText(self.log_list.currentItem().path)
+            self.editor.setPlainText(self.log_list.currentItem().content)
+        except AttributeError:
+            logger.warning("Cannot load scripts, none found.")
 
-    def folder_clicked(self, item):
-        worker = Logs(self, item)
-        self.threadpool.start(worker)
+    def load_logs(self):
+        self.log_list.clear()
+        self.editor.clear()
+        logs = []
+
+        files = listdir(self.folder_list.currentItem().path)
+        for file in files:
+            abspath = path.join(self.folder_list.currentItem().path, file)
+            if not path.isdir(abspath):
+                logs.append(Log(abspath, file))
+
+        for log in logs:
+            self.log_list.addItem(log)
+        self.log_list.setCurrentItem(
+            self.log_list.item(0))
+        self.log_clicked()
+
+    def reload(self, item):
+        self.folder_list.clear()
+        self.log_list.clear()
+        self.editor.clear()
+        folders = []
+
+        files = listdir(self.path)
+        for file in files:
+            abspath = path.join(self.path, file)
+            if path.isdir(abspath):
+                folders.append(Folder(abspath, file))
+        for folder in folders:
+            self.folder_list.addItem(folder)
+        self.folder_list.setCurrentItem(
+            self.folder_list.item(0))
+        self.load_logs()
 
 
 class Log(QListWidgetItem):
@@ -94,46 +126,3 @@ class Folder(QListWidgetItem):
         super(Folder, self).__init__()
         self.path = path
         self.setText(name)
-
-
-class Logs(QRunnable):
-    def __init__(self, widget, folder):
-        super(Logs, self).__init__()
-        self.widget = widget
-        self.folder = folder
-
-    @Slot()
-    def run(self):
-        self.widget.log_list.clear()
-        self.widget.editor.clear()
-        logs = []
-
-        files = listdir(self.folder.path)
-        for file in files:
-            abspath = "{}/{}".format(self.folder.path, file)
-            if not path.isdir(abspath):
-                logs.append(Log(abspath, file))
-
-        for log in logs:
-            self.widget.log_list.addItem(log)
-
-
-class Folders(QRunnable):
-    def __init__(self, widget):
-        super(Folders, self).__init__()
-        self.widget = widget
-
-    @Slot()
-    def run(self):
-        self.widget.folder_list.clear()
-        self.widget.log_list.clear()
-        self.widget.editor.clear()
-        folders = []
-
-        files = listdir(self.widget.path)
-        for file in files:
-            abspath = "{}/{}".format(self.widget.path, file)
-            if path.isdir(abspath):
-                folders.append(Folder(abspath, file))
-        for folder in folders:
-            self.widget.folder_list.addItem(folder)

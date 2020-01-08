@@ -65,6 +65,7 @@ class ScriptEditor(QWidget):
             self.editor.setPlainText(self.file_list.currentItem().content)
         except AttributeError:
             logger.warning("Cannot load scripts, none found.")
+
     def text_modified(self):
         """Update content of script and update status to show if edited"""
         if self.file_list.currentItem() is not None:
