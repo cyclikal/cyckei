@@ -1,10 +1,4 @@
 __pycache__
 .DS_Store
-dist
-cyckei.egg-info
-build
 venv
-.vscode
-.eggs
 docs/_build
-.ipynb_checkpoints
