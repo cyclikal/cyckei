@@ -24,17 +24,16 @@ def main(config):
 
     """
 
-    logger.info("explorer.main: Initializing Explorer version {}".format(
+    logger.info("Initializing Explorer version {}".format(
         config["version"]))
-    logger.debug("explorer.main: Logging at debug level")
 
     # Create QApplication
-    logger.debug("explorer.main: Creating QApplication")
+    logger.debug("Creating QApplication")
     app = QApplication(sys.argv)
     gui.style(app, "assets/explorer.png", gui.teal)
 
     # Create Client
-    logger.debug("explorer.main: Creating Window")
+    logger.debug("Creating Window")
     main_window = MainWindow(config)
     main_window.show()
 

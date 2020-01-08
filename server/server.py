@@ -39,7 +39,7 @@ def main(config):
         logger.critical(
             "It appears the server is already running: {}".format(error))
         return
-    logger.debug("cyckei.server.server.main: Socket bound successfully")
+    logger.debug("Socket bound successfully")
 
     # Start server event loop
     event_loop(config, socket)
@@ -161,8 +161,7 @@ def event_loop(config, socket):
             # mod it by a large value to avoid ever overflowing
             counter = counter % max_counter + 1
     except Exception as e:
-        logger.error("cyckei.server.server.main: \
-            Failed with uncaught exception:")
+        logger.error("Failed with uncaught exception:")
         logger.exception(e)
 
 

@@ -19,19 +19,18 @@ def main():
     """
 
     try:
-        print()
         args = parse_args()
         file_structure(args.dir)
         config = make_config(args)
         start_logging(config)
-        print("Done!")
+        print("Done!\n")
         logger.debug(f"Using configuration: {config}")
 
     except Exception:
         print("Error occured before logging began.")
         raise Exception
 
-    logger.info("Launching {} with record directory '{}'...".format(
+    logger.info("Launching {} with record directory '{}'".format(
         config["component"], config["record_dir"]
     ))
 
@@ -147,7 +146,7 @@ def start_logging(config):
 
     # Format individual loggers
     f_format = logging.Formatter(
-      "%(asctime)s - %(levelname)s - %(name)s.%(threadName)s - %(filename)s.%(funcName)s - %(message)s")
+      "%(asctime)s - %(levelname)s - %(filename)s.%(funcName)s:\t\t%(message)s")
     c_handler.setFormatter(f_format)
     f_handler.setFormatter(f_format)
 

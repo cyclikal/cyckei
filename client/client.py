@@ -23,16 +23,15 @@ def main(config):
 
     """
 
-    logger.info(f"cyckei.main: Initializing Cyckei Client {config['version']}")
-    logger.debug("cyckei.main: Logging at debug level")
+    logger.info(f"Initializing Cyckei Client {config['version']}")
 
     # Create QApplication
-    logger.debug("cyckei.main: Creating QApplication")
+    logger.debug("Creating QApplication")
     app = QApplication(sys.argv)
     gui.style(app, "assets/cyckei.png", gui.orange)
 
     # Create Client
-    logger.debug("cyckei.main: Creating Initial Client")
+    logger.debug("Creating Initial Client")
     main_window = MainWindow(config)
     main_window.show()
 
