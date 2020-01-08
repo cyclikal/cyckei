@@ -1,4 +1,5 @@
 """Tab to view and edit scripts, also has access to checking procedure"""
+import logging
 
 from PySide2.QtWidgets import QVBoxLayout, QHBoxLayout, \
     QPlainTextEdit, QListWidget, QFileDialog, QWidget
@@ -6,6 +7,8 @@ from PySide2.QtWidgets import QVBoxLayout, QHBoxLayout, \
 from . import scripts
 from .workers import Check
 from functions import gui
+
+logger = logging.getLogger('cyckei')
 
 
 class ScriptEditor(QWidget):
@@ -18,8 +21,6 @@ class ScriptEditor(QWidget):
 
         # Create overall layout
         columns = QHBoxLayout(self)
-        self.setup_file_list()
-        columns.addWidget(self.file_list)
         edit_rows = QVBoxLayout()
         columns.addLayout(edit_rows)
         columns.setStretch(0, 1)
@@ -45,18 +46,25 @@ class ScriptEditor(QWidget):
         for button in buttons:
             controls.addWidget(gui.button(text=button[0], connect=button[1]))
 
+        self.setup_file_list()
+        columns.addWidget(self.file_list)
+
     def setup_file_list(self):
         """Create list of script files"""
         self.file_list = QListWidget()
         self.file_list.itemClicked.connect(self.list_clicked)
         for script in self.scripts.script_list:
             self.file_list.addItem(script)
+        self.file_list.setCurrentItem(self.file_list.item(0))
+        self.list_clicked()
 
     def list_clicked(self):
         """Display contents of script when clicked"""
-        self.title_bar.setText(self.file_list.currentItem().path)
-        self.editor.setPlainText(self.file_list.currentItem().content)
-
+        try:
+            self.title_bar.setText(self.file_list.currentItem().path)
+            self.editor.setPlainText(self.file_list.currentItem().content)
+        except AttributeError:
+            logger.warning("Cannot load scripts, none found.")
     def text_modified(self):
         """Update content of script and update status to show if edited"""
         if self.file_list.currentItem() is not None:
