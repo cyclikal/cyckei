@@ -83,7 +83,7 @@ def file_structure(path):
     makedirs(join(path, "tests"), exist_ok=True)
     if not exists(join(path, "config.json")):
         shutil.copy(func.find_path(join("assets", "default_config.json")),
-                    path + "config.json")
+                    join(path, "config.json"))
     open(join(path, "batch.txt"), "a")
     if not exists(join(path, "scripts")):
         makedirs(join(path, "scripts"))

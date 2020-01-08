@@ -69,4 +69,4 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(resource["tabs"])
 
         resource["tabs"].addTab(ScriptEditor(config, resource), "Scripts")
-        resource["tabs"].addTab(LogViewer(config, resource), "Logs")
+        resource["tabs"].addTab(LogViewer(config, resource), "Results")
