@@ -204,13 +204,15 @@ class ChannelWidget(QWidget):
 
     def get_controls(self):
         buttons = [
-            ["Start", "Start Cycle"],
-            ["Stop", "Stop Cycle"],
-            ["Check", "Attempt to Read Cell"]
+            ["Start", "Start Cycle", self.button],
+            ["Stop", "Stop Cycle", self.button],
+            ["Check", "Attempt to Read Cell", self.button, False],
+            ["Pause", "Pause Cycle", self.button, False],
+            ["Resume", "Resume Cycle", self.button, False]
         ]
         elements = []
         for but in buttons:
-            elements.append(gui.button(*but, self.button))
+            elements.append(gui.button(*but))
 
         return elements
 
