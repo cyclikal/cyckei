@@ -163,7 +163,7 @@ class InsertBar(QWidget):
         elements = []
         # Script File Dialog
         items = ["CCCharge", "CCDischarge", "CVCharge", "CVDischarge",
-                 "Sleep", "Rest"]
+                 "Sleep", "Rest", "Comment", "For Loop"]
         elements.append(gui.combo_box(items, "Select Protocol", "protocol",
                         self.update))
 
@@ -196,6 +196,10 @@ class InsertBar(QWidget):
             out = f"{d['protocol']}({d['value']}, reports=(('voltage', '{d['report_val']}'), ('time', '{d['report_time']}')), ends=(('voltage', '>', '{d['end_val']}'), ('time', '>', '{d['end_time']}')))"
         elif d['protocol'] == "CCDischarge" or d['protocol'] == "CVDischarge":
             out = f"{d['protocol']}({d['value']}, reports=(('voltage', '{d['report_val']}'), ('time', '{d['report_time']}')), ends=(('voltage', '<', '{d['end_val']}'), ('time', '>', '{d['end_time']}')))"
+        elif d['protocol'] == "Comment":
+            out = f"# {d['value']}"
+        elif d['protocol'] == "For Loop":
+            out = f"for i in range({d['value']}):"
 
         self.output.setText(out.replace("\'", "\""))
         logger.debug(self.output.text)
