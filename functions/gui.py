@@ -25,7 +25,7 @@ css = """
     font-size:16px;
     selection-background-color: {color};
 } ChannelWidget {
-    border-bottom: 2px solid  {color};
+    border-bottom: 2px solid {color};
 } QLabel#id_label {
     color: {color};
     font-weight:bold;
@@ -33,6 +33,9 @@ css = """
     background-color: {color};
 } QPlainTextEdit:focus, QListWidget:focus {
     border:1px solid  {color}
+} InsertBar {
+    border-bottom: 2px solid {color};
+    border-top: 2px solid {color};
 }
 """
 

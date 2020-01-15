@@ -28,6 +28,8 @@ class ScriptEditor(QWidget):
         columns.setStretch(1, 5)
 
         # Create edit_rows
+        edit_rows.addWidget(InsertBar())
+
         self.title_bar = gui.label("Select or open file to edit.")
         edit_rows.addWidget(self.title_bar)
 
@@ -124,6 +126,57 @@ class ScriptEditor(QWidget):
         self.file_list.addItem(self.scripts.script_list[-1])
         for channel in self.channels:
             channel.settings[1].addItem(self.scripts.script_list[-1].title)
+
+
+class InsertBar(QWidget):
+    """Controls and stores information for a given channel"""
+    def __init__(self):
+        super(InsertBar, self).__init__()
+        # General UI
+        layout = QVBoxLayout(self)
+
+        # Settings
+        settings = QHBoxLayout()
+        layout.addLayout(settings)
+        self.settings = self.get_settings()
+        for element in self.settings:
+            settings.addWidget(element)
+
+        # Status
+        args = ["Edit Protocol to Generate...",
+                "Generated Protocol for Copy/Paste", "output", self.update]
+        self.status = gui.line_edit(*args)
+        layout.addWidget(self.status)
+
+    def get_settings(self):
+        """Creates all UI elements and adds them to elements list"""
+        elements = []
+        # Script File Dialog
+        items = ["CCCharge", "CCDischarge", "CVCharge", "CVDischarge",
+                 "Sleep", "Rest"]
+        elements.append(gui.combo_box(items, "Select Protocol", "protocol",
+                        self.update))
+
+        # Line Edits
+        editables = [
+            ["V/I Value", " Set Voltage or Current", "value"],
+            ["Report Threshhold", "Threshold to Record At", "report_val"],
+            ["Report Interval", "Maximum Length Between Recording",
+             "report_time"],
+            ["End Threshhold", "Threshold to End Step", "end_val"],
+            ["End Duration", "Max Duration of End Step", "end_time"],
+        ]
+        for line in editables:
+            elements.append(gui.line_edit(*line, self.update))
+
+        return elements
+
+    def update(self, key, text):
+        logger.debug(f"Key: {key}, Text: {text}")
+
+    def set(self, key, text):
+        """Sets object's script to one selected in dropdown"""
+        pass
 
 
 class Script(QListWidgetItem):
