@@ -6,7 +6,7 @@ import os
 import sys
 
 from PySide2.QtWidgets import QMessageBox, QPushButton, QComboBox, QLineEdit, \
-     QLabel, QAction
+     QLabel, QAction, QPlainTextEdit
 from PySide2.QtGui import QIcon
 
 from functions import func
@@ -113,6 +113,18 @@ def line_edit(label, status, key, connect):
     if connect:
         text.textChanged.connect(functools.partial(connect, key))
     return text
+
+
+def text_edit(status=None, connect=None, readonly=False,
+              wrap=QPlainTextEdit.NoWrap):
+    editor = QPlainTextEdit()
+    editor.setLineWrapMode(wrap)
+    if connect:
+        editor.textChanged.connect(connect)
+    editor.setReadOnly(readonly)
+    editor.setStatusTip(status)
+
+    return editor
 
 
 def action(text=None, connect=None, tip=None, parent=None,

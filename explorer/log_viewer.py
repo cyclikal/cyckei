@@ -6,7 +6,7 @@ import logging
 import json
 
 from PySide2.QtWidgets import QVBoxLayout, QHBoxLayout, \
-    QListWidget, QListWidgetItem, QWidget, QPlainTextEdit
+    QListWidget, QListWidgetItem, QWidget
 
 from functions import gui
 
@@ -120,16 +120,10 @@ class LogDisplay(QWidget):
         for key, value in self.info_elements.items():
             info.addWidget(value)
 
-        self.protocol_viewer = QPlainTextEdit()
-        self.protocol_viewer.setLineWrapMode(QPlainTextEdit.NoWrap)
-        self.protocol_viewer.setReadOnly(True)
-        self.protocol_viewer.setStatusTip("Protocol")
+        self.protocol_viewer = gui.text_edit("Protocol", readonly=True)
         layout.addWidget(self.protocol_viewer)
 
-        self.data_viewer = QPlainTextEdit()
-        self.data_viewer.setLineWrapMode(QPlainTextEdit.NoWrap)
-        self.data_viewer.setReadOnly(True)
-        self.data_viewer.setStatusTip("Test Data")
+        self.data_viewer = gui.text_edit("Test Data", readonly=True)
         layout.addWidget(self.data_viewer)
         layout.setStretch(1, 1)
         layout.setStretch(2, 3)

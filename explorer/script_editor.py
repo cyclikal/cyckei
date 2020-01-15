@@ -5,7 +5,7 @@ from os import listdir
 import webbrowser
 
 from PySide2.QtWidgets import QVBoxLayout, QHBoxLayout, \
-    QPlainTextEdit, QListWidget, QFileDialog, QWidget, QListWidgetItem
+    QListWidget, QFileDialog, QWidget, QListWidgetItem
 
 from .workers import Check
 from functions import gui
@@ -29,9 +29,7 @@ class ScriptEditor(QWidget):
         columns.setStretch(1, 5)
 
         # Create edit_rows
-        self.editor = QPlainTextEdit()
-        self.editor.setLineWrapMode(QPlainTextEdit.NoWrap)
-        self.editor.textChanged.connect(self.text_modified)
+        self.editor = gui.text_edit("Edit Script", self.text_modified)
         self.title_bar = gui.label("Select or open file to edit.")
 
         edit_rows.addWidget(InsertBar(self.editor))
