@@ -203,11 +203,20 @@ class InsertBar(QWidget):
         d = self.attributes
 
         if d['protocol'] == "Sleep" or d['protocol'] == "Rest":
-            out = f"{d['protocol']}(reports=(('time', '{d['report_time']}'), ), ends=(('time', '>', '{d['end_time']}'), ))"
+            out = f"{d['protocol']}(reports=(('time', '{d['report_time']}'),)"\
+                  f", ends=(('time', '>', '{d['end_time']}'), ))"
         elif d['protocol'] == "CCCharge" or d['protocol'] == "CVCharge":
-            out = f"{d['protocol']}({d['value']}, reports=(('voltage', '{d['report_val']}'), ('time', '{d['report_time']}')), ends=(('voltage', '>', '{d['end_val']}'), ('time', '>', '{d['end_time']}')))"
+            out = f"{d['protocol']}({d['value']}," \
+                  f"reports=(('voltage', '{d['report_val']}'), "\
+                  f"('time', '{d['report_time']}')), "\
+                  f"ends=(('voltage', '>', '{d['end_val']}'), "\
+                  f"('time', '>', '{d['end_time']}')))"
         elif d['protocol'] == "CCDischarge" or d['protocol'] == "CVDischarge":
-            out = f"{d['protocol']}({d['value']}, reports=(('voltage', '{d['report_val']}'), ('time', '{d['report_time']}')), ends=(('voltage', '<', '{d['end_val']}'), ('time', '>', '{d['end_time']}')))"
+            out = f"{d['protocol']}({d['value']}, "\
+                  f"reports=(('voltage', '{d['report_val']}'), "\
+                  f"('time', '{d['report_time']}')), "\
+                  f"ends=(('voltage', '<', '{d['end_val']}'), "\
+                  f"('time', '>', '{d['end_time']}')))"
         elif d['protocol'] == "Comment":
             out = f"# {d['value']}"
         elif d['protocol'] == "For Loop":
