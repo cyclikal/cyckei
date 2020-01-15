@@ -34,6 +34,7 @@ class ScriptEditor(QWidget):
         edit_rows.addWidget(self.title_bar)
 
         self.editor = QPlainTextEdit()
+        self.editor.setLineWrapMode(QPlainTextEdit.NoWrap)
         self.editor.textChanged.connect(self.text_modified)
         edit_rows.addWidget(self.editor)
 

@@ -24,18 +24,18 @@ css = """
 * {
     font-size:16px;
     selection-background-color: {color};
-} ChannelWidget {
+} InsertBar {
     border-bottom: 2px solid {color};
+    border-top: 2px solid {color};
+} ChannelWidget {
+    border-bottom: 3px solid {color};
 } QLabel#id_label {
     color: {color};
     font-weight:bold;
 } QPushButton:pressed {
     background-color: {color};
 } QPlainTextEdit:focus, QListWidget:focus {
-    border:1px solid  {color}
-} InsertBar {
-    border-bottom: 2px solid {color};
-    border-top: 2px solid {color};
+    border: 1px solid {color}
 }
 """
 
