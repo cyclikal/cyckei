@@ -133,6 +133,15 @@ class InsertBar(QWidget):
     """Controls and stores information for a given channel"""
     def __init__(self):
         super(InsertBar, self).__init__()
+        self.attributes = {
+            "protocol": "CCCharge",
+            "value": "0.01",
+            "report_val": "0.1",
+            "report_time": ":5:",
+            "end_val": "3.8",
+            "end_time": "5::",
+        }
+
         # General UI
         layout = QVBoxLayout(self)
 
@@ -145,9 +154,9 @@ class InsertBar(QWidget):
 
         # Status
         args = ["Edit Protocol to Generate...",
-                "Generated Protocol for Copy/Paste", "output", self.update]
-        self.status = gui.line_edit(*args)
-        layout.addWidget(self.status)
+                "Generated Protocol for Copy/Paste", None, None]
+        self.output = gui.line_edit(*args)
+        layout.addWidget(self.output)
 
     def get_settings(self):
         """Creates all UI elements and adds them to elements list"""
@@ -162,10 +171,12 @@ class InsertBar(QWidget):
         editables = [
             ["V/I Value", " Set Voltage or Current", "value"],
             ["Report Threshhold", "Threshold to Record At", "report_val"],
-            ["Report Interval", "Maximum Length Between Recording",
+            ["Report Interval (hh:mm:ss)",
+             "Maximum Length Between Recording  in Format HH:MM:SS",
              "report_time"],
             ["End Threshhold", "Threshold to End Step", "end_val"],
-            ["End Duration", "Max Duration of End Step", "end_time"],
+            ["End Duration (hh:mm:ss)",
+             "Max Duration of End Step in Format HH:MM:SS", "end_time"],
         ]
         for line in editables:
             elements.append(gui.line_edit(*line, self.update))
@@ -173,11 +184,21 @@ class InsertBar(QWidget):
         return elements
 
     def update(self, key, text):
-        logger.debug(f"Key: {key}, Text: {text}")
+        self.attributes[key] = text
+        self.write()
 
-    def set(self, key, text):
-        """Sets object's script to one selected in dropdown"""
-        pass
+    def write(self):
+        d = self.attributes
+
+        if d['protocol'] == "Sleep" or d['protocol'] == "Rest":
+            out = f"{d['protocol']}(reports=(('time', '{d['report_time']}'), ), ends=(('time', '>', '{d['end_time']}'), ))"
+        elif d['protocol'] == "CCCharge" or d['protocol'] == "CVCharge":
+            out = f"{d['protocol']}({d['value']}, reports=(('voltage', '{d['report_val']}'), ('time', '{d['report_time']}')), ends=(('voltage', '>', '{d['end_val']}'), ('time', '>', '{d['end_time']}')))"
+        elif d['protocol'] == "CCDischarge" or d['protocol'] == "CVDischarge":
+            out = f"{d['protocol']}({d['value']}, reports=(('voltage', '{d['report_val']}'), ('time', '{d['report_time']}')), ends=(('voltage', '<', '{d['end_val']}'), ('time', '>', '{d['end_time']}')))"
+
+        self.output.setText(out.replace("\'", "\""))
+        logger.debug(self.output.text)
 
 
 class Script(QListWidgetItem):

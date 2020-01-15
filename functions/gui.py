@@ -110,7 +110,8 @@ def line_edit(label, status, key, connect):
     text.setMinimumSize(60, 20)
     text.setPlaceholderText(label)
     text.setStatusTip(status)
-    text.textChanged.connect(functools.partial(connect, key))
+    if connect:
+        text.textChanged.connect(functools.partial(connect, key))
     return text
 
 
