@@ -130,8 +130,6 @@ class ScriptEditor(QWidget):
         """Add new script to list to make available"""
         self.scripts.script_list.append(Script(file[1], file[0]))
         self.file_list.addItem(self.scripts.script_list[-1])
-        for channel in self.channels:
-            channel.settings[1].addItem(self.scripts.script_list[-1].title)
 
 
 class InsertBar(QWidget):
