@@ -28,14 +28,13 @@ class ScriptEditor(QWidget):
         columns.setStretch(1, 5)
 
         # Create edit_rows
-        edit_rows.addWidget(InsertBar())
-
-        self.title_bar = gui.label("Select or open file to edit.")
-        edit_rows.addWidget(self.title_bar)
-
         self.editor = QPlainTextEdit()
         self.editor.setLineWrapMode(QPlainTextEdit.NoWrap)
         self.editor.textChanged.connect(self.text_modified)
+        self.title_bar = gui.label("Select or open file to edit.")
+
+        edit_rows.addWidget(InsertBar(self.editor))
+        edit_rows.addWidget(self.title_bar)
         edit_rows.addWidget(self.editor)
 
         controls = QHBoxLayout()
@@ -131,7 +130,7 @@ class ScriptEditor(QWidget):
 
 class InsertBar(QWidget):
     """Controls and stores information for a given channel"""
-    def __init__(self):
+    def __init__(self, editor):
         super(InsertBar, self).__init__()
         self.attributes = {
             "protocol": "CCCharge",
@@ -141,6 +140,7 @@ class InsertBar(QWidget):
             "end_val": "3.8",
             "end_time": "5::",
         }
+        self.editor = editor
 
         # General UI
         layout = QVBoxLayout(self)
@@ -153,10 +153,16 @@ class InsertBar(QWidget):
             settings.addWidget(element)
 
         # Status
+        lower = QHBoxLayout()
+        layout.addLayout(lower)
+
         args = ["Edit Protocol to Generate...",
                 "Generated Protocol for Copy/Paste", None, None]
         self.output = gui.line_edit(*args)
-        layout.addWidget(self.output)
+        lower.addWidget(self.output)
+
+        lower.addWidget(gui.button("Insert", "Insert Protocol into Script",
+                        self.insert))
 
     def get_settings(self):
         """Creates all UI elements and adds them to elements list"""
@@ -203,6 +209,11 @@ class InsertBar(QWidget):
 
         self.output.setText(out.replace("\'", "\""))
         logger.debug(self.output.text)
+
+    def insert(self, text):
+        content = self.output.text()
+        if content:
+            self.editor.appendPlainText(content)
 
 
 class Script(QListWidgetItem):
