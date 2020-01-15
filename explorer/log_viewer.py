@@ -3,6 +3,7 @@
 import webbrowser
 from os import path, listdir
 import logging
+import json
 
 from PySide2.QtWidgets import QVBoxLayout, QHBoxLayout, \
     QListWidget, QListWidgetItem, QWidget, QPlainTextEdit
@@ -42,7 +43,7 @@ class LogViewer(QWidget):
         self.title_bar = gui.label("Select file on left to view log.")
         edit_rows.addWidget(self.title_bar)
 
-        self.editor = QPlainTextEdit()
+        self.editor = LogDisplay()
         edit_rows.addWidget(self.editor)
 
         controls = QHBoxLayout()
@@ -67,13 +68,12 @@ class LogViewer(QWidget):
         """Display text of clicked file in text box"""
         try:
             self.title_bar.setText(self.log_list.currentItem().path)
-            self.editor.setPlainText(self.log_list.currentItem().content)
+            self.editor.update(self.log_list.currentItem().content)
         except AttributeError:
             logger.warning("Cannot load scripts, none found.")
 
     def load_logs(self):
         self.log_list.clear()
-        self.editor.clear()
         logs = []
 
         files = listdir(self.folder_list.currentItem().path)
@@ -91,7 +91,6 @@ class LogViewer(QWidget):
     def reload(self, item):
         self.folder_list.clear()
         self.log_list.clear()
-        self.editor.clear()
         folders = []
 
         files = listdir(self.path)
@@ -104,6 +103,56 @@ class LogViewer(QWidget):
         self.folder_list.setCurrentItem(
             self.folder_list.item(0))
         self.load_logs()
+
+
+class LogDisplay(QWidget):
+    def __init__(self):
+        super(LogDisplay, self).__init__()
+        layout = QVBoxLayout(self)
+        info = QHBoxLayout()
+        layout.addLayout(info)
+
+        self.info_elements = {
+            "cellid": gui.label("Cell ID", "Cell ID"),
+            "date_start_timestr": gui.label("Start Time", "Start Time"),
+            "comment": gui.label("Comment", "Test Comment"),
+        }
+        for key, value in self.info_elements.items():
+            info.addWidget(value)
+
+        self.protocol_viewer = QPlainTextEdit()
+        self.protocol_viewer.setLineWrapMode(QPlainTextEdit.NoWrap)
+        self.protocol_viewer.setReadOnly(True)
+        self.protocol_viewer.setStatusTip("Protocol")
+        layout.addWidget(self.protocol_viewer)
+
+        self.data_viewer = QPlainTextEdit()
+        self.data_viewer.setLineWrapMode(QPlainTextEdit.NoWrap)
+        self.data_viewer.setReadOnly(True)
+        self.data_viewer.setStatusTip("Test Data")
+        layout.addWidget(self.data_viewer)
+        layout.setStretch(1, 1)
+        layout.setStretch(2, 3)
+
+    def update(self, content):
+        # Load data
+        attr = ""
+        data = ""
+        for line in content.split("\n"):
+            if line.startswith("#"):
+                attr += line[1:] + "\n"
+            else:
+                data += line + "\n"
+        try:
+            attr = json.loads(attr)
+        except json.decoder.JSONDecodeError:
+            logger.warning("Could not read script file.")
+
+        # Setting info Elements
+        for common_key in attr.keys() & self.info_elements.keys():
+            self.info_elements[common_key].setText(attr[common_key])
+        self.protocol_viewer.setPlainText(attr["protocol"])
+        self.data_viewer.setPlainText(data.replace(",", "\t"))
 
 
 class Log(QListWidgetItem):
