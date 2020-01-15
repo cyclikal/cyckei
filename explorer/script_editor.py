@@ -2,6 +2,7 @@
 import logging
 from os.path import join
 from os import listdir
+import webbrowser
 
 from PySide2.QtWidgets import QVBoxLayout, QHBoxLayout, \
     QPlainTextEdit, QListWidget, QFileDialog, QWidget, QListWidgetItem
@@ -45,6 +46,7 @@ class ScriptEditor(QWidget):
             ["New", "Start New Script", self.new],
             ["Save", "Save Current Script", self.save],
             ["Check", "Check for Basic Syntax Errors", self.check],
+            ["Help", "Script Writing Help", self.help]
         ]
         for button in buttons:
             controls.addWidget(gui.button(*button))
@@ -104,6 +106,10 @@ class ScriptEditor(QWidget):
         worker = Check(self.config, self.file_list.currentItem().content)
         self.threadpool.start(worker)
         worker.signals.status.connect(self.alert_check)
+
+    def help(self, text):
+        webbrowser.open("https://docs.cyclikal.com/projects/cyckei/en/stable/"
+                        "usage.html#creating-scripts")
 
     def alert_check(self, result, message):
         if result:
