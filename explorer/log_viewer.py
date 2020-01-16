@@ -6,7 +6,9 @@ import logging
 import json
 
 from PySide2.QtWidgets import QVBoxLayout, QHBoxLayout, \
-    QListWidget, QListWidgetItem, QWidget
+    QListWidget, QListWidgetItem, QWidget, QSizePolicy
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
+from matplotlib.figure import Figure
 
 from functions import gui
 
@@ -123,10 +125,18 @@ class LogDisplay(QWidget):
         self.protocol_viewer = gui.text_edit("Protocol", readonly=True)
         layout.addWidget(self.protocol_viewer)
 
+        data = QHBoxLayout()
+        layout.addLayout(data)
+
         self.data_viewer = gui.text_edit("Test Data", readonly=True)
-        layout.addWidget(self.data_viewer)
+        data.addWidget(self.data_viewer)
         layout.setStretch(1, 1)
         layout.setStretch(2, 3)
+
+        self.graph = GraphCanvas()
+        data.addWidget(self.graph)
+        data.setStretch(0, 3)
+        data.setStretch(1, 2)
 
     def update(self, content):
         # Load data
@@ -147,6 +157,43 @@ class LogDisplay(QWidget):
             self.info_elements[common_key].setText(attr[common_key])
         self.protocol_viewer.setPlainText(attr["protocol"])
         self.data_viewer.setPlainText(data.replace(",", "\t"))
+
+        # Setup graph
+        points_t = []
+        points_v = []
+        for line in data.split("\n"):
+            if "{\"" in line:
+                points_t.append([])
+                points_v.append([])
+            else:
+                info = line.strip().split(",")
+                try:
+                    points_t[-1].append(info[0])
+                    points_v[-1].append(info[2])
+                except IndexError:
+                    pass
+        self.graph.plot(points_t, points_v)
+
+
+class GraphCanvas(FigureCanvasQTAgg):
+    """Graphing Canvas using matplotlib"""
+
+    def __init__(self):
+        fig = Figure()
+        self.axes = fig.add_subplot()
+        FigureCanvasQTAgg.__init__(self, fig)
+
+    def plot(self, x_data, y_data):
+        self.axes.cla()
+        col = ["b", "g", "r", "c", "m", "b"]
+        i = 0
+        for x, y in zip(x_data, y_data):
+            try:
+                self.figure.add_subplot(111).plot(x, y, col[i % len(col)])
+            except ValueError:
+                pass
+            i += 1
+        self.draw()
 
 
 class Log(QListWidgetItem):
