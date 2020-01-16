@@ -19,7 +19,6 @@ def main():
     Starts logging to both console and file based on argument input.
     Launches requested cyckei component (server, client, or explorer).
     """
-
     try:
         args = parse_args()
         file_structure(args.dir)
