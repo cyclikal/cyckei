@@ -6,9 +6,10 @@ import logging
 import json
 
 from PySide2.QtWidgets import QVBoxLayout, QHBoxLayout, \
-    QListWidget, QListWidgetItem, QWidget, QSizePolicy
+    QListWidget, QListWidgetItem, QWidget
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
+from matplotlib.pyplot import FuncFormatter
 
 from functions import gui
 
@@ -168,9 +169,9 @@ class LogDisplay(QWidget):
             else:
                 info = line.strip().split(",")
                 try:
-                    points_t[-1].append(info[0])
-                    points_v[-1].append(info[2])
-                except IndexError:
+                    points_t[-1].append(float(info[0]))
+                    points_v[-1].append(float(info[2]))
+                except (IndexError, ValueError):
                     pass
         self.graph.plot(points_t, points_v)
 
@@ -185,11 +186,11 @@ class GraphCanvas(FigureCanvasQTAgg):
 
     def plot(self, x_data, y_data):
         self.axes.cla()
-        col = ["b", "g", "r", "c", "m", "b"]
+        col = ["b", "g", "r", "c", "m", "k"]
         i = 0
         for x, y in zip(x_data, y_data):
             try:
-                self.figure.add_subplot(111).plot(x, y, col[i % len(col)])
+                self.axes.plot(x, y, col[i % len(col)])
             except ValueError:
                 pass
             i += 1
