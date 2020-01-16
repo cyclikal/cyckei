@@ -8,6 +8,8 @@ import json
 
 from functions import func
 
+logger = logging.getLogger('cyckei')
+
 
 def main():
     """
@@ -58,10 +60,10 @@ def parse_args():
     parser.add_argument('launch', metavar="{server | client | explorer}",
                         choices=['server', 'client', 'explorer'],
                         type=str, help='Select which component to launch.')
-    parser.add_argument('--dir', metavar="[dir]", default=default_path,
-                        type=str, help='Recording directory')
     parser.add_argument('-v', action="store_true",
                         help='Toggle verbose console output')
+    parser.add_argument('--dir', metavar="[dir]", default=default_path,
+                        type=str, help='Recording directory')
     parser.add_argument('--log_level', metavar="[log_level]",
                         default=30, type=int,
                         help='Set log file logging level')
@@ -163,5 +165,4 @@ def handle_exception(exc_type, exc_value, exc_traceback):
 
 
 if __name__ == "__main__":
-    logger = logging.getLogger('cyckei')
     main()
