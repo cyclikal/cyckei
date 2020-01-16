@@ -8,7 +8,13 @@ def find_path(path):
     local = os.path.join(os.path.abspath('.'), path)
     if os.path.exists(local):
         return local
-    return os.path.join(os.path.abspath('..'), path)
+    local = os.path.join(os.path.abspath('.'), "cyckei", path)
+    if os.path.exists(local):
+        return local
+    local = os.path.join(os.path.abspath('..'), path)
+    if os.path.exists(local):
+        return local
+    raise FileNotFoundError
 
 
 def not_none(value):
