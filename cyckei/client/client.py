@@ -7,7 +7,7 @@ from PySide2.QtWidgets import QApplication, QMainWindow
 from PySide2.QtCore import QThreadPool
 from .channel_tab import ChannelTab
 from . import workers
-from functions import gui
+from cyckei.functions import gui
 
 logger = logging.getLogger('cyckei')
 
@@ -28,7 +28,7 @@ def main(config):
     # Create QApplication
     logger.debug("Creating QApplication")
     app = QApplication(sys.argv)
-    gui.style(app, "assets/cyckei.png", gui.orange)
+    gui.style(app, "icon-client.png", gui.orange)
 
     # Create Client
     logger.debug("Creating Initial Client")

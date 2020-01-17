@@ -109,13 +109,14 @@ Release Candidates
 0.3 Tenzin
 ----------
 
-Rebuilding existing interface after fixing an OS-level threading error.
-Also adds Cyckei Explorer for editing scripts and viewing recent log files.
+Rebuilding existing interfaces after fixing an OS-level threading error.
+Adds Cyckei Explorer for editing scripts and viewing recent log files.
+Now, again, uses PyPI release system as opposed to freezing.
 
 Development Releases
 ^^^^^^^^^^^^^^^^^^^^
 
-- 0.3.dev1, 0/00/0000 -- TBD
+- 0.3.dev1, 1/16/2020 -- Implements Cyckei Explorer and Rebuilds Distribution System
 
 Release Candidates
 ^^^^^^^^^^^^^^^^^^

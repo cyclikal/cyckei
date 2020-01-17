@@ -5,7 +5,7 @@ import time
 
 import visa
 
-from functions import func
+from cyckei.functions import func
 
 logger = logging.getLogger('cyckei')
 
@@ -36,7 +36,7 @@ def with_safety(fn):
 
 class Keithley2602(object):
     """Represents a single keithley Interface"""
-    script_startup = open(func.find_path("assets/startup.lua")).read()
+    script_startup = open(func.asset_path("startup.lua")).read()
     current_ranges = [100 * 1e-9, 1e-6, 10e-6,
                       100e-6, 1e-3, 0.01,
                       0.1, 1.0, 3.0]

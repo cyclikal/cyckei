@@ -6,7 +6,7 @@ import sys
 from PySide2.QtWidgets import QApplication, QMainWindow, QTabWidget
 from PySide2.QtCore import QThreadPool
 
-from functions import gui
+from cyckei.functions import gui
 from .script_editor import ScriptEditor
 from .log_viewer import LogViewer
 
@@ -30,7 +30,7 @@ def main(config):
     # Create QApplication
     logger.debug("Creating QApplication")
     app = QApplication(sys.argv)
-    gui.style(app, "assets/explorer.png", gui.teal)
+    gui.style(app, "icon-explorer.png", gui.teal)
 
     # Create Client
     logger.debug("Creating Window")

@@ -8,7 +8,7 @@ from PySide2.QtWidgets import QVBoxLayout, QHBoxLayout, \
     QListWidget, QFileDialog, QWidget, QListWidgetItem
 
 from .workers import Check
-from functions import gui
+from cyckei.functions import gui
 
 logger = logging.getLogger('cyckei')
 

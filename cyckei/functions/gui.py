@@ -9,7 +9,7 @@ from PySide2.QtWidgets import QMessageBox, QPushButton, QComboBox, QLineEdit, \
      QLabel, QAction, QPlainTextEdit
 from PySide2.QtGui import QIcon
 
-from functions import func
+from cyckei.functions import func
 
 Question = QMessageBox.Question
 Information = QMessageBox.Information
@@ -40,19 +40,10 @@ css = """
 """
 
 
-def style(app, icon="assets/cyckei.png", highlight=orange):
+def style(app, icon="icon-client.png", highlight=orange):
     app.setStyle("Fusion")
-    app.setWindowIcon(QIcon(func.find_path(icon)))
+    app.setWindowIcon(QIcon(func.asset_path(icon)))
     app.setStyleSheet(css.replace("{color}", highlight))
-
-
-def find_path(path):
-    if hasattr(sys, '_MEIPASS'):
-        return os.path.join(sys._MEIPASS, path)
-    local = os.path.join(os.path.abspath('.'), path)
-    if os.path.exists(local):
-        return local
-    return os.path.join(os.path.abspath('..'), path)
 
 
 def not_none(value):

@@ -13,7 +13,7 @@ from PySide2.QtCore import QTimer, Qt
 from PySide2.QtGui import QPainter, QPalette
 
 from . import workers
-from functions import func, gui
+from cyckei.functions import func, gui
 
 UPDATE_INTERVAL = 1000  # milliseconds
 logger = logging.getLogger('cyckei')
@@ -154,7 +154,7 @@ class ChannelWidget(QWidget):
 
         # Load default JSON
         self.json = json.load(open(
-            func.find_path("assets/default_packet.json")))
+            func.asset_path("default_packet.json")))
 
     def get_settings(self):
         """Creates all UI elements and adds them to elements list"""

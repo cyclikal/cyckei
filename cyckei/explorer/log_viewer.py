@@ -11,7 +11,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
 from matplotlib.pyplot import FuncFormatter
 
-from functions import gui
+from cyckei.functions import gui
 
 logger = logging.getLogger('cyckei')
 
