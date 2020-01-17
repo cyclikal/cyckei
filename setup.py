@@ -23,6 +23,7 @@ setup(
         "explorer": "cyckei/explorer",
         "functions": "cyckei/functions"
     },
+    include_package_data=True,
 
     classifiers=[
         "Programming Language :: Python :: 3",

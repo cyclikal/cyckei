@@ -40,7 +40,7 @@ css = """
 """
 
 
-def style(app, icon="assets/cyckei.png", highlight=orange):
+def style(app, icon="icon-client.png", highlight=orange):
     app.setStyle("Fusion")
     app.setWindowIcon(QIcon(func.find_path(icon)))
     app.setStyleSheet(css.replace("{color}", highlight))

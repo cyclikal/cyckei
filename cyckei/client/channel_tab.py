@@ -154,7 +154,7 @@ class ChannelWidget(QWidget):
 
         # Load default JSON
         self.json = json.load(open(
-            func.find_path("assets/default_packet.json")))
+            func.find_path("default_packet.json")))
 
     def get_settings(self):
         """Creates all UI elements and adds them to elements list"""

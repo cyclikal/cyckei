@@ -30,7 +30,7 @@ def main(config):
     # Create QApplication
     logger.debug("Creating QApplication")
     app = QApplication(sys.argv)
-    gui.style(app, "assets/explorer.png", gui.teal)
+    gui.style(app, "icon-explorer.png", gui.teal)
 
     # Create Client
     logger.debug("Creating Window")

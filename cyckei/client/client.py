@@ -28,7 +28,7 @@ def main(config):
     # Create QApplication
     logger.debug("Creating QApplication")
     app = QApplication(sys.argv)
-    gui.style(app, "assets/cyckei.png", gui.orange)
+    gui.style(app, "icon-client.png", gui.orange)
 
     # Create Client
     logger.debug("Creating Initial Client")

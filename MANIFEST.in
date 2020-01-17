@@ -1,0 +1,2 @@
+recursive-include cyckei *
+prune *.egg-info

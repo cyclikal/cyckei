@@ -1,20 +1,8 @@
-import os
-import sys
+from os.path import join, dirname
 
 
 def find_path(path):
-    if hasattr(sys, '_MEIPASS'):
-        return os.path.join(sys._MEIPASS, path)
-    local = os.path.join(os.path.abspath('.'), path)
-    if os.path.exists(local):
-        return local
-    local = os.path.join(os.path.abspath('.'), "cyckei", path)
-    if os.path.exists(local):
-        return local
-    local = os.path.join(os.path.abspath('..'), path)
-    if os.path.exists(local):
-        return local
-    raise FileNotFoundError
+    return join(dirname(__file__), "..", "assets", path)
 
 
 def not_none(value):

@@ -83,12 +83,12 @@ def file_structure(path):
     makedirs(path, exist_ok=True)
     makedirs(join(path, "tests"), exist_ok=True)
     if not exists(join(path, "config.json")):
-        shutil.copy(func.find_path(join("assets", "default_config.json")),
+        shutil.copy(func.find_path("default_config.json"),
                     join(path, "config.json"))
     open(join(path, "batch.txt"), "a")
     if not exists(join(path, "scripts")):
         makedirs(join(path, "scripts"))
-        shutil.copy(func.find_path(join("assets", "example-script")),
+        shutil.copy(func.find_path("example-script"),
                     join(path, "scripts", "example"))
 
 
@@ -107,7 +107,7 @@ def make_config(args):
 
     with open(join(args.dir, "config.json")) as file:
         configuration = json.load(file)
-    with open(func.find_path(join("assets", "variables.json"))) as file:
+    with open(func.find_path("variables.json")) as file:
         variables = json.load(file)
 
     config = {**configuration, **variables}
