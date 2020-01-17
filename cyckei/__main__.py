@@ -33,12 +33,6 @@ def main(args=None):
         print("Error occured before logging began.")
         raise Exception
 
-    logger.debug("Debug")
-    logger.info("Info")
-    logger.warning("Warning")
-    logger.error("Error")
-    logger.critical("Critical")
-
     logger.info(f"Launching {config['component']} with record "
                 f"directory '{config['record_dir']}'")
 
