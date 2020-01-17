@@ -15,7 +15,7 @@ logger = logging.getLogger('cyckei')
 
 def prepare_json(channel, function, protocol, temp):
     """Sets the channel's json script to current values"""
-    with open(func.find_path("default_packet.json")) as file:
+    with open(func.asset_path("default_packet.json")) as file:
         packet = json.load(file)
 
     packet["function"] = function
@@ -209,7 +209,7 @@ class Check(QRunnable):
     def prepare_json(self, protocol):
         """create json to send to server"""
         packet = json.load(
-            open(func.find_path("default_packet.json")))
+            open(func.asset_path("default_packet.json")))
 
         packet["function"] = "test"
         packet["kwargs"]["protocol"] = protocol

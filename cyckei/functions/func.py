@@ -1,7 +1,7 @@
 from os.path import join, dirname
 
 
-def find_path(path):
+def asset_path(path):
     return join(dirname(__file__), "..", "assets", path)
 
 

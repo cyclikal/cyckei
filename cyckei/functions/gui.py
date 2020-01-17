@@ -42,17 +42,8 @@ css = """
 
 def style(app, icon="icon-client.png", highlight=orange):
     app.setStyle("Fusion")
-    app.setWindowIcon(QIcon(func.find_path(icon)))
+    app.setWindowIcon(QIcon(func.asset_path(icon)))
     app.setStyleSheet(css.replace("{color}", highlight))
-
-
-def find_path(path):
-    if hasattr(sys, '_MEIPASS'):
-        return os.path.join(sys._MEIPASS, path)
-    local = os.path.join(os.path.abspath('.'), path)
-    if os.path.exists(local):
-        return local
-    return os.path.join(os.path.abspath('..'), path)
 
 
 def not_none(value):
