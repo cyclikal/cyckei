@@ -35,7 +35,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "cyckei = cyckei.cyckei:main"
+            "cyckei = cyckei.__main__:main"
         ],
     },
 )
