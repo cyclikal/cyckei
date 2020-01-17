@@ -2,8 +2,6 @@
 Universal GUI Functions
 """
 import functools
-import os
-import sys
 
 from PySide2.QtWidgets import QMessageBox, QPushButton, QComboBox, QLineEdit, \
      QLabel, QAction, QPlainTextEdit
@@ -18,7 +16,9 @@ Critical = QMessageBox.Critical
 
 orange = "#f05f40"
 teal = "#3eb58a"
+blue = "#33658a"
 gray = "#a6a6a6"
+dark = "#303036"
 
 css = """
 * {

@@ -31,7 +31,7 @@ setup(
         "pyzmq",
         "pyvisa",
         "PySide2",
-        "matplotlib",
+        "matplotlib"
     ],
     entry_points={
         "console_scripts": [

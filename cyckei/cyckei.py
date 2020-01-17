@@ -33,9 +33,14 @@ def main(args=None):
         print("Error occured before logging began.")
         raise Exception
 
-    logger.info("Launching {} with record directory '{}'".format(
-        config["component"], config["record_dir"]
-    ))
+    logger.debug("Debug")
+    logger.info("Info")
+    logger.warning("Warning")
+    logger.error("Error")
+    logger.critical("Critical")
+
+    logger.info(f"Launching {config['component']} with record "
+                f"directory '{config['record_dir']}'")
 
     if args.launch == "server":
         from cyckei.server import server
@@ -148,11 +153,9 @@ def start_logging(config):
     print(f"C:{c_handler.level}, F:{f_handler.level}...", end="")
 
     # Format individual loggers
-    f_format = logging.Formatter(
-      "%(asctime)s - %(levelname)s - %(filename)s.%(funcName)s:\t\t%(message)s"
-    )
-    c_handler.setFormatter(f_format)
-    f_handler.setFormatter(f_format)
+    formatter = ColorFormatter()
+    c_handler.setFormatter(formatter)
+    f_handler.setFormatter(formatter)
 
     # Add handlers to the logger
     logger.addHandler(c_handler)
@@ -163,6 +166,32 @@ def handle_exception(exc_type, exc_value, exc_traceback):
     """Exception Handler (referenced in start_logging)"""
     logger.error("Uncaught exception", exc_info=(exc_type, exc_value,
                  exc_traceback))
+
+
+class ColorFormatter(logging.Formatter):
+    """Logging Formatter to add colors and count warning / errors"""
+
+    gray = "\x1b[38;21m"
+    blue = "\x1b[34;21m"
+    yellow = "\x1b[33;21m"
+    red = "\x1b[31;21m"
+    bold_red = "\x1b[31;1m"
+    reset = "\x1b[0m"
+    format = ("%(asctime)s - %(levelname)s - %(filename)s.%(funcName)s:"
+              "\t\t%(message)s")
+
+    FORMATS = {
+        logging.DEBUG: blue + format + reset,
+        logging.INFO: gray + format + reset,
+        logging.WARNING: yellow + format + reset,
+        logging.ERROR: red + format + reset,
+        logging.CRITICAL: bold_red + format + reset
+    }
+
+    def format(self, record):
+        log_fmt = self.FORMATS.get(record.levelno)
+        formatter = logging.Formatter(log_fmt)
+        return formatter.format(record)
 
 
 if __name__ == "__main__":
