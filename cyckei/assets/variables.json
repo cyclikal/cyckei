@@ -3,7 +3,7 @@
   "version": "0.3.dev1",
   "codename": "Tenzin",
   "id": "com.cyclikal.cyckei",
-  "copyright": "2019, Cyclikal, LLC",
+  "copyright": "2020, Cyclikal, LLC",
   "author": "Cyclikal, LLC",
   "email": "gabriel@cyclikal.com",
   "description": "Keithley Battery Cycler for Python 3",
