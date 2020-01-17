@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.abspath(".."))
 
 # -- Project information -----------------------------------------------------
 
-with open("../assets/variables.json") as file:
+with open("../cyckei/assets/variables.json") as file:
     var = json.load(file)
 
 project = var["name"]
