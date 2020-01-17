@@ -1,3 +1,4 @@
+"""This file is for execution as an installed package via 'cyckei'."""
 import argparse
 from os import makedirs
 from os.path import expanduser, join, exists
