@@ -217,13 +217,13 @@ class ChannelWidget(QWidget):
         return elements
 
     def button(self, text):
-        func.feedback("{} in progress...".format(text), self)
+        gui.feedback("{} in progress...".format(text), self)
         if text == "Check":
             worker = workers.Read(self.config, self)
         else:
             worker = workers.Control(
                 self.config, self, text.lower(), temp=False)
-        worker.signals.status.connect(func.feedback)
+        worker.signals.status.connect(gui.feedback)
         self.threadpool.start(worker)
 
     def set(self, key, text):
