@@ -13,7 +13,7 @@ from PySide2.QtCore import QTimer, Qt
 from PySide2.QtGui import QPainter, QPalette
 
 from . import workers
-from functions import func, gui
+from cyckei.functions import func, gui
 
 UPDATE_INTERVAL = 1000  # milliseconds
 logger = logging.getLogger('cyckei')

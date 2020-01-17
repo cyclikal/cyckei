@@ -9,7 +9,7 @@ from PySide2.QtWidgets import QMessageBox, QPushButton, QComboBox, QLineEdit, \
      QLabel, QAction, QPlainTextEdit
 from PySide2.QtGui import QIcon
 
-from functions import func
+from cyckei.functions import func
 
 Question = QMessageBox.Question
 Information = QMessageBox.Information

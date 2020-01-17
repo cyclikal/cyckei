@@ -7,7 +7,7 @@ from PySide2.QtWidgets import QApplication, QMainWindow
 from PySide2.QtCore import QThreadPool
 from .channel_tab import ChannelTab
 from . import workers
-from functions import gui
+from cyckei.functions import gui
 
 logger = logging.getLogger('cyckei')
 

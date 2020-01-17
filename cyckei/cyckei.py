@@ -6,12 +6,12 @@ import shutil
 import logging
 import json
 
-from functions import func
+from cyckei.functions import func
 
 logger = logging.getLogger('cyckei')
 
 
-def main():
+def main(args=None):
     """
     Parses command-line arguments for component and directory.
     Checks for and, if necessary, creates file structure at given directory.
@@ -20,7 +20,8 @@ def main():
     Launches requested cyckei component (server, client, or explorer).
     """
     try:
-        args = parse_args()
+        if args is None:
+            args = parse_args()
         file_structure(args.dir)
         config = make_config(args)
         start_logging(config)
@@ -36,13 +37,13 @@ def main():
     ))
 
     if args.launch == "server":
-        from server import server
+        from cyckei.server import server
         server.main(config)
     elif args.launch == "client":
-        from client import client
+        from cyckei.client import client
         client.main(config)
     elif args.launch == "explorer":
-        from explorer import explorer
+        from cyckei.explorer import explorer
         explorer.main(config)
 
 

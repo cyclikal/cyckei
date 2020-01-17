@@ -14,7 +14,8 @@ setup(
     keywords='keithley battery lithium-ion cycling calorimetry',
     url="https://gitlab.com/cyclikal/cyckei",
 
-    packages=["cyckei", "server", "client", "explorer", "functions"],
+    packages=["cyckei", "cyckei.server", "cyckei.client", "cyckei.explorer",
+              "cyckei.functions"],
     package_dir={
         "cyckei": "cyckei",
         "server": "cyckei/server",

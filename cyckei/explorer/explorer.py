@@ -6,7 +6,7 @@ import sys
 from PySide2.QtWidgets import QApplication, QMainWindow, QTabWidget
 from PySide2.QtCore import QThreadPool
 
-from functions import gui
+from cyckei.functions import gui
 from .script_editor import ScriptEditor
 from .log_viewer import LogViewer
 
