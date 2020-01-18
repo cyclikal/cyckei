@@ -39,11 +39,12 @@ Linux-GPIB is a GPL licensed GPIB support package for Linux. In addition to the 
 
 Installation
 ------------
+
 For Users
 ^^^^^^^^^
-Cyckei is distributed using standalone executables for Linux, Mac OS, and Windows. Installation is as simple as downloading the correct executable from the GitLab `releases`_ page.
+Cyckei is distributed on PyPi and can easily be acquired with pip. It is recommended that Cyckei is installed into a virtual environment.
 
-After downloading, simply double-click the executable to start Cyckei. A "cyckei" folder will automatically be created in the user's home directory to store scripts, configuration, and results.
+After downloading, simply run ``cyckei`` in the command prompt to launch a component. A "cyckei" folder will automatically be created in the user's home directory to store scripts, configuration, and results.
 
 Cyckei will almost certainly need to be configured to work with your instruments. See :ref:`Editing Configuration` for more details.
 
@@ -58,21 +59,17 @@ The Cyckei source code is available on `GitLab`_, and can be cloned locally to r
   git clone https://gitlab.com/cyclikal/cyckei.git
   cd cyckei
 
-Cyckei requires Python 3, and assumes that \*NIX-style commands are available. If developing on Windows, ``make`` will not function properly, and you must manually setup all virtual environments and dependencies. This can be accomplished with the following commands.
+Cyckei requires Python 3 in addition to some packages which can be installed via pip. Consult ``setup.py`` for a complete list of requirements.
 
-.. code-block:: bash
+Python can be run directly from source using the ``cyckei.py`` script in the root of the repository.
 
-    pip install virtualenv
-    virtualenv venv
-    ./venv/Scripts/activate.bat
-    pip install -Ur requirements.txt
+  python cyckei.py
 
-On Linux and Mac OS, ``make`` is used to easily handle setting up and running Cyckei from source. For example, you can setup a virtual environment, install necessary dependencies, and run Cyckei with the following commands. ``make help`` will show all options for testing and building Cyckei.
+It can also be installed as a package and run by packaging it with ``setup.py``.
 
-.. code-block:: bash
-
-    make setup
-    make run
+  python setup.py sdist
+  pip install dist/cyckei.tar.gz
+  cyckei
 
 For more information about editing and contributing to Cyckei see :doc:`contributing`.
 

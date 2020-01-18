@@ -2,7 +2,7 @@ Changes & Features
 ==================
 
 
-0.0
+0.0 Yin - 11/14/2018
 ----------------
 
 Original version of Cyckei.
@@ -85,6 +85,7 @@ Release Candidates
 -  0.2rc4, 7/31/2019 -- Fix file naming while reading cell, unify versioning
 -  0.2rc5, 8/01/2019 -- Report pre-logging runtime errors
 
+
 0.2.1
 -----
 
@@ -101,10 +102,6 @@ Development Releases
 
 -  0.2.1.dev1, 8/19/2019 -- Fix issues with delay and improper current measurement
 
-Release Candidates
-^^^^^^^^^^^^^^^^^^
-
--  0.2.1rc1, 0/00/0000 -- TBD
 
 0.3 Tenzin
 ----------
@@ -116,7 +113,8 @@ Now, again, uses PyPI release system as opposed to freezing.
 Development Releases
 ^^^^^^^^^^^^^^^^^^^^
 
-- 0.3.dev1, 1/16/2020 -- Implements Cyckei Explorer and Rebuilds Distribution System
+- 0.3.dev1, 1/16/2020 -- Implements Cyckei Explorer and rebuilds distribution system
+- 0.3.dev2, 0/00/0000 -- Rebuild check, pause, & resume functionality
 
 Release Candidates
 ^^^^^^^^^^^^^^^^^^

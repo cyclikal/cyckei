@@ -15,46 +15,36 @@ generated, and instructions on further configuration can be found in the `Editin
 Starting a cycle
 ----------------
 
-Various attributes of the cycle must be set in order to start a cycle.
-All of these have default values to prevent errors, however it is a good
-idea to manually specify them. The following should be set under the
-desired channel:
+Various attributes of the cycle may be set in before starting a cycle:
 
-+----------------+------------+----------------------------------------------------------------------------------------------------------------------+----------------------+
-| Option         | Type       | Description                                                                                                          | Default              |
-+================+============+======================================================================================================================+======================+
-| Script         | dropdown   | Script with desired protocol. Automatically loaded from the 'cycleScripts' folder in the program's root directory.   | First scanned file   |
-+----------------+------------+----------------------------------------------------------------------------------------------------------------------+----------------------+
-| Cell ID        | text       | Identification for cell. Recorded to output file.                                                                    | 0                    |
-+----------------+------------+----------------------------------------------------------------------------------------------------------------------+----------------------+
-| Log file       | text       | Path to output file. Placed in the specified logs folder.                                                            | "defaultLog.txt"     |
-+----------------+------------+----------------------------------------------------------------------------------------------------------------------+----------------------+
-| Mass           | text       | Mass of cell.                                                                                                        | 1                    |
-+----------------+------------+----------------------------------------------------------------------------------------------------------------------+----------------------+
-| Comment        | text       | Requester's comment for cycle. Recorded to output file.                                                              | "No Comment"         |
-+----------------+------------+----------------------------------------------------------------------------------------------------------------------+----------------------+
-| Package type   | dropdown   | Type of cell package. Recorded to output file.                                                                       | "Pouch"              |
-+----------------+------------+----------------------------------------------------------------------------------------------------------------------+----------------------+
-| Cell type      | dropdown   | Type of cell. Recorded to output file.                                                                               | "Full"               |
-+----------------+------------+----------------------------------------------------------------------------------------------------------------------+----------------------+
-| Requester      | dropdown   | Name of person starting cycle.                                                                                       | "Unspecified"        |
-+----------------+------------+----------------------------------------------------------------------------------------------------------------------+----------------------+
++----------------+------------+-------------------------------------------------------------------------+----------------------+
+| Option         | Type       | Description                                                             | Default              |
++================+============+=========================================================================+======================+
+| Script         | file       | Script with desired protocol. Gives option to select any local file.    | First scanned file   |
++----------------+------------+-------------------------------------------------------------------------+----------------------+
+| Log file       | text       | Path to output file. Placed in the specified logs folder.               | "defaultLog.txt"     |
++----------------+------------+-------------------------------------------------------------------------+----------------------+
+| Cell ID        | text       | Identification for cell. Recorded to output file.                       | 0                    |
++----------------+------------+--------------------------------------------------------------------- ---+----------------------+
+| Comment        | text       | Requester's comment for cycle. Recorded to output file.                 | "No Comment"         |
++----------------+------------+-------------------------------------------------------------------------+----------------------+
 
 The available buttons can be used to Start, Stop, Pause, or Resume the
-protocol. Note that the program will overwrite any existing output files
-if an identical log file is specified. The *Fill* button allows you to
-automatically create a log file name based on the entered cell ID. This
-takes the format of [id]A.pyb where the "A" designates which log file
-within a series.
+protocol.
 
 .. _Creating Scripts:
 
 Creating Scripts
 ----------------
 
-Scripts can be created in the scripts tab of the client. This editor
+Scripts can be created in the separate explorer application. This editor
 will automatically load the default included scripts, but can be used to
-open and edit additional files.
+open and edit any local files.
+
+.. figure:: _static/images/explorer-scripts.png
+
+The explorer includes a protocol generator above the editor to streamline script creation.
+This can be used to specify attributes, and insert generated lines of code into the script.
 
 Scripts are written in regular python code, and can contain loops and
 other statements to control cycle flow. There are seven built in
@@ -103,37 +93,29 @@ the scripts folder which is available whenever the client is started.
       Rest(reports=(("time", "::1"),), ends=(("time", ">", "::15"),))
 
 Scripts are automatically checked when they are sent to the server. They
-can also be manually checked by clicking the "Check" button in the
-scripts tab. Checking a script ensures that (1) the script only contains
+can also be manually checked by clicking the "Check" button below the editor.
+Checking a script ensures that (1) the script only contains
 legal arguments and (2) can be loaded by the server without immediate
 errors. Checking your scripts is a good practice to mitigate possible
 formatting issues and errors. However, care should still be taken while
 writing scripts as they are executed as any other python code within the
 application.
 
-Working With Batches
---------------------
-
-The "Batch" menu allows large tests with multiple cells to be run more
-easily. Saving a batch writes the IDs and log files of each channel to
-the "batch" file which can be loaded later. The "Fill All" and
-"Increment" options allow you to automatically create log files based on
-each ID, and increment the last letter to indicate which test is being
-run on the same cell.
-
 Viewing Logs
 ------------
 
 Logs are created to document measurements from each cell throughout it's
 cycle. They also have details about the cell and the cycle that was run
-on it. Log files are saved to the "tests" folder specified in the
+on it. Log files are saved to the ``tests`` folder specified in the
 configuration under the specified name. To view a log from the client
-application, just open the logging tab. All logs are automatically
+application, just open the explorer application . All logs are automatically
 loaded on startup, and new or updated ones can be viewed after clicking
 reload. Although you can copy the contents of a log file to an excel
 spreadsheet, log files *should not* be opened with excel or another
 application directly. Doing this can cause the file to become locked and
 prevent Cyckei from editing it.
+
+.. figure:: _static/images/explorer-results.png
 
 .. _Editing Configuration:
 
