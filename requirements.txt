@@ -1,0 +1,4 @@
+pyzmq
+pyvisa
+PySide2
+matplotlib
