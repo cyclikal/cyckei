@@ -207,8 +207,8 @@ class ChannelWidget(QWidget):
             ["Start", "Start Cycle", self.button],
             ["Stop", "Stop Cycle", self.button],
             ["Check", "Attempt to Read Cell", self.button, False],
-            ["Pause", "Pause Cycle", self.button, False],
-            ["Resume", "Resume Cycle", self.button, False]
+            ["Pause", "Pause Cycle", self.button],
+            ["Resume", "Resume Cycle", self.button]
         ]
         elements = []
         for but in buttons:
