@@ -206,7 +206,7 @@ class ChannelWidget(QWidget):
         buttons = [
             ["Start", "Start Cycle", self.button],
             ["Stop", "Stop Cycle", self.button],
-            ["Check", "Attempt to Read Cell", self.button, False],
+            ["Check", "Attempt to Read Cell", self.button],
             ["Pause", "Pause Cycle", self.button],
             ["Resume", "Resume Cycle", self.button]
         ]

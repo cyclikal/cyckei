@@ -108,10 +108,10 @@ class Read(QRunnable):
         status = Socket(self.config).info_channel(
             self.channel.attributes["channel"])["response"]
         if status["status"] == "available":
-            script = """Rest(ends=(("time", ">", "::3"),))"""
+            script = """Rest(ends=(("time", ">", "::5"),))"""
             Control(self.config, self.channel, "start", script=script,
                     temp=True).run()
-            time.sleep(1)
+            time.sleep(3)
             info_channel = Socket(self.config).info_channel(
                 self.channel.attributes["channel"])["response"]
             try:
@@ -131,7 +131,10 @@ class Control(QRunnable):
         # TODO: Make sure read passes correct script
         super(Control, self).__init__()
         self.channel = channel
-        self.script = None
+        if script is not None:
+            self.script = script
+        elif self.channel.attributes['script_content'] is not None:
+            self.script = self.channel.attributes['script_content']
         self.config = config
         self.command = command
         self.signals = Signals()
@@ -139,9 +142,7 @@ class Control(QRunnable):
 
     @Slot()
     def run(self):
-        if self.command == "start" \
-          and self.channel.attributes['script_content'] is not None:
-            self.script = self.channel.attributes['script_content']
+        if self.command == "start" and self.script is not None:
             script_ok, msg = Check(self.config, self.script).run()
             if script_ok is False:
                 self.signals.status.emit("Script Failed", self.channel)
