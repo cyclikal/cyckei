@@ -155,7 +155,7 @@ class LogDisplay(QWidget):
 
         # Setting info Elements
         for common_key in attr.keys() & self.info_elements.keys():
-            self.info_elements[common_key].setText(attr[common_key])
+            self.info_elements[common_key].setText(str(attr[common_key]))
         self.protocol_viewer.setPlainText(attr["protocol"])
         self.data_viewer.setPlainText(data.replace(",", "\t"))
 
