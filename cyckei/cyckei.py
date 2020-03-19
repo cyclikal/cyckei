@@ -93,6 +93,8 @@ def file_structure(path):
         makedirs(join(path, "plugins"))
         shutil.copy(func.asset_path("ni-gpib-usb-hs.py"),
                     join(path, "plugins", "ni-gpib-usb-hs.py"))
+        shutil.copy(func.asset_path("record-temperature.py"),
+                    join(path, "plugins", "record-temperature.py"))
 
 
 def make_config(args):
