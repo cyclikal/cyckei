@@ -19,5 +19,9 @@
         "server-address":"tcp://*",
         "timeout": 10
     },
+    "plugins":[
+      "ni-gpib-usb-hs",
+      "record-temperature"
+    ],
     "verbosity": 30
 }
