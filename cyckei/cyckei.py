@@ -85,11 +85,14 @@ def file_structure(path):
     if not exists(join(path, "config.json")):
         shutil.copy(func.asset_path("default_config.json"),
                     join(path, "config.json"))
-    open(join(path, "batch.txt"), "a")
     if not exists(join(path, "scripts")):
         makedirs(join(path, "scripts"))
         shutil.copy(func.asset_path("example-script"),
                     join(path, "scripts", "example"))
+    if not exists(join(path, "plugins")):
+        makedirs(join(path, "plugins"))
+        shutil.copy(func.asset_path("ni-gpib-usb-hs.py"),
+                    join(path, "plugins", "ni-gpib-usb-hs.py"))
 
 
 def make_config(args):
