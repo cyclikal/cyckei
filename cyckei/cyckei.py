@@ -1,7 +1,7 @@
 """This file is for execution as an installed package via 'cyckei'."""
 import argparse
-from os import makedirs
-from os.path import expanduser, join, exists
+from os import makedirs, listdir
+from os.path import expanduser, join, exists, isfile
 import sys
 import shutil
 import logging
@@ -82,9 +82,9 @@ def file_structure(path):
 
     makedirs(path, exist_ok=True)
     makedirs(join(path, "tests"), exist_ok=True)
-    # if not exists(join(path, "config.json")):
-    shutil.copy(func.asset_path("default_config.json"),
-                join(path, "config.json"))
+    if not exists(join(path, "config.json")):
+        shutil.copy(func.asset_path("default_config.json"),
+                    join(path, "config.json"))
     if not exists(join(path, "scripts")):
         makedirs(join(path, "scripts"), exist_ok=True)
         shutil.copy(func.asset_path("example-script"),
@@ -92,10 +92,17 @@ def file_structure(path):
     # Plugin creation should be safety locked to prevent overwrite
     # if not exists(join(path, "plugins")):
     makedirs(join(path, "plugins"), exist_ok=True)
-    shutil.copy(func.asset_path("dep-gpib-usb.py"),
-                join(path, "plugins", "dep-gpib-usb.py"))
-    shutil.copy(func.asset_path("dap-temperature.py"),
-                join(path, "plugins", "dap-temperature.py"))
+    files = listdir(func.asset_path("data-plugins"))
+    for plugin in files:
+        plugin = join(func.asset_path("data-plugins"), plugin)
+        if isfile(plugin):
+            print("yes")
+            shutil.copy(plugin, join(path, "plugins"))
+    files = listdir(func.asset_path("device-plugins"))
+    for plugin in files:
+        plugin = join(func.asset_path("device-plugins"), plugin)
+        if isfile(plugin):
+            shutil.copy(plugin, join(path, "plugins"))
 
 
 def make_config(args):

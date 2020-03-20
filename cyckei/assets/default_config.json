@@ -20,8 +20,8 @@
         "timeout": 10
     },
     "data-plugins": [
-      "dap-temperature"
+      "temperature"
     ],
-    "device-plugin": "dep-gpib-usb",
+    "device-plugin": "gpib-usb",
     "verbosity": 30
 }
