@@ -41,6 +41,8 @@ def main(config):
         return
     logger.debug("Socket bound successfully")
 
+    # Initialize Data Plugins
+
     # Start server event loop
     event_loop(config, socket)
 
