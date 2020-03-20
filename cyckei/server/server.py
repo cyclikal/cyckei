@@ -3,7 +3,7 @@
 import logging
 import time
 import traceback
-from os.path import isfile, join
+from os.path import isfile, join, basename
 from collections import OrderedDict
 from importlib.util import spec_from_file_location, module_from_spec
 
@@ -125,7 +125,7 @@ def event_loop(config, socket, plugins):
             # main loop without problem
             # logger.debug("cyckei.server.server.main: \
             #               Processing socket messages")
-            process_socket(socket, runners, sources, current_time)
+            process_socket(socket, runners, sources, current_time, plugins)
 
             # execute runners or sleep if none
             if runners:
@@ -177,7 +177,7 @@ def event_loop(config, socket, plugins):
         logger.exception(e)
 
 
-def process_socket(socket, runners, sources, server_time):
+def process_socket(socket, runners, sources, server_time, plugins):
     """
 
     Parameters
@@ -213,7 +213,8 @@ def process_socket(socket, runners, sources, server_time):
                         Packet request received: {}".format(fun))
                     try:
                         resp = start(kwargs["channel"], kwargs["meta"],
-                                     kwargs["protocol"], runners, sources)
+                                     kwargs["protocol"], runners, sources,
+                                     plugins)
                     except Exception:
                         resp = "Error occured when running script."
                     logger.debug("cyckei.server.server.process_socket: \
@@ -323,7 +324,7 @@ def info_channel(channel, runners, sources):
     return info
 
 
-def start(channel, meta, protocol, runners, sources):
+def start(channel, meta, protocol, runners, sources, plugins):
     """Start channel with given protocol"""
 
     # check to see if there is a already a runner on that channel
@@ -332,10 +333,10 @@ def start(channel, meta, protocol, runners, sources):
         return "Channel {} already in use.".format(channel)
 
     path = meta["path"]
-    if os.path.isfile(path):
-        return("Log file '{}' already in use.").format(os.path.basename(path))
+    if isfile(path):
+        return("Log file '{}' already in use.").format(basename(path))
 
-    runner = CellRunner(**meta)
+    runner = CellRunner(plugins, **meta)
     # Set the channel source
     for source in sources:
         if runner.channel == source.channel:

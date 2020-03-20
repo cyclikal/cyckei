@@ -77,15 +77,15 @@ class CellRunner(object):
         "start_cycle": None
     }
 
-    def __init__(self, **meta):
+    def __init__(self, plugins, **meta):
         self.meta = self.META.copy()
         for k in self.meta.keys():
             self.meta[k] = meta.get(k, None)
-
         if self.meta["cycler"] is None:
             self.meta["cycler"] = "Keithley2602"
         if self.meta["celltype"] is None:
             self.meta["celltype"] = "unknown"
+        self.plugins = plugins
 
         # Enforce a str channel
         self.meta["channel"] = str(self.meta["channel"])
@@ -389,8 +389,7 @@ class ProtocolStep(object):
 
     """
 
-    def __init__(self,
-                 wait_time: float = 10.0,
+    def __init__(self, wait_time: float = 10.0,
                  cellrunner_parent: CellRunner = None):
         """
         Base class for protocols
@@ -564,6 +563,10 @@ class ProtocolStep(object):
     def read_data(self, force_report=False):
         self.last_time = time.time()
         current, voltage = self.parent.source.read_iv()
+        plugin_values = []
+        for plugin in self.parent.plugins:
+            plugin_values.append([plugin.name, plugin.read()])
+        logging.info(f"Values from plugins: {plugin_values}")
 
         self.check_in_control(self.last_time, current, voltage)
 
