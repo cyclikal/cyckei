@@ -89,7 +89,7 @@ def file_structure(path):
         makedirs(join(path, "scripts"), exist_ok=True)
         shutil.copy(func.asset_path("example-script"),
                     join(path, "scripts", "example"))
-    # Plugin creation should be safety locked to prevent overwrite
+    # TODO: Plugin creation should be safety locked to prevent overwrite
     # if not exists(join(path, "plugins")):
     makedirs(join(path, "plugins"), exist_ok=True)
     files = listdir(func.asset_path("data-plugins"))

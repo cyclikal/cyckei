@@ -3,7 +3,7 @@ import logging
 logger = logging.getLogger('cyckei')
 
 
-class TemperatureRecorder(object):
+class DataPlugin(object):
     def __init__(self):
         logger.info("Initializing Temperature Recorder plugin")
 

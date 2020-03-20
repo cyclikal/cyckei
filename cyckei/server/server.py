@@ -1,10 +1,11 @@
 """Main script run by server application"""
 
 import logging
-import os
 import time
 import traceback
+from os.path import isfile, join
 from collections import OrderedDict
+from importlib.util import spec_from_file_location, module_from_spec
 
 import zmq
 from visa import VisaIOError
@@ -42,11 +43,18 @@ def main(config):
     logger.debug("Socket bound successfully")
 
     # Initialize Data Plugins
+    logger.info(f"Loading plugins: {config['data-plugins']}")
+    plugins = []
     for plugin in config["data-plugins"]:
-        print(plugin)
+        plugin_file = join(config["record_dir"], "plugins", f"{plugin}.py")
+        if isfile(plugin_file):
+            spec = spec_from_file_location(f"plugin.{plugin}", plugin_file)
+            module = module_from_spec(spec)
+            spec.loader.exec_module(module)
+            plugins.append(module.DataPlugin())
 
     # Start server event loop
-    event_loop(config, socket)
+    event_loop(config, socket, plugins)
 
 
 # def handler(exception_type, value, tb):
@@ -57,7 +65,7 @@ def main(config):
 #     print(text)
 
 
-def event_loop(config, socket):
+def event_loop(config, socket, plugins):
     try:
         """Main start method and loop for server application"""
         logger.debug("Starting server event loop")
