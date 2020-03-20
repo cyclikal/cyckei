@@ -19,11 +19,9 @@
         "server-address":"tcp://*",
         "timeout": 10
     },
-    "device-plugins":[
-      "dep-gpib-usb",
-    ],
-    "data-plugins":[
+    "data-plugins": [
       "dap-temperature"
     ],
+    "device-plugin": "dep-gpib-usb",
     "verbosity": 30
 }

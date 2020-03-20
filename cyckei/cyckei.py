@@ -82,9 +82,9 @@ def file_structure(path):
 
     makedirs(path, exist_ok=True)
     makedirs(join(path, "tests"), exist_ok=True)
-    if not exists(join(path, "config.json")):
-        shutil.copy(func.asset_path("default_config.json"),
-                    join(path, "config.json"))
+    # if not exists(join(path, "config.json")):
+    shutil.copy(func.asset_path("default_config.json"),
+                join(path, "config.json"))
     if not exists(join(path, "scripts")):
         makedirs(join(path, "scripts"), exist_ok=True)
         shutil.copy(func.asset_path("example-script"),
@@ -92,10 +92,10 @@ def file_structure(path):
     # Plugin creation should be safety locked to prevent overwrite
     # if not exists(join(path, "plugins")):
     makedirs(join(path, "plugins"), exist_ok=True)
-    shutil.copy(func.asset_path("ni-gpib-usb-hs.py"),
-                join(path, "plugins", "ni-gpib-usb-hs.py"))
-    shutil.copy(func.asset_path("record-temperature.py"),
-                join(path, "plugins", "record-temperature.py"))
+    shutil.copy(func.asset_path("dep-gpib-usb.py"),
+                join(path, "plugins", "dep-gpib-usb.py"))
+    shutil.copy(func.asset_path("dap-temperature.py"),
+                join(path, "plugins", "dap-temperature.py"))
 
 
 def make_config(args):
