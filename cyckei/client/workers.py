@@ -142,11 +142,18 @@ class Control(QRunnable):
 
     @Slot()
     def run(self):
-        if self.command == "start" and self.script is not None:
-            script_ok, msg = Check(self.config, self.script).run()
-            if script_ok is False:
-                self.signals.status.emit("Script Failed", self.channel)
-                return
+        try:
+            if self.command == "start" and self.script is not None:
+                script_ok, msg = Check(self.config, self.script).run()
+                if script_ok is False:
+                    self.signals.status.emit("Script Failed", self.channel)
+                    return
+            else:
+                raise AttributeError
+        except AttributeError:
+            logger.warning("Start pressed with no script selected.")
+            self.signals.status.emit("No Script Selected", self.channel)
+            return
 
         packet = prepare_json(self.channel, self.command,
                               self.script, self.temp)
