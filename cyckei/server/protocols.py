@@ -1084,7 +1084,6 @@ class ConditionDelta(Condition):
                     step.next_time = min(next_time, step.next_time)
 
                 logger.debug("Set next_time to {:.2f} (in {:.2f} sec)".format(
-                                self.value_str,
                                 step.next_time, step.next_time-time.time()
                             ))
 

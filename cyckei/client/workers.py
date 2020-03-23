@@ -33,6 +33,8 @@ def prepare_json(channel, function, protocol, temp):
 
         os.makedirs(dir, exist_ok=True)
 
+    if channel.attributes["path"] == "default.pyb":
+        channel.attributes["path"]
     packet["kwargs"]["meta"]["path"] \
         = os.path.join(dir, channel.attributes["path"])
 
@@ -143,17 +145,16 @@ class Control(QRunnable):
     @Slot()
     def run(self):
         try:
-            if self.command == "start" and self.script is not None:
-                script_ok, msg = Check(self.config, self.script).run()
-                if script_ok is False:
-                    self.signals.status.emit("Script Failed", self.channel)
-                    return
-            else:
-                raise AttributeError
+            if self.script is None:
+                self.script = None
         except AttributeError:
-            logger.warning("Start pressed with no script selected.")
-            self.signals.status.emit("No Script Selected", self.channel)
-            return
+            self.script = None
+
+        if self.command == "start" and self.script is not None:
+            script_ok, msg = Check(self.config, self.script).run()
+            if script_ok is False:
+                self.signals.status.emit("Script Failed", self.channel)
+                return
 
         packet = prepare_json(self.channel, self.command,
                               self.script, self.temp)
