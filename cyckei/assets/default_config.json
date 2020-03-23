@@ -2,13 +2,13 @@
     "channels": [
         {
             "channel": "1",
-            "gpib_address": 0,
+            "gpib_address": 1,
             "keithley_model": "2602A",
             "keithley_channel": "a"
         },
         {
             "channel": "2",
-            "gpib_address": 0,
+            "gpib_address": 1,
             "keithley_model": "2602A",
             "keithley_channel": "b"
         }
@@ -22,6 +22,6 @@
     "data-plugins": [
       "temperature"
     ],
-    "device-plugin": "keithley-2602",
+    "device": "keithley2602",
     "verbosity": 30
 }

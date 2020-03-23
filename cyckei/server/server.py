@@ -3,6 +3,7 @@
 import logging
 import time
 import traceback
+import sys
 from os.path import isfile, join, basename
 from collections import OrderedDict
 from importlib.util import spec_from_file_location, module_from_spec
@@ -43,13 +44,16 @@ def main(config):
 
     # Initialize Device Plugins
     logger.info(f"Loading device: {config['device-plugin']}")
-    device_file = join(config["record_dir"], "plugins",
-                       f"{config['device-plugin']}.py")
-    if isfile(device_file):
-        spec = spec_from_file_location(f"model.{config['device-plugin']}",
-                                       device_file)
-        device_module = module_from_spec(spec)
-        spec.loader.exec_module(device_module)
+    try:
+        if config['device'] == "keithley2602":
+            from . import keithley2602 as device_module
+        elif config['device'] == "testresponder":
+            raise ImportError
+        else:
+            raise ImportError
+    except ImportError:
+        logger.critical("Could not find device configuration module. Exiting.")
+        sys.exit()
 
     # Initialize Data Plugins
     logger.info(f"Loading plugins: {config['data-plugins']}")
