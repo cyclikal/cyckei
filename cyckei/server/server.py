@@ -10,7 +10,6 @@ from importlib.util import spec_from_file_location, module_from_spec
 import zmq
 from visa import VisaIOError
 
-from .models import Keithley2602
 from .protocols import STATUS, CellRunner
 
 logger = logging.getLogger('cyckei')
@@ -42,6 +41,15 @@ def main(config):
         return
     logger.debug("Socket bound successfully")
 
+    # Initialize Device Plugins
+    logger.info(f"Loading device: {config['device-plugin']}")
+    device_file = join(config["record_dir"], "plugins",
+                       f"{config['device-plugin']}.py")
+    if isfile(device_file):
+        spec = spec_from_file_location(f"model.{config['device-plugin']}", device_file)
+        device_module = module_from_spec(spec)
+        spec.loader.exec_module(device_module)
+
     # Initialize Data Plugins
     logger.info(f"Loading plugins: {config['data-plugins']}")
     plugins = []
@@ -49,12 +57,12 @@ def main(config):
         plugin_file = join(config["record_dir"], "plugins", f"{plugin}.py")
         if isfile(plugin_file):
             spec = spec_from_file_location(f"plugin.{plugin}", plugin_file)
-            module = module_from_spec(spec)
-            spec.loader.exec_module(module)
-            plugins.append(module.DataPlugin())
+            plugin_module = module_from_spec(spec)
+            spec.loader.exec_module(plugin_module)
+            plugins.append(plugin_module.DataController())
 
     # Start server event loop
-    event_loop(config, socket, plugins)
+    event_loop(config, socket, plugins, device_module)
 
 
 # def handler(exception_type, value, tb):
@@ -65,7 +73,7 @@ def main(config):
 #     print(text)
 
 
-def event_loop(config, socket, plugins):
+def event_loop(config, socket, plugins, device_module):
     try:
         """Main start method and loop for server application"""
         logger.debug("Starting server event loop")
@@ -84,7 +92,7 @@ def event_loop(config, socket, plugins):
                     keithley = k
             if keithley is None:
                 try:
-                    keithley = Keithley2602(gpib_addr)
+                    keithley = device_module.DeviceController(gpib_addr)
                 except (ValueError, VisaIOError) as e:
                     logger.error("Could not establish connection: "
                                  "Channel {}, GPIB {}.".format(

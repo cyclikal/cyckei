@@ -92,15 +92,9 @@ def file_structure(path):
     # TODO: Plugin creation should be safety locked to prevent overwrite
     # if not exists(join(path, "plugins")):
     makedirs(join(path, "plugins"), exist_ok=True)
-    files = listdir(func.asset_path("data-plugins"))
+    files = listdir(func.asset_path("plugins"))
     for plugin in files:
-        plugin = join(func.asset_path("data-plugins"), plugin)
-        if isfile(plugin):
-            print("yes")
-            shutil.copy(plugin, join(path, "plugins"))
-    files = listdir(func.asset_path("device-plugins"))
-    for plugin in files:
-        plugin = join(func.asset_path("device-plugins"), plugin)
+        plugin = join(func.asset_path("plugins"), plugin)
         if isfile(plugin):
             shutil.copy(plugin, join(path, "plugins"))
 
