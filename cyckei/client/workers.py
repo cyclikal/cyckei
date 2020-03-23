@@ -3,7 +3,7 @@ import logging
 import os
 import tempfile
 import time
-from datetime import date
+from datetime import date, datetime
 
 from PySide2.QtCore import QRunnable, Slot, Signal, QObject
 
@@ -34,7 +34,8 @@ def prepare_json(channel, function, protocol, temp):
         os.makedirs(dir, exist_ok=True)
 
     if channel.attributes["path"] == "default.pyb":
-        channel.attributes["path"]
+        channel.attributes["path"] = datetime.now().strftime(
+            '%m-%d_%H-%M-%S')
     packet["kwargs"]["meta"]["path"] \
         = os.path.join(dir, channel.attributes["path"])
 
