@@ -254,8 +254,7 @@ smu{ch}.source.output = smu{ch}.OUTPUT_ON"""
         current = float(self.source_meter.query("print(current)"))
         voltage = float(self.source_meter.query("print(voltage)"))
 
-        logger.debug(f'models.Source.read_iv: current:{current}, \
-                     voltage:{voltage}')
+        logger.debug(f'Current: {current}, Voltage: {voltage}')
         # The Keithley will report totally out of range numbers like 9.91e+37
         # if asked to e.g. charge to 3.9V when the cell is already at 4.2V
         # It is basically its way of saying the condition cannot be achieved

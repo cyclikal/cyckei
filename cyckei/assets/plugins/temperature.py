@@ -1,4 +1,5 @@
 import logging
+from random import randint
 
 logger = logging.getLogger('cyckei')
 
@@ -10,7 +11,7 @@ class DataController(object):
 
     def read(self):
         logger.debug("Reading temperature...")
-        return 420
+        return randint(1, 101)
 
     def write(self):
         logger.debug("Logging temperature.")

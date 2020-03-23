@@ -228,10 +228,8 @@ class CellRunner(object):
         -------
         None
         """
-        logger.info(
-            "cyckei.server.protocols.CellRunner._start:"
-            "Starting cellrunner instance (channel: {})".format(self.channel)
-        )
+        logger.info("Starting cellrunner instance \
+                    (channel: {})".format(self.channel))
 
         self.i_current_step = 0
         self.status = STATUS.started
@@ -263,8 +261,7 @@ class CellRunner(object):
             False if it is complete
 
         """
-        logger.debug("cyckei.server.protocols.CellRunner.run: \
-                      Entering method for channel {}".format(self.channel))
+        logger.debug("Entering method for channel {}".format(self.channel))
         if self.status == STATUS.completed:
             return False
 
@@ -483,11 +480,8 @@ class ProtocolStep(object):
             returns non if no data to report
 
         """
-        logger.debug(
-            "cyckei.server.protocols.ProtocolStep.run:"
-            "running {} protocol on channel {}".format(self.state_str,
-                                                       self.parent.channel)
-        )
+        logger.debug("Running {} protocol on channel {}".format(
+                        self.state_str, self.parent.channel))
         if self.status == STATUS.paused:
             self.next_time = NEVER
             return None
@@ -1089,10 +1083,10 @@ class ConditionDelta(Condition):
                                                  self.index)
                     step.next_time = min(next_time, step.next_time)
 
-                logger.debug("cyckei.server.protocols.ConditionDelta: {}, \
-                              set next_time to {:.2f} (in {:.2f} sec)".format(
+                logger.debug("Set next_time to {:.2f} (in {:.2f} sec)".format(
                                 self.value_str,
-                                step.next_time, step.next_time-time.time()))
+                                step.next_time, step.next_time-time.time()
+                            ))
 
                 if self.comparison(abs(val - step.report[-1][self.index]),
                                    self.delta):
@@ -1160,10 +1154,9 @@ class ConditionTotalTime(ConditionTotalDelta):
             else:
                 next_time = self.delta - delta + time.time()
                 step.next_time = min(step.next_time, next_time)
-                logger.debug(
-                    "cyckei.server.protocols.ConditionTotalTime: "
-                    "{}, set next_time to {}".format(self.value_str,
-                                                     step.next_time))
+                logger.debug("{}, set next_time to {}".format(
+                                self.value_str,
+                                step.next_time))
                 return False
         except IndexError:
             return False
@@ -1212,10 +1205,9 @@ class ConditionAbsolute(Condition):
                                                  self.value,
                                                  self.index)
                     step.next_time = min(next_time, step.next_time)
-                    logger.debug(f"cyckei.server.protocols.ConditionAbsolute: \
-                                    {self.value_str} set next_time to \
-                                    {step.next_time:.2f} (in \
-                                    {step.next_time - time.time():.2f} sec)")
+                    logger.debug(f"{self.value_str} set next_time to \
+                                   {step.next_time:.2f} (in \
+                                   {step.next_time - time.time():.2f} sec)")
                     return False
             else:
                 return False
@@ -1276,19 +1268,11 @@ def extrapolate_time(data, target, index):
                      / (d1[index] - d0[index])
                      * (d1[0] - d0[0]) + d1[0])
         current_time = time.time()
-        logger.debug(
-            "cyckei.server.protocols.extrapolate_time: Current time {:.2f} \
-            Extrapolated time {:.2f} (in {:.2f} sec) using {} index and \
-            target value {}".format(current_time, next_time,
-                                    next_time-current_time,
-                                    DATA_NAME_MAP[index], target))
+        logger.debug("Current time {:.2f}, Extrapolated time {:.2f} (in {:.2f} sec) using {} index and target value {}".format(current_time, next_time, next_time-current_time, DATA_NAME_MAP[index], target))
 
     except (NameError, IndexError, ZeroDivisionError):
         next_time = NEVER
-        logger.debug(
-            "cyckei.server.protocols.extrapolate_time: "
-            "Failed extrapolating, next_time: {}".format(next_time)
-            )
+        logger.debug("Failed extrapolating, next_time: {}".format(next_time))
 
     return next_time
 
