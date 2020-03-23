@@ -9,7 +9,6 @@ from PySide2.QtWidgets import QVBoxLayout, QHBoxLayout, \
     QListWidget, QListWidgetItem, QWidget
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
-from matplotlib.pyplot import FuncFormatter
 
 from cyckei.functions import gui
 
@@ -73,13 +72,17 @@ class LogViewer(QWidget):
             self.title_bar.setText(self.log_list.currentItem().path)
             self.editor.update(self.log_list.currentItem().content)
         except AttributeError:
-            logger.warning("Cannot load scripts, none found.")
+            logger.warning("Cannot load logs, none found.")
 
     def load_logs(self):
         self.log_list.clear()
         logs = []
 
-        files = listdir(self.folder_list.currentItem().path)
+        try:
+            files = listdir(self.folder_list.currentItem().path)
+        except AttributeError:
+            logger.warning("No log folders found.")
+            files = []
         for file in files:
             abspath = path.join(self.folder_list.currentItem().path, file)
             if not path.isdir(abspath):

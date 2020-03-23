@@ -2,6 +2,8 @@ import zmq
 import json
 import logging
 
+logger = logging.getLogger('cyckei')
+
 
 class Socket(object):
     """Handles connection, communication, and control of server over ZMQ"""
@@ -16,7 +18,7 @@ class Socket(object):
 
     def send(self, to_send):
         """Sends packet to server"""
-        logging.debug("Sending: {}".format(to_send["function"]))
+        logger.debug("Sending: {}".format(to_send["function"]))
 
         self.socket.send_json(to_send)
         poller = zmq.Poller()
@@ -26,7 +28,7 @@ class Socket(object):
         else:
             response = (
                 json.loads('{"response": "No Connection", "message": ""}'))
-        logging.debug("Received: {}".format(response))
+        logger.debug("Received: {}".format(response))
         self.socket.close()
         return response
 

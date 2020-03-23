@@ -77,7 +77,7 @@ class CellRunner(object):
         "start_cycle": None
     }
 
-    def __init__(self, plugins, **meta):
+    def __init__(self, plugins=None, **meta):
         self.meta = self.META.copy()
         for k in self.meta.keys():
             self.meta[k] = meta.get(k, None)
