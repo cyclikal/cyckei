@@ -4,7 +4,6 @@ from datetime import datetime
 import operator
 import logging
 
-
 logger = logging.getLogger('cyckei')
 
 

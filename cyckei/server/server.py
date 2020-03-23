@@ -46,7 +46,8 @@ def main(config):
     device_file = join(config["record_dir"], "plugins",
                        f"{config['device-plugin']}.py")
     if isfile(device_file):
-        spec = spec_from_file_location(f"model.{config['device-plugin']}", device_file)
+        spec = spec_from_file_location(f"model.{config['device-plugin']}",
+                                       device_file)
         device_module = module_from_spec(spec)
         spec.loader.exec_module(device_module)
 
