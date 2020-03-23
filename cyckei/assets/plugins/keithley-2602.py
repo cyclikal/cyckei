@@ -51,14 +51,12 @@ class DeviceController(object):
         self.source_meter.write("abort")
         self.source_meter.write("reset()")
         if load_scripts:
-            logger.info(f'Initializing Keithley at GPIB {gpib_addr} with \
-                        {self.script_startup}')
+            logger.info(f'Initializing device at address {gpib_addr}')
             self.source_meter.write(self.script_startup)
             time.sleep(1)
         else:
             # No matter what we need the safety shutoff script
-            logger.info(f'Initializing Keithley at GPIB {gpib_addr} with \
-                        hardcoded safety script')
+            logger.info(f'Initializing device at address {gpib_addr}')
             safety_shutoff_script = \
                 """
                 loadscript safety()
