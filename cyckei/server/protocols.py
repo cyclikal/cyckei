@@ -73,7 +73,8 @@ class CellRunner(object):
         "cycler": None,
         "celltype": None,
         "package": None,
-        "start_cycle": None
+        "start_cycle": None,
+        "format": None
     }
 
     def __init__(self, plugins=None, **meta):
@@ -84,7 +85,12 @@ class CellRunner(object):
             self.meta["cycler"] = "Keithley2602"
         if self.meta["celltype"] is None:
             self.meta["celltype"] = "unknown"
+        self.meta["format"] = ["time", "current", "voltage", "capacitance"]
+
         self.plugins = plugins
+        if self.plugins is not None:
+            for plugin in self.plugins:
+                self.meta["format"].append(plugin.name)
 
         # Enforce a str channel
         self.meta["channel"] = str(self.meta["channel"])
