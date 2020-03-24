@@ -12,6 +12,3 @@ class DataController(object):
     def read(self):
         logger.debug("Reading temperature...")
         return randint(1, 101)
-
-    def write(self):
-        logger.debug("Logging temperature.")

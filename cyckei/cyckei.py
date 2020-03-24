@@ -91,7 +91,7 @@ def file_structure(path):
         for script in files:
             script = join(func.asset_path("scripts"), script)
             if isfile(script):
-                shutil.copy(script, join(path, "plugins"))
+                shutil.copy(script, join(path, "scripts"))
     # TODO: Plugin creation should be safety locked to prevent overwrite
     # if not exists(join(path, "plugins")):
     makedirs(join(path, "plugins"), exist_ok=True)

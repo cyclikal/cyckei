@@ -558,8 +558,9 @@ class ProtocolStep(object):
         current, voltage = self.parent.source.read_iv()
         plugin_values = []
         for plugin in self.parent.plugins:
-            plugin_values.append([plugin.name, plugin.read()])
-        logging.info(f"Values from plugins: {plugin_values}")
+            value = plugin.read()
+            plugin_values.append((plugin.name, value))
+        logger.debug(f"Values from plugins: {plugin_values}")
 
         self.check_in_control(self.last_time, current, voltage)
 
