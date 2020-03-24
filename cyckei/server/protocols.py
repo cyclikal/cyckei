@@ -1283,7 +1283,11 @@ def extrapolate_time(data, target, index):
                      / (d1[index] - d0[index])
                      * (d1[0] - d0[0]) + d1[0])
         current_time = time.time()
-        logger.debug("Current time {:.2f}, Extrapolated time {:.2f} (in {:.2f} sec) using {} index and target value {}".format(current_time, next_time, next_time-current_time, DATA_NAME_MAP[index], target))
+        logger.debug("Current time {:.2f}, \
+                      Extrapolated time {:.2f} (in {:.2f} sec) \
+                      using {} index and target value {}".format(
+                        current_time, next_time, next_time-current_time,
+                        DATA_NAME_MAP[index], target))
 
     except (NameError, IndexError, ZeroDivisionError):
         next_time = NEVER
