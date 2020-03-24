@@ -43,7 +43,7 @@ def main(config):
     logger.debug("Socket bound successfully")
 
     # Initialize Device Plugins
-    logger.info(f"Loading device: {config['device-plugin']}")
+    logger.info(f"Loading device: {config['device']}")
     try:
         if config['device'] == "keithley2602":
             from . import keithley2602 as device_module

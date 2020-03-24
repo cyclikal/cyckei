@@ -82,9 +82,9 @@ def file_structure(path):
 
     makedirs(path, exist_ok=True)
     makedirs(join(path, "tests"), exist_ok=True)
-    if not exists(join(path, "config.json")):
-        shutil.copy(func.asset_path("default_config.json"),
-                    join(path, "config.json"))
+    # if not exists(join(path, "config.json")):
+    shutil.copy(func.asset_path("default_config.json"),
+                join(path, "config.json"))
     if not exists(join(path, "scripts")):
         makedirs(join(path, "scripts"), exist_ok=True)
         shutil.copy(func.asset_path("example-script"),
