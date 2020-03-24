@@ -101,7 +101,6 @@ class CellRunner(object):
         self.prev_cycle = None
         self._next_time = -1
         self.channel = self.meta["channel"]
-        self.data_format = "    " + ",".join(["{:0.8g}"] * 4) + "\n"
         self.last_data = None
         self.total_pause_time = 0.0
         self.source = None
@@ -321,12 +320,21 @@ class CellRunner(object):
             self.write_data(*data)
             self.last_data = data
 
-    def write_data(self, timestamp, current, voltage, capacity):
-        with open(self.fpath, 'a') as fo:
-            fo.write(self.data_format.format(
-                timestamp - self.start_time - self.total_pause_time,
-                current, voltage, capacity)
-            )
+    def write_data(self, timestamp, current, voltage, capacity, plugin):
+        with open(self.fpath, 'a') as file:
+            try:
+                time = timestamp - self.start_time - self.total_pause_times
+            except AttributeError:
+                time = timestamp - self.start_time
+            data_format = "    " + ",".join(["{:0.8g}"] * 4)
+            writeout = data_format.format(time, current, voltage, capacity)
+            for value in plugin:
+                # TODO: Need to create keyed header
+                writeout += ",{:0.8g}".format(value[1])
+            writeout += "\n"
+
+            file.write(writeout)
+            logger.debug("Wrote data point to file.")
 
     def pause(self):
         """
@@ -579,7 +587,8 @@ class ProtocolStep(object):
         else:
             capacity = self.starting_capacity
 
-        self.data.append([self.last_time, current, voltage, capacity])
+        self.data.append([self.last_time, current,
+                         voltage, capacity, plugin_values])
 
         if len(self.data) > self.data_max_len:
             # we pop 1 and not 0
