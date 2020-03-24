@@ -87,8 +87,11 @@ def file_structure(path):
                 join(path, "config.json"))
     if not exists(join(path, "scripts")):
         makedirs(join(path, "scripts"), exist_ok=True)
-        shutil.copy(func.asset_path("example-script"),
-                    join(path, "scripts", "example"))
+        files = listdir(func.asset_path("scripts"))
+        for script in files:
+            script = join(func.asset_path("scripts"), script)
+            if isfile(script):
+                shutil.copy(script, join(path, "plugins"))
     # TODO: Plugin creation should be safety locked to prevent overwrite
     # if not exists(join(path, "plugins")):
     makedirs(join(path, "plugins"), exist_ok=True)
