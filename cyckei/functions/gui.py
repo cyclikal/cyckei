@@ -111,7 +111,7 @@ def text_edit(status=None, connect=None, readonly=False,
               wrap=QPlainTextEdit.NoWrap):
     editor = QPlainTextEdit()
     editor.setLineWrapMode(wrap)
-    highlight = Highlighter(editor.document())
+    Highlighter(editor.document())
     if connect:
         editor.textChanged.connect(connect)
     editor.setReadOnly(readonly)

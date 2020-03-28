@@ -6,12 +6,16 @@ Modified from https://wiki.python.org/moin/PyQt/Python%20syntax%20highlighting
 from PySide2.QtCore import QRegExp
 from PySide2.QtGui import QColor, QTextCharFormat, QFont, QSyntaxHighlighter
 
+orange = "#f05f40"
+teal = "#3eb58a"
+blue = "#33658a"
+gray = "#a6a6a6"
+dark = "#303036"
+
 
 def format(color, style=''):
-    """Return a QTextCharFormat with the given attributes.
-    """
-    _color = QColor()
-    _color.setNamedColor(color)
+    """Return a QTextCharFormat with the given attributes."""
+    _color = QColor(color)
 
     _format = QTextCharFormat()
     _format.setForeground(_color)
@@ -25,15 +29,15 @@ def format(color, style=''):
 
 # Syntax styles that can be shared by all languages
 STYLES = {
-    'keyword': format('blue'),
-    'operator': format('red'),
-    'brace': format('darkGray'),
+    'keyword': format(blue),
+    'operator': format(blue),
+    'brace': format(gray),
     'defclass': format('black', 'bold'),
-    'string': format('magenta'),
+    'string': format(teal),
     'string2': format('darkMagenta'),
-    'comment': format('darkGreen', 'italic'),
+    'numbers': format(orange),
+    'comment': format(gray, 'italic'),
     'self': format('black', 'italic'),
-    'numbers': format('brown'),
 }
 
 
@@ -42,31 +46,17 @@ class Highlighter(QSyntaxHighlighter):
 
     # Python keywords
     keywords = [
-        'and', 'assert', 'break', 'class', 'continue', 'def',
-        'del', 'elif', 'else', 'except', 'exec', 'finally',
-        'for', 'from', 'global', 'if', 'import', 'in',
-        'is', 'lambda', 'not', 'or', 'pass', 'print',
-        'raise', 'return', 'try', 'while', 'yield',
-        'None', 'True', 'False',
+        'and', 'break', 'continue', 'elif', 'else', 'for', 'if', 'is',
+        'not', 'or', 'pass', 'print', 'while', 'None', 'True', 'False',
+        'CCCharge', 'CCDischarge', 'CVCharge', 'CVDischarge',
+        'Sleep', 'Rest', 'AdvanceCycle'
     ]
 
     # Python operators
-    operators = [
-        '=',
-        # Comparison
-        '==', '!=', '<', '<=', '>', '>=',
-        # Arithmetic
-        '\+', '-', '\*', '/', '//', '\%', '\*\*',
-        # In-place
-        '\+=', '-=', '\*=', '/=', '\%=',
-        # Bitwise
-        '\^', '\|', '\&', '\~', '>>', '<<',
-    ]
+    operators = ['=', '==', '!=', '<', '<=', '>', '>=']
 
     # Python braces
-    braces = [
-        '\{', '\}', '\(', '\)', '\[', '\]',
-    ]
+    braces = ['\{', '\}', '\(', '\)', '\[', '\]']  # noqa: W605
 
     def __init__(self, document):
         QSyntaxHighlighter.__init__(self, document)
