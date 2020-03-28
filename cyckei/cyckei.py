@@ -82,9 +82,9 @@ def file_structure(path):
 
     makedirs(path, exist_ok=True)
     makedirs(join(path, "tests"), exist_ok=True)
-    # if not exists(join(path, "config.json")):
-    shutil.copy(func.asset_path("default_config.json"),
-                join(path, "config.json"))
+    if not exists(join(path, "config.json")):
+        shutil.copy(func.asset_path("default_config.json"),
+                    join(path, "config.json"))
     if not exists(join(path, "scripts")):
         makedirs(join(path, "scripts"), exist_ok=True)
         files = listdir(func.asset_path("scripts"))
@@ -92,14 +92,13 @@ def file_structure(path):
             script = join(func.asset_path("scripts"), script)
             if isfile(script):
                 shutil.copy(script, join(path, "scripts"))
-    # TODO: Plugin creation should be safety locked to prevent overwrite
-    # if not exists(join(path, "plugins")):
-    makedirs(join(path, "plugins"), exist_ok=True)
-    files = listdir(func.asset_path("plugins"))
-    for plugin in files:
-        plugin = join(func.asset_path("plugins"), plugin)
-        if isfile(plugin):
-            shutil.copy(plugin, join(path, "plugins"))
+    if not exists(join(path, "plugins")):
+        makedirs(join(path, "plugins"), exist_ok=True)
+        files = listdir(func.asset_path("plugins"))
+        for plugin in files:
+            plugin = join(func.asset_path("plugins"), plugin)
+            if isfile(plugin):
+                shutil.copy(plugin, join(path, "plugins"))
 
 
 def make_config(args):
