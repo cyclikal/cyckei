@@ -22,10 +22,10 @@ Various attributes of the cycle may be set in before starting a cycle:
 +================+============+=========================================================================+======================+
 | Script         | file       | Script with desired protocol. Gives option to select any local file.    | First scanned file   |
 +----------------+------------+-------------------------------------------------------------------------+----------------------+
-| Log file       | text       | Path to output file. Placed in the specified logs folder.               | "defaultLog.txt"     |
+| Log file       | text       | Path to output file. Placed in the specified logs folder.               | "default.pdb"        |
 +----------------+------------+-------------------------------------------------------------------------+----------------------+
 | Cell ID        | text       | Identification for cell. Recorded to output file.                       | 0                    |
-+----------------+------------+--------------------------------------------------------------------- ---+----------------------+
++----------------+------------+-------------------------------------------------------------------------+----------------------+
 | Comment        | text       | Requester's comment for cycle. Recorded to output file.                 | "No Comment"         |
 +----------------+------------+-------------------------------------------------------------------------+----------------------+
 
@@ -86,11 +86,11 @@ the scripts folder which is available whenever the client is started.
 
 ::
 
-    for i in range(3):
-      AdvanceCycle()
-      CCCharge(0.1, reports=(("voltage", 0.01), ("time", ":5:")), ends=(("voltage", ">", 4.2), ("time", ">", "4::")))
-      CCDischarge(0.1, reports=(("voltage", 0.01), ("time", ":5:")), ends=(("voltage", "<", 3.0), ("time", ">", "4::")))
-      Rest(reports=(("time", "::1"),), ends=(("time", ">", "::15"),))
+  for i in range(3):
+    AdvanceCycle()
+    CCCharge(0.1, reports=(("voltage", 0.01), ("time", ":5:")), ends=(("voltage", ">", 4.2), ("time", ">", "4::")))
+    CCDischarge(0.1, reports=(("voltage", 0.01), ("time", ":5:")), ends=(("voltage", "<", 3.0), ("time", ">", "4::")))
+    Rest(reports=(("time", "::1"),), ends=(("time", ">", "::15"),))
 
 Scripts are automatically checked when they are sent to the server. They
 can also be manually checked by clicking the "Check" button below the editor.
@@ -112,20 +112,20 @@ Below is an example plugin for reference.
 
 .. code-block:: python
 
-    import logging
-    from random import randint
+  import logging
+  from random import randint
 
-    logger = logging.getLogger('cyckei')
+  logger = logging.getLogger('cyckei')
 
 
-    class DataController(object):
-        def __init__(self):
-            self.name = "random"
-            logger.info("Initializing Random Recorder plugin")
+  class DataController(object):
+      def __init__(self):
+          self.name = "random"
+          logger.info("Initializing Random Recorder plugin")
 
-        def read(self):
-            logger.debug("Generating random integer...")
-            return randint(1, 101)
+      def read(self):
+          logger.debug("Generating random integer...")
+          return randint(1, 101)
 
 
 Viewing Logs
@@ -190,33 +190,33 @@ Here is an example configuration file for a simple setup running on port
 
 .. code-block:: json
 
-    {
-        "channels": [
-            {
-                "channel": "1",
-                "gpib_address": 1,
-                "keithley_model": "2602A",
-                "keithley_channel": "a"
-            },
-            {
-                "channel": "2",
-                "gpib_address": 1,
-                "keithley_model": "2602A",
-                "keithley_channel": "b"
-            }
-        ],
-        "zmq":{
-            "port": 5556,
-            "client-address":"tcp://localhost",
-            "server-address":"tcp://*",
-            "timeout": 10
-        },
-        "data-plugins": [
-          "temperature"
-        ],
-        "device": "keithley2602",
-        "verbosity": 30
-    }
+  {
+      "channels": [
+          {
+              "channel": "1",
+              "gpib_address": 1,
+              "keithley_model": "2602A",
+              "keithley_channel": "a"
+          },
+          {
+              "channel": "2",
+              "gpib_address": 1,
+              "keithley_model": "2602A",
+              "keithley_channel": "b"
+          }
+      ],
+      "zmq":{
+          "port": 5556,
+          "client-address":"tcp://localhost",
+          "server-address":"tcp://*",
+          "timeout": 10
+      },
+      "data-plugins": [
+        "temperature"
+      ],
+      "device": "keithley2602",
+      "verbosity": 30
+  }
 
 
 .. _GitLab: https://gitlab.com
