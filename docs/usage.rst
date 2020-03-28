@@ -194,13 +194,13 @@ Here is an example configuration file for a simple setup running on port
       "channels": [
           {
               "channel": "1",
-              "gpib_address": 1,
+              "gpib_address": 5,
               "keithley_model": "2602A",
               "keithley_channel": "a"
           },
           {
               "channel": "2",
-              "gpib_address": 1,
+              "gpib_address": 5,
               "keithley_model": "2602A",
               "keithley_channel": "b"
           }
