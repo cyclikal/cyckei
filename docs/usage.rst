@@ -101,6 +101,33 @@ formatting issues and errors. However, care should still be taken while
 writing scripts as they are executed as any other python code within the
 application.
 
+Using Plugins
+-------------
+
+Data plugins are available to supplement current and voltage data measurements.
+The plugin scheme is designed to be flexible in order to support any device with the use of custom configuration.
+A random plugin is included by default with the Cyckei distribution.
+Other plugins can be written by developing a similar DataController object and including it in the ``plugins`` folder of the Cyckei recording directory.
+Below is an example plugin for reference.
+
+.. code-block:: python
+
+    import logging
+    from random import randint
+
+    logger = logging.getLogger('cyckei')
+
+
+    class DataController(object):
+        def __init__(self):
+            self.name = "random"
+            logger.info("Initializing Random Recorder plugin")
+
+        def read(self):
+            logger.debug("Generating random integer...")
+            return randint(1, 101)
+
+
 Viewing Logs
 ------------
 
@@ -127,8 +154,7 @@ properly. Any custom configuration files should be written in JSON and
 should mirror the default config.json in the program's root directory.
 Each section is described in more detail below:
 
--  **channels** - A list of channels currently connected to the
-   computer.
+-  **channels** - A list of channels currently connected to the computer.
 
    -  *channel (string)* - Channel number for identification within the application.
    -  *gpib\_address (int)* - Hardware address of GPIB interface can be found with a NI VISA application or wth the code in :ref:`Host System Setup`.
@@ -142,6 +168,11 @@ Each section is described in more detail below:
    -  *client-address (string)* - Address for the client to connect to. Usually localhost.
    -  *server-address (string)* - Address for the server to listen on. Usually all.
    -  *timeout (int)* - Number of seconds to wait for server response. 10 seconds seems to work well for most configurations.
+
+- **data-plugins** - A list of data plugins to load and execute alongside normal data collection.
+  Plugins should be placed in the ``plugins`` directory of the Cyckei recording folder.
+
+- **device** - The identifier for which device to load. Currently, ``keithley2602`` is the only acceptable model.
 
 -  **verbosity** - The amount of information to be saved to log files.
    Generally should be set to 20, but the following levels can also be
@@ -163,13 +194,13 @@ Here is an example configuration file for a simple setup running on port
         "channels": [
             {
                 "channel": "1",
-                "gpib_address": 5,
+                "gpib_address": 1,
                 "keithley_model": "2602A",
                 "keithley_channel": "a"
             },
             {
                 "channel": "2",
-                "gpib_address": 5,
+                "gpib_address": 1,
                 "keithley_model": "2602A",
                 "keithley_channel": "b"
             }
@@ -180,7 +211,12 @@ Here is an example configuration file for a simple setup running on port
             "server-address":"tcp://*",
             "timeout": 10
         },
-        "verbosity": 20,
+        "data-plugins": [
+          "temperature"
+        ],
+        "device": "keithley2602",
+        "verbosity": 30
     }
+
 
 .. _GitLab: https://gitlab.com
