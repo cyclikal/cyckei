@@ -116,6 +116,7 @@ Development Releases
 - 0.3.dev1, 1/16/2020 -- Implements Cyckei Explorer and rebuilds distribution system
 - 0.3.dev2, 1/31/2020 -- Rebuild check, pause, & resume functionality
 - 0.3.dev3, 3/28/2020 -- Add plugin scheme to support additional data collection
+- 0.3.dev4, 0/00/0000 -- Highlight scripts in explorer
 
 Release Candidates
 ^^^^^^^^^^^^^^^^^^

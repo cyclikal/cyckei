@@ -71,8 +71,10 @@ class LogViewer(QWidget):
         try:
             self.title_bar.setText(self.log_list.currentItem().path)
             self.editor.update(self.log_list.currentItem().content)
+        except json.decoder.JSONDecodeError:
+            logger.warning(f"{self.log_list.currentItem().path} unreadable")
         except AttributeError:
-            logger.warning("Cannot load logs, none found.")
+            logger.warning("No logs found.")
 
     def load_logs(self):
         self.log_list.clear()
@@ -151,10 +153,7 @@ class LogDisplay(QWidget):
                 attr += line[1:] + "\n"
             else:
                 data += line + "\n"
-        try:
-            attr = json.loads(attr)
-        except json.decoder.JSONDecodeError:
-            logger.warning("Could not read script file.")
+        attr = json.loads(attr)
 
         # Setting info Elements
         for common_key in attr.keys() & self.info_elements.keys():
