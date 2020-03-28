@@ -6,6 +6,7 @@ import webbrowser
 
 from PySide2.QtWidgets import QVBoxLayout, QHBoxLayout, \
     QListWidget, QFileDialog, QWidget, QListWidgetItem
+from PySide2 import QtCore
 
 from .workers import Check
 from cyckei.functions import gui
@@ -38,6 +39,10 @@ class ScriptEditor(QWidget):
 
         controls = QHBoxLayout()
         edit_rows.addLayout(controls)
+        edit_rows.setStretch(0, 1)
+        # edit_rows.setStretch(1, 1)
+        edit_rows.setStretch(2, 5)
+        # edit_rows.setStretch(3, 1)
 
         buttons = [
             ["Open", "Open Another Script", self.open],
@@ -158,20 +163,23 @@ class InsertBar(QWidget):
         lower = QHBoxLayout()
         layout.addLayout(lower)
 
-        args = ["Edit Protocol to Generate...",
-                "Generated Protocol for Copy/Paste", None, None]
-        self.output = gui.line_edit(*args)
+        args = ["Generated Protocol for Copy/Paste"]
+        self.output = gui.text_edit(*args)
+        self.output.setReadOnly(True)
         lower.addWidget(self.output)
+        lower.setGeometry(QtCore.QRect(100, 100, 100, 100))
 
         lower.addWidget(gui.button("Insert", "Insert Protocol into Script",
                         self.insert))
+
+        self.write()
 
     def get_settings(self):
         """Creates all UI elements and adds them to elements list"""
         elements = []
         # Script File Dialog
         items = ["CCCharge", "CCDischarge", "CVCharge", "CVDischarge",
-                 "Sleep", "Rest", "Comment", "For Loop"]
+                 "Sleep", "Rest", "Comment", "Loop"]
         elements.append(gui.combo_box(items, "Select Protocol", "protocol",
                         self.update))
 
@@ -202,7 +210,7 @@ class InsertBar(QWidget):
             out = f"{d['protocol']}(reports=(('time', '{d['report_time']}'),)"\
                   f", ends=(('time', '>', '{d['end_time']}'), ))"
         elif d['protocol'] == "CCCharge" or d['protocol'] == "CVCharge":
-            out = f"{d['protocol']}({d['value']}," \
+            out = f"{d['protocol']}({d['value']}, " \
                   f"reports=(('voltage', '{d['report_val']}'), "\
                   f"('time', '{d['report_time']}')), "\
                   f"ends=(('voltage', '>', '{d['end_val']}'), "\
@@ -215,14 +223,14 @@ class InsertBar(QWidget):
                   f"('time', '>', '{d['end_time']}')))"
         elif d['protocol'] == "Comment":
             out = f"# {d['value']}"
-        elif d['protocol'] == "For Loop":
-            out = f"for i in range({d['value']}):"
+        elif d['protocol'] == "Loop":
+            out = f"for i in range({d['value']}):\n\tAdvanceCycle()"
 
-        self.output.setText(out.replace("\'", "\""))
-        logger.debug(self.output.text)
+        self.output.setPlainText(out.replace("\'", "\""))
+        logger.debug(self.output.toPlainText())
 
     def insert(self, text):
-        content = self.output.text()
+        content = self.output.toPlainText()
         if content:
             self.editor.appendPlainText(content)
 

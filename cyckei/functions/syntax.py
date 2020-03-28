@@ -46,7 +46,7 @@ class Highlighter(QSyntaxHighlighter):
 
     # Python keywords
     keywords = [
-        'and', 'break', 'continue', 'elif', 'else', 'for', 'if', 'is',
+        'and', 'break', 'continue', 'elif', 'else', 'for', 'in', 'if', 'is',
         'not', 'or', 'pass', 'print', 'while', 'None', 'True', 'False',
         'CCCharge', 'CCDischarge', 'CVCharge', 'CVDischarge',
         'Sleep', 'Rest', 'AdvanceCycle'
