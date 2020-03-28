@@ -69,12 +69,13 @@ class LogViewer(QWidget):
     def log_clicked(self):
         """Display text of clicked file in text box"""
         try:
-            self.title_bar.setText(self.log_list.currentItem().path)
             self.editor.update(self.log_list.currentItem().content)
+            self.title_bar.setText(self.log_list.currentItem().path)
         except json.decoder.JSONDecodeError:
-            logger.warning(f"{self.log_list.currentItem().path} unreadable")
+            logger.warning("Log unreadable: "
+                           + self.log_list.currentItem().path)
         except AttributeError:
-            logger.warning("No logs found.")
+            logger.debug("No logs found.")
 
     def load_logs(self):
         self.log_list.clear()
@@ -83,7 +84,7 @@ class LogViewer(QWidget):
         try:
             files = listdir(self.folder_list.currentItem().path)
         except AttributeError:
-            logger.warning("No log folders found.")
+            logger.debug("No log folders found.")
             files = []
         for file in files:
             abspath = path.join(self.folder_list.currentItem().path, file)
@@ -153,6 +154,7 @@ class LogDisplay(QWidget):
                 attr += line[1:] + "\n"
             else:
                 data += line + "\n"
+
         attr = json.loads(attr)
 
         # Setting info Elements
