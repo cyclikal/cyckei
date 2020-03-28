@@ -114,7 +114,8 @@ Development Releases
 ^^^^^^^^^^^^^^^^^^^^
 
 - 0.3.dev1, 1/16/2020 -- Implements Cyckei Explorer and rebuilds distribution system
-- 0.3.dev2, 0/00/0000 -- Rebuild check, pause, & resume functionality
+- 0.3.dev2, 1/31/2020 -- Rebuild check, pause, & resume functionality
+- 0.3.dev3, 3/28/2020 -- Add plugin scheme to support additional data collection
 
 Release Candidates
 ^^^^^^^^^^^^^^^^^^
@@ -125,19 +126,14 @@ Release Candidates
 Possible Features
 ----------------
 - Client Interface
-   - Automatic scripting
    - Better batch management
-   - Pretty log view
    - Multi-folder script storage
    - Script highlighting
 - Server Software
    - "Plug-in" style core (lua) script management for different devices
    - Implement Cython and threading for improved performance with massive cycles
-   - Possibly better logging format, dependent on Cell Explorer
-   - Stop all cycles on exit
 - Hardware Support
-   - Complete Support for Mac and Linux
-   - Make equivalent for Windows
+   - Complete Support for Linux
    - Simplify VISA and driver installation for end user
 - Miscellaneous
    - Automated release delivery
@@ -147,4 +143,4 @@ Possible Features
 Bug Tracker
 -----------
 
--  ``Segmentation Fault: 11`` on Darwin
+-  Line flickering

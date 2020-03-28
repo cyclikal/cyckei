@@ -42,6 +42,8 @@ Server
     :members:
   .. automodule:: server.server
     :members:
+  .. automodule:: server.keithley2602
+    :members:
 
 Functions
 ------
