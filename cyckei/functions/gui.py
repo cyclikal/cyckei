@@ -8,6 +8,7 @@ from PySide2.QtWidgets import QMessageBox, QPushButton, QComboBox, QLineEdit, \
 from PySide2.QtGui import QIcon
 
 from cyckei.functions import func
+from cyckei.functions.syntax import Highlighter
 
 Question = QMessageBox.Question
 Information = QMessageBox.Information
@@ -110,6 +111,7 @@ def text_edit(status=None, connect=None, readonly=False,
               wrap=QPlainTextEdit.NoWrap):
     editor = QPlainTextEdit()
     editor.setLineWrapMode(wrap)
+    highlight = Highlighter(editor.document())
     if connect:
         editor.textChanged.connect(connect)
     editor.setReadOnly(readonly)
