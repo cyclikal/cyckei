@@ -191,16 +191,17 @@ class ChannelWidget(QWidget):
             "Open Script",
             self.config["record_dir"] + "/scripts")
 
-        filepath = Path(filename[0]).resolve().absolute()
-        self.attributes['script_path'] = str(filepath)
-        try:
-            self.attributes['script_content'] \
-                = open(self.attributes['script_path'], "r").read()
-            self.script_label.setText(f'Script: {filepath.name}')
-        except (UnicodeDecodeError, PermissionError) as error:
-            logger.error(f"cyckei.client.channel_tab.ChannelWidget.set_script: \
-                Could not read file: {self.attributes['script_path']}")
-            logger.exception(error)
+        if filename[0]:
+            filepath = Path(filename[0]).resolve().absolute()
+            self.attributes['script_path'] = str(filepath)
+            try:
+                self.attributes['script_content'] \
+                    = open(self.attributes['script_path'], "r").read()
+                self.script_label.setText(f'Script: {filepath.name}')
+            except (UnicodeDecodeError, PermissionError) as error:
+                logger.error(f"cyckei.client.channel_tab.ChannelWidget.set_script: \
+                    Could not read file: {self.attributes['script_path']}")
+                logger.exception(error)
 
     def get_controls(self):
         buttons = [
