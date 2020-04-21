@@ -45,6 +45,7 @@ class ChannelTab(QWidget):
                 resource
             ))
             rows.addWidget(self.channels[-1])
+        self.alternate_colors()
 
         # Set initial status and set status timer
         self.update_status()
@@ -79,7 +80,6 @@ class ChannelTab(QWidget):
         option.initFrom(self)
         painter = QPainter(self)
         self.style().drawPrimitive(QStyle.PE_Widget, option, painter, self)
-        self.alternate_colors()
 
 
 class ChannelWidget(QWidget):
@@ -121,7 +121,7 @@ class ChannelWidget(QWidget):
         self.divider = QWidget(self)
         self.divider.setMinimumWidth(2)
         self.divider.setMaximumWidth(2)
-        self.divider.setStyleSheet("background-color: {}".format(gui.gray))
+        self.divider.setStyleSheet(f"background-color: {gui.gray}")
         middle.addWidget(self.divider)
 
         # Settings

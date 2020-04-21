@@ -82,19 +82,19 @@ class UpdateStatus(QRunnable):
                           + " | C: " + func.not_none(info["current"])
                           + ", V: " + func.not_none(info["voltage"]))
 
-                if info["status"] == "started":
-                    channel.divider.setStyleSheet(
-                        "background-color: {}".format(gui.orange))
-                else:
-                    channel.divider.setStyleSheet(
-                        "background-color: {}".format(gui.gray))
+                #if info["status"] == "started":
+                #    channel.divider.setStyleSheet(
+                #        "background-color: {}".format(gui.orange))
+                #else:
+                #    channel.divider.setStyleSheet(
+                #        "background-color: {}".format(gui.gray))
             except (TypeError, KeyError):
                 status = "Could not get status!"
-                channel.divider.setStyleSheet(
-                    "background-color: {}".format(gui.gray))
-            # logger.debug("cyckei.client.workers.UpdateStatus.run:
-            # Updating channel {} with status {}".format(
-            #     channel.attributes["channel"], status))
+            #    channel.divider.setStyleSheet(
+            #        "background-color: {}".format(gui.gray))
+            logger.debug("cyckei.client.workers.UpdateStatus.run: \
+                         Updating channel {} with status {}".format(
+                         channel.attributes["channel"], status))
             channel.status.setText(status)
 
 
