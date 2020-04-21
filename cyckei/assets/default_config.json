@@ -22,6 +22,6 @@
     "data-plugins": [
       "temperature"
     ],
-    "device": "random",
+    "device": "keithley2602",
     "verbosity": 30
 }
