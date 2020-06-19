@@ -6,7 +6,7 @@ logger = logging.getLogger('cyckei')
 
 class DataController(object):
     def __init__(self):
-        self.name = "random"
+        self.name = "randomizer"
         logger.info("Initializing Random Recorder plugin")
 
     def read(self):
