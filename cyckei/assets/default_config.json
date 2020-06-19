@@ -11,6 +11,18 @@
             "gpib_address": 1,
             "keithley_model": "2602A",
             "keithley_channel": "b"
+        },
+        {
+            "channel": "3",
+            "gpib_address": 2,
+            "keithley_model": "2602B",
+            "keithley_channel": "a"
+        },
+        {
+            "channel": "4",
+            "gpib_address": 2,
+            "keithley_model": "2602B",
+            "keithley_channel": "b"
         }
     ],
     "zmq":{

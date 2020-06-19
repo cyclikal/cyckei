@@ -2,6 +2,7 @@
 import argparse
 from os import makedirs, listdir, remove
 from os.path import expanduser, join, exists, isfile
+from importlib.util import spec_from_file_location, module_from_spec
 import sys
 import shutil
 import logging
@@ -25,6 +26,7 @@ def main(args=None):
             args = parse_args()
         file_structure(args.dir, args.x)
         config = make_config(args)
+        config, plugins = load_plugins(config, args.x)
         start_logging(config)
         print("Done!\n")
         logger.debug(f"Using configuration: {config}")
@@ -38,7 +40,7 @@ def main(args=None):
 
     if args.launch == "server":
         from cyckei.server import server
-        server.main(config)
+        server.main(config, plugins)
     elif args.launch == "client":
         from cyckei.client import client
         client.main(config)
@@ -72,7 +74,6 @@ def parse_args():
 
     return parser.parse_args()
 
-
 def file_structure(path, overwrite):
     """
     Checks for existing folder structure and sets up if missing
@@ -105,7 +106,6 @@ def file_structure(path, overwrite):
             if isfile(plugin):
                 shutil.copy(plugin, join(path, "plugins"))
 
-
 def make_config(args):
     """
     Loads configuration and variables from respective files.
@@ -117,7 +117,6 @@ def make_config(args):
     Returns:
         Completed 'config' dictionary.
     """
-    print("Loading configuration...", end="")
 
     with open(join(args.dir, "config.json")) as file:
         configuration = json.load(file)
@@ -132,6 +131,42 @@ def make_config(args):
 
     return config
 
+def load_plugins(config, overwrite):
+    # create individual plugin configurations, if necessary
+    print("Loading plugins:", end="")
+    for plugin in config["data-plugins"]:
+        print(f" {plugin},", end="")
+    print("\b...", end="")
+
+    plugins = []
+    # Load plugin modules
+    for plugin in config["data-plugins"]:
+        plugin_file = join(config["record_dir"], "plugins", f"{plugin}.py")
+        if isfile(plugin_file):
+            spec = spec_from_file_location(f"plugin.{plugin}", plugin_file)
+            plugin_module = module_from_spec(spec)
+            spec.loader.exec_module(plugin_module)
+            plugins.append(plugin_module)
+
+    # Rewrite individual configuration and load sources into config for client
+    config["plugin_sources"] = []
+    for plugin in plugins:
+        config_file = join(config["record_dir"], "plugins",
+                           f"{plugin.DEFAULT_CONFIG['name']}.json")
+        if not exists(config_file) or overwrite:
+            with open(config_file, "w") as file:
+                json.dump(plugin.DEFAULT_CONFIG, file)
+
+        with open(config_file) as file:
+            plugin_config = json.load(file)
+        config["plugin_sources"].append({
+            "name": plugin_config["name"],
+            "sources": []
+        })
+        for source in plugin_config["sources"]:
+            config["plugin_sources"][-1]["sources"].append(source["readable"])
+
+    return config, plugins
 
 def start_logging(config):
     """

@@ -6,7 +6,6 @@ import traceback
 import sys
 from os.path import isfile, join, basename
 from collections import OrderedDict
-from importlib.util import spec_from_file_location, module_from_spec
 
 import zmq
 from visa import VisaIOError
@@ -16,7 +15,7 @@ from .protocols import STATUS, CellRunner
 logger = logging.getLogger('cyckei')
 
 
-def main(config):
+def main(config, plugins):
     """
     Begins execution of Cyckei Server.
 
@@ -54,17 +53,6 @@ def main(config):
     except ImportError:
         logger.critical("Could not find device configuration module. Exiting.")
         sys.exit()
-
-    # Initialize Data Plugins
-    logger.info(f"Loading plugins: {config['data-plugins']}")
-    plugins = []
-    for plugin in config["data-plugins"]:
-        plugin_file = join(config["record_dir"], "plugins", f"{plugin}.py")
-        if isfile(plugin_file):
-            spec = spec_from_file_location(f"plugin.{plugin}", plugin_file)
-            plugin_module = module_from_spec(spec)
-            spec.loader.exec_module(plugin_module)
-            plugins.append(plugin_module.DataController())
 
     # Start server event loop
     event_loop(config, socket, plugins, device_module)

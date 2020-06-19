@@ -6,20 +6,33 @@ import json
 import re
 import sys
 import logging
+from os.path import basename
 
 logger = logging.getLogger('cyckei')
 
 EOL = b'\r\n'
 weight_conversion = {'g':1, 'mg':0.001, 'kg':1000., 'oz':0.0352739619, 'lb':0.00220462262}
 
+DEFAULT_CONFIG = {
+    "name": basename(__file__)[:-3],
+    "description": "Plugin to retrieve weight from Mettler Toldeo scale.",
+    "requirements": {},
+    "sources": [
+        {
+            "readable": "Balance 1",
+            "port": "COM3",
+        }
+    ],
+}
+
 class DataController(object):
     def __init__(self):
-        self.name = "mettler-scale"
+        self.name = CONFIG["name"]
         logger.info("Initializing Mettler Toledo Scale Plugin...")
 
         self.scale = MettlerLogger(PORT="COM5")
-        self.model = scale.get_balance_model()
-        self.serial = scale.get_balance_serial()
+        self.model = self.scale.get_balance_model()
+        self.serial = self.scale.get_balance_serial()
         logger.info(f"Model: {self.model}, Serial: {self.serial}")
 
     def read(self):
