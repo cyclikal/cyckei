@@ -1,6 +1,6 @@
 """This file is for execution as an installed package via 'cyckei'."""
 import argparse
-from os import makedirs, listdir
+from os import makedirs, listdir, remove
 from os.path import expanduser, join, exists, isfile
 import sys
 import shutil
@@ -96,6 +96,9 @@ def file_structure(path, overwrite):
                 shutil.copy(script, join(path, "scripts"))
     if not exists(join(path, "plugins")) or overwrite:
         makedirs(join(path, "plugins"), exist_ok=True)
+        configs = [f for f in listdir(join(path, "plugins")) if f.endswith(".json") ]
+        for f in configs:
+            remove(join(path, "plugins" ,f))
         files = listdir(func.asset_path("plugins"))
         for plugin in files:
             plugin = join(func.asset_path("plugins"), plugin)
