@@ -23,7 +23,7 @@ def main(args=None):
     try:
         if args is None:
             args = parse_args()
-        file_structure(args.dir)
+        file_structure(args.dir, args.x)
         config = make_config(args)
         start_logging(config)
         print("Done!\n")
@@ -61,17 +61,19 @@ def parse_args():
                         choices=['server', 'client', 'explorer'],
                         type=str, help='Select which component to launch.')
     parser.add_argument('-v', action="store_true",
-                        help='Toggle verbose console output')
+                        help='Toggle verbose console output.')
+    parser.add_argument('-x', action="store_true",
+                        help='Reset all configuration and plugins.')
     parser.add_argument('--dir', metavar="[dir]", default=default_path,
-                        type=str, help='Recording directory')
+                        type=str, help='Recording directory.')
     parser.add_argument('--log_level', metavar="[log_level]",
                         default=30, type=int,
-                        help='Set log file logging level')
+                        help='Set log file logging level.')
 
     return parser.parse_args()
 
 
-def file_structure(path):
+def file_structure(path, overwrite):
     """
     Checks for existing folder structure and sets up if missing
 
@@ -82,7 +84,7 @@ def file_structure(path):
 
     makedirs(path, exist_ok=True)
     makedirs(join(path, "tests"), exist_ok=True)
-    if not exists(join(path, "config.json")):
+    if not exists(join(path, "config.json")) or overwrite:
         shutil.copy(func.asset_path("default_config.json"),
                     join(path, "config.json"))
     if not exists(join(path, "scripts")):
@@ -92,7 +94,7 @@ def file_structure(path):
             script = join(func.asset_path("scripts"), script)
             if isfile(script):
                 shutil.copy(script, join(path, "scripts"))
-    if not exists(join(path, "plugins")):
+    if not exists(join(path, "plugins")) or overwrite:
         makedirs(join(path, "plugins"), exist_ok=True)
         files = listdir(func.asset_path("plugins"))
         for plugin in files:
