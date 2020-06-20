@@ -72,8 +72,9 @@ class MainWindow(QMainWindow):
         """Setup menu bar"""
 
         entries = {
-            "Server": [
-                ["&Ping", self.ping_server, "Test Connection to Server"]
+            "Info": [
+                ["&Server", self.ping_server, "Test Connection to Server"],
+                ["&Plugins", self.plugin_info, "Check Loaded Plugins"]
             ],
         }
 
@@ -86,3 +87,15 @@ class MainWindow(QMainWindow):
         worker = workers.Ping(self.config)
         worker.signals.alert.connect(gui.message)
         self.threadpool.start(worker)
+
+    def plugin_info(self):
+        text = ""
+        for plugin in self.config["plugin_sources"]:
+            text += f"<p><h3>{plugin['name']}</h3>"
+            text += f"<i>{plugin['description']}</i><br>"
+            text += f"Sources: {plugin['sources']}</p>"
+        msg = {
+            "text": "<h2>Plugins:</h2>",
+            "info": text,
+        }
+        gui.message(**msg)

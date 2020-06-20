@@ -161,6 +161,7 @@ def load_plugins(config, overwrite):
             plugin_config = json.load(file)
         config["plugin_sources"].append({
             "name": plugin_config["name"],
+            "description": plugin_config["description"],
             "sources": []
         })
         for source in plugin_config["sources"]:
