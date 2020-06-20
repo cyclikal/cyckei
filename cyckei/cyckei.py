@@ -74,6 +74,7 @@ def parse_args():
 
     return parser.parse_args()
 
+
 def file_structure(path, overwrite):
     """
     Checks for existing folder structure and sets up if missing
@@ -97,14 +98,16 @@ def file_structure(path, overwrite):
                 shutil.copy(script, join(path, "scripts"))
     if not exists(join(path, "plugins")) or overwrite:
         makedirs(join(path, "plugins"), exist_ok=True)
-        configs = [f for f in listdir(join(path, "plugins")) if f.endswith(".json") ]
-        for f in configs:
-            remove(join(path, "plugins" ,f))
+        configs = []
+        for file in listdir(join(path, "plugins")):
+            if file.endswith(".json"):
+                configs.append(file)
         files = listdir(func.asset_path("plugins"))
         for plugin in files:
             plugin = join(func.asset_path("plugins"), plugin)
             if isfile(plugin):
                 shutil.copy(plugin, join(path, "plugins"))
+
 
 def make_config(args):
     """

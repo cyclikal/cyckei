@@ -183,6 +183,19 @@ class ChannelWidget(QWidget):
         for line in editables:
             elements.append(gui.line_edit(*line, self.set))
 
+        # Plugin Assignments
+        plugin_sources = []
+        for plugin in self.config["plugin_sources"]:
+            plugin_sources.append([])
+            plugin_sources[-1].append([f"No {plugin['name']}"]
+                                      + plugin["sources"])
+            plugin_sources[-1].append(
+                f"Set Measurement Source for '{plugin['name']}' Plugin.")
+            plugin_sources[-1].append(plugin["name"])
+
+        for source in plugin_sources:
+            elements.append(gui.combo_box(*source, self.set))
+
         return elements
 
     def set_script(self, button_text):
