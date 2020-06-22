@@ -134,6 +134,7 @@ def make_config(args):
 
     return config
 
+
 def load_plugins(config, overwrite):
     # create individual plugin configurations, if necessary
     print("Loading plugins:", end="")
@@ -171,6 +172,7 @@ def load_plugins(config, overwrite):
             config["plugin_sources"][-1]["sources"].append(source["readable"])
 
     return config, plugins
+
 
 def start_logging(config):
     """
