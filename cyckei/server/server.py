@@ -4,7 +4,7 @@ import logging
 import time
 import traceback
 import sys
-from os.path import isfile, join, basename
+from os.path import isfile, basename
 from collections import OrderedDict
 
 import zmq

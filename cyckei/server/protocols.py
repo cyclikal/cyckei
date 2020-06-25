@@ -89,9 +89,8 @@ class CellRunner(object):
         self.meta["format"] = ["time", "current", "voltage", "capacitance"]
 
         self.plugins = plugins
-        if self.plugins is not None:
-            for plugin in self.plugins:
-                self.meta["format"].append(plugin.name)
+        for plugin in self.meta["plugins"]:
+            self.meta["format"].append(f"{plugin[0]}:{plugin[1]}")
 
         # Enforce a str channel
         self.meta["channel"] = str(self.meta["channel"])
@@ -336,7 +335,6 @@ class CellRunner(object):
             data_format = "    " + ",".join(["{:0.8g}"] * 4)
             writeout = data_format.format(time, current, voltage, capacity)
             for value in plugin:
-                # TODO: Need to create keyed header
                 writeout += ",{:0.8g}".format(value[1])
             writeout += "\n"
 
@@ -572,9 +570,18 @@ class ProtocolStep(object):
         self.last_time = time.time()
         current, voltage = self.parent.source.read_iv()
         plugin_values = []
-        for plugin in self.parent.plugins:
-            value = plugin.read()
-            plugin_values.append((plugin.name, value))
+        for enabled_plugin in self.parent.meta["plugins"]:
+            plugin = None
+            for available_plugin in self.parent.plugins:
+                if available_plugin.name == enabled_plugin[0]:
+                    plugin = available_plugin
+                    break
+            if plugin:
+                value = plugin.read(self.parent.meta["plugins"][1])
+                plugin_values.append((plugin.name, value))
+            else:
+                value = 0
+                logger.critical(f"Could not bind plugin {enabled_plugin[0]}")
         logger.debug(f"Values from plugins: {plugin_values}")
 
         self.check_in_control(self.last_time, current, voltage)
