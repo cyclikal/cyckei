@@ -99,9 +99,14 @@ class ChannelWidget(QWidget):
             "mass": 1,
             "requester": "Unspecified",
             "script_path": None,
-            "script_content": None
+            "script_content": None,
+            "plugins": {}
         }
         self.config = config
+
+        # Add default plugin values to attributes
+        for plugin in config["plugin_sources"]:
+            self.attributes["plugins"][plugin["name"]] = "None"
 
         self.threadpool = resource["threadpool"]
         # self.scripts = resource["scripts"]
@@ -125,11 +130,11 @@ class ChannelWidget(QWidget):
         middle.addWidget(self.divider)
 
         # Settings
-        settings = QHBoxLayout()
-        left.addLayout(settings)
-        self.settings = self.get_settings()
-        for element in self.settings:
-            settings.addWidget(element)
+        setting_box = QHBoxLayout()
+        left.addLayout(setting_box)
+        setting_elements = self.get_settings()
+        for element in setting_elements:
+            setting_box.addLayout(element)
 
         # Script
         self.script_label = gui.label("Script: None", "Current script loaded")
@@ -157,44 +162,58 @@ class ChannelWidget(QWidget):
             func.asset_path("default_packet.json")))
 
     def get_settings(self):
-        """Creates all UI elements and adds them to elements list"""
-        elements = []
+        """Creates all UI settings and adds them to settings list"""
+        labels = []
+        settings = []
 
         # Cell channel label
+        labels.append("")
         args = [
             "{}:".format(self.attributes["channel"]),
             "Channel {}".format(self.attributes["channel"]),
             "id_label"
         ]
-        elements.append(gui.label(*args))
-        elements[-1].setMinimumSize(25, 25)
+        settings.append(gui.label(*args))
+        settings[-1].setMinimumSize(25, 25)
 
         # Script File Dialog
-        elements.append(gui.button("Script", "Open Script file",
+        labels.append("Script:")
+        settings.append(gui.button("Open File", "Open Script file",
                                    connect=self.set_script))
 
         # Line Edits
+        labels.append("Log File:")
+        labels.append("Cell ID:")
+        labels.append("Comment:")
         editables = [
-            ["Log file", "File to log to, placed in specified logs folder",
+            ["Filename", "File to log to, placed in specified logs folder",
                 "path"],
-            ["Cell ID", "Cell identification", "cellid"],
+            ["ID", "Cell identification", "cellid"],
             ["Comment", "Unparsed Comment", "comment"],
         ]
         for line in editables:
-            elements.append(gui.line_edit(*line, self.set))
+            settings.append(gui.line_edit(*line, self.set))
 
         # Plugin Assignments
         plugin_sources = []
         for plugin in self.config["plugin_sources"]:
+            labels.append(f"{plugin['name'].title()} Source:")
             plugin_sources.append([])
-            plugin_sources[-1].append([f"No {plugin['name']}"]
+            plugin_sources[-1].append([f"None"]
                                       + plugin["sources"])
             plugin_sources[-1].append(
                 f"Set Measurement Source for '{plugin['name']}' Plugin.")
             plugin_sources[-1].append(plugin["name"])
 
         for source in plugin_sources:
-            elements.append(gui.combo_box(*source, self.set))
+            settings.append(gui.combo_box(*source, self.set))
+
+        # Zip Settings and layers together into elements
+        elements = []
+        for label, setting in zip(labels, settings):
+            elements.append(QVBoxLayout())
+            elements[-1].addWidget(gui.label(f"<i><small>{label}</small></i>"))
+            elements[-1].addWidget(setting)
 
         return elements
 
@@ -242,7 +261,7 @@ class ChannelWidget(QWidget):
 
     def set(self, key, text):
         """Sets object's script to one selected in dropdown"""
-        self.attributes[key] = text
+        self.attributes["plugins"][key] = text
 
     def paintEvent(self, event):
         option = QStyleOption()

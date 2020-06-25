@@ -1,6 +1,6 @@
 """This file is for execution as an installed package via 'cyckei'."""
 import argparse
-from os import makedirs, listdir, remove
+from os import makedirs, listdir
 from os.path import expanduser, join, exists, isfile
 from importlib.util import spec_from_file_location, module_from_spec
 import sys
