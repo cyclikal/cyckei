@@ -63,16 +63,17 @@ STATUS.string_map = {
 
 class CellRunner(object):
     META = {
-        "path": None,
-        "protocol_name": None,
-        "protocol": None,
         "channel": None,
+        "path": None,
         "cellid": None,
         "comment": None,
-        "requester": None,
-        "cycler": None,
-        "celltype": None,
         "package": None,
+        "celltype": None,
+        "requester": None,
+        "plugins": {},
+        "protocol": None,
+        "protocol_name": None,
+        "cycler": None,
         "start_cycle": None,
         "format": None
     }

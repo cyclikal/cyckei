@@ -90,17 +90,17 @@ class ChannelWidget(QWidget):
         # Default Values
         self.attributes = {
             "channel": channel,
-            "record_folder": config["record_dir"] + "/tests",
+            "path": "default.pyb",
             "cellid": 0,
             "comment": "No Comment",
             "package": "Pouch",
             "celltype": "Full",
-            "path": "default.pyb",
-            "mass": 1,
             "requester": "Unspecified",
+            "plugins": {},
+            "record_folder": config["record_dir"] + "/tests",
+            "mass": 1,
             "script_path": None,
-            "script_content": None,
-            "plugins": {}
+            "script_content": None
         }
         self.config = config
 

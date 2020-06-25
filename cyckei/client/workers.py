@@ -8,7 +8,7 @@ from datetime import date, datetime
 from PySide2.QtCore import QRunnable, Slot, Signal, QObject
 
 from .socket import Socket
-from cyckei.functions import func, gui
+from cyckei.functions import func
 
 logger = logging.getLogger('cyckei')
 
@@ -82,10 +82,10 @@ class UpdateStatus(QRunnable):
                           + " | C: " + func.not_none(info["current"])
                           + ", V: " + func.not_none(info["voltage"]))
 
-                #if info["status"] == "started":
+                # if info["status"] == "started":
                 #    channel.divider.setStyleSheet(
                 #        "background-color: {}".format(gui.orange))
-                #else:
+                # else:
                 #    channel.divider.setStyleSheet(
                 #        "background-color: {}".format(gui.gray))
             except (TypeError, KeyError):
