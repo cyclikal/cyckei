@@ -4,7 +4,7 @@ from os.path import basename
 
 logger = logging.getLogger('cyckei')
 
-CONFIG = {
+DEFAULT_CONFIG = {
     "name":  basename(__file__)[:-3],
     "description": "Default Cyckei plugin to demonstrate functionality. Generates random numbers.",
     "requirements": {},
@@ -24,9 +24,9 @@ CONFIG = {
 
 class DataController(object):
     def __init__(self):
-        self.name = CONFIG["name"]
+        self.name = DEFAULT_CONFIG["name"]
         logger.info("Initializing Random Recorder plugin")
 
-    def read(self):
+    def read(self, source):
         logger.debug("Generating random integer...")
         return randint(1, 100)

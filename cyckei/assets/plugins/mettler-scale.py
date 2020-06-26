@@ -13,7 +13,7 @@ logger = logging.getLogger('cyckei')
 EOL = b'\r\n'
 weight_conversion = {'g':1, 'mg':0.001, 'kg':1000., 'oz':0.0352739619, 'lb':0.00220462262}
 
-CONFIG = {
+DEFAULT_CONFIG = {
     "name": basename(__file__)[:-3],
     "description": "Plugin to retrieve weight from Mettler Toledo scale.",
     "requirements": {},
@@ -27,7 +27,7 @@ CONFIG = {
 
 class DataController(object):
     def __init__(self):
-        self.name = CONFIG["name"]
+        self.name = DEFAULT_CONFIG["name"]
         logger.info("Initializing Mettler Toledo Scale Plugin...")
 
         self.scale = MettlerLogger(PORT="COM5")

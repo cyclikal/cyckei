@@ -571,19 +571,19 @@ class ProtocolStep(object):
         self.last_time = time.time()
         current, voltage = self.parent.source.read_iv()
         plugin_values = []
-        import pdb; pdb.set_trace()
-        for enabled_plugin in self.parent.meta["plugins"]:
-            plugin = None
-            for available_plugin in self.parent.plugin_objects:
-                if available_plugin.name == enabled_plugin[0]:
-                    plugin = available_plugin
-                    break
-            if plugin:
-                value = plugin.read(self.parent.meta["plugins"][1])
-                plugin_values.append((plugin.name, value))
-            else:
-                value = 0
-                logger.critical(f"Could not bind plugin {enabled_plugin[0]}")
+        for enabled_plugin, plugin_source in self.parent.meta["plugins"].items():
+            if plugin_source != "None":
+                plugin = None
+                for available_plugin in self.parent.plugin_objects:
+                    if available_plugin.name == enabled_plugin:
+                        plugin = available_plugin
+                        break
+                if plugin:
+                    value = plugin.read(plugin_source)
+                    plugin_values.append((plugin.name, value))
+                else:
+                    value = 0
+                    logger.critical(f"Could not bind plugin {enabled_plugin[0]}")
         logger.debug(f"Values from plugins: {plugin_values}")
 
         self.check_in_control(self.last_time, current, voltage)

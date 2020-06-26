@@ -26,7 +26,7 @@ def main(args=None):
             args = parse_args()
         file_structure(args.dir, args.x)
         config = make_config(args)
-        config, plugins = load_plugins(config, args.x)
+        config, plugins = load_plugins(config, args.x, args.launch)
         start_logging(config)
         print("Done!\n")
         logger.debug(f"Using configuration: {config}")
@@ -135,7 +135,7 @@ def make_config(args):
     return config
 
 
-def load_plugins(config, overwrite):
+def load_plugins(config, overwrite, launch):
     # create individual plugin configurations, if necessary
     print("Loading plugins:", end="")
     for plugin in config["data-plugins"]:
@@ -150,7 +150,7 @@ def load_plugins(config, overwrite):
             spec = spec_from_file_location(f"plugin.{plugin}", plugin_file)
             plugin_module = module_from_spec(spec)
             spec.loader.exec_module(plugin_module)
-            plugins.append(plugin_module.DataController())
+            plugins.append(plugin_module)
 
     # Rewrite individual configuration and load sources into config for client
     config["plugin_sources"] = []
@@ -170,6 +170,11 @@ def load_plugins(config, overwrite):
         })
         for source in plugin_config["sources"]:
             config["plugin_sources"][-1]["sources"].append(source["readable"])
+
+    # Cycle each plugin module up into its own object
+    if launch == "server":
+        for i, module in enumerate(plugins):
+            plugins[i] = module.DataController()
 
     return config, plugins
 
