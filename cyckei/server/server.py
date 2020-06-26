@@ -213,8 +213,9 @@ def process_socket(socket, runners, sources, server_time, plugins):
                         resp = start(kwargs["channel"], kwargs["meta"],
                                      kwargs["protocol"], runners, sources,
                                      plugins)
-                    except Exception:
+                    except Exception as e:
                         resp = "Error occured when running script."
+                        logger.warning(e)
                     logger.debug("Sending response: {}".format(resp))
 
                 elif fun == "pause":
@@ -310,7 +311,7 @@ def info_channel(channel, runners, sources):
     return info
 
 
-def start(channel, meta, protocol, runners, sources, plugins):
+def start(channel, meta, protocol, runners, sources, plugin_objects):
     """Start channel with given protocol"""
 
     # check to see if there is a already a runner on that channel
@@ -321,8 +322,7 @@ def start(channel, meta, protocol, runners, sources, plugins):
     path = meta["path"]
     if isfile(path):
         return("Log file '{}' already in use.").format(basename(path))
-
-    runner = CellRunner(plugins, **meta)
+    runner = CellRunner(plugin_objects, **meta)
     # Set the channel source
     for source in sources:
         if runner.channel == source.channel:

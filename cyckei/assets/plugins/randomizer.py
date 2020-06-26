@@ -4,7 +4,7 @@ from os.path import basename
 
 logger = logging.getLogger('cyckei')
 
-DEFAULT_CONFIG = {
+CONFIG = {
     "name":  basename(__file__)[:-3],
     "description": "Default Cyckei plugin to demonstrate functionality. Generates random numbers.",
     "requirements": {},

@@ -150,7 +150,7 @@ def load_plugins(config, overwrite):
             spec = spec_from_file_location(f"plugin.{plugin}", plugin_file)
             plugin_module = module_from_spec(spec)
             spec.loader.exec_module(plugin_module)
-            plugins.append(plugin_module)
+            plugins.append(plugin_module.DataController())
 
     # Rewrite individual configuration and load sources into config for client
     config["plugin_sources"] = []

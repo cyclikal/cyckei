@@ -155,6 +155,7 @@ class Control(QRunnable):
             script_ok, msg = Check(self.config, self.script).run()
             if script_ok is False:
                 self.signals.status.emit("Script Failed", self.channel)
+                logger.warning(msg)
                 return
 
         packet = prepare_json(self.channel, self.command,

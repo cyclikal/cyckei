@@ -78,7 +78,7 @@ class CellRunner(object):
         "format": None
     }
 
-    def __init__(self, plugins=None, **meta):
+    def __init__(self, plugin_objects=None, **meta):
         self.meta = self.META.copy()
         for k in self.meta.keys():
             self.meta[k] = meta.get(k, None)
@@ -88,9 +88,10 @@ class CellRunner(object):
             self.meta["celltype"] = "unknown"
         self.meta["format"] = ["time", "current", "voltage", "capacitance"]
 
-        self.plugins = plugins
-        for plugin in self.meta["plugins"]:
-            self.meta["format"].append(f"{plugin[0]}:{plugin[1]}")
+        self.plugin_objects = plugin_objects
+        if self.plugin_objects and self.meta["plugins"]:
+            for plugin in self.meta["plugins"]:
+                self.meta["format"].append(f"{plugin[0]}:{plugin[1]}")
 
         # Enforce a str channel
         self.meta["channel"] = str(self.meta["channel"])
@@ -570,9 +571,10 @@ class ProtocolStep(object):
         self.last_time = time.time()
         current, voltage = self.parent.source.read_iv()
         plugin_values = []
+        import pdb; pdb.set_trace()
         for enabled_plugin in self.parent.meta["plugins"]:
             plugin = None
-            for available_plugin in self.parent.plugins:
+            for available_plugin in self.parent.plugin_objects:
                 if available_plugin.name == enabled_plugin[0]:
                     plugin = available_plugin
                     break
