@@ -7,7 +7,7 @@ logger = logging.getLogger('cyckei')
 
 DEFAULT_CONFIG = {
     "name":  basename(__file__)[:-3],
-    "description": "Default Cyckei plugin to demonstrate functionality. Generates random numbers.",
+    "description": "Generates random numbers to demonstrate functionality.",
     "requirements": [],
     "sources": [
         {
@@ -22,6 +22,7 @@ DEFAULT_CONFIG = {
         }
     ],
 }
+
 
 class DataController(object):
     def __init__(self, path):
