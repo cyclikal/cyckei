@@ -1,12 +1,11 @@
 import serial
 import datetime
 import time
-import os.path
 import json
 import re
 import sys
 import logging
-from os.path import basename
+from os.path import basename, join
 
 logger = logging.getLogger('cyckei')
 
@@ -16,29 +15,41 @@ weight_conversion = {'g':1, 'mg':0.001, 'kg':1000., 'oz':0.0352739619, 'lb':0.00
 DEFAULT_CONFIG = {
     "name": basename(__file__)[:-3],
     "description": "Plugin to retrieve weight from Mettler Toledo scale.",
-    "requirements": {},
+    "requirements": ["pyserial"],
     "sources": [
         {
             "readable": "Balance 1",
-            "port": "COM3",
+            "port": "COM3"
         }
     ],
 }
 
 class DataController(object):
-    def __init__(self):
+    def __init__(self, path):
         self.name = DEFAULT_CONFIG["name"]
         logger.info("Initializing Mettler Toledo Scale Plugin...")
 
-        self.scale = MettlerLogger(PORT="COM5")
-        self.model = self.scale.get_balance_model()
-        self.serial = self.scale.get_balance_serial()
-        logger.info(f"Model: {self.model}, Serial: {self.serial}")
+        with open(join(path, "plugins",
+                       f"{self.name}.json")) as file:
+            self.config = json.load(file)
 
-    def read(self):
+        self.scales = {}
+        for scale in self.config["sources"]:
+            self.scales[scale["readable"]] = MettlerLogger(PORT=scale["port"])
+
+    def match_source_attributes(self, source):
+        for name, object in self.scales.items():
+            if name == source:
+                return object
+        logger.critical("Could not match plugin source.")
+
+    def read(self, source):
         logger.debug("Reading Weight from Scale...")
-        self.weight = scale.get_weight()
-        return self.weight
+        scale = self.match_source_attributes(source)
+        weight = scale.get_weight()[0]
+        if weight:
+            return weight
+        return 0
 
 class MettlerLogger(object):
     def __init__(self,

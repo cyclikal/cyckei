@@ -8,18 +8,18 @@ logger = logging.getLogger('cyckei')
 DEFAULT_CONFIG = {
     "name":  basename(__file__)[:-3],
     "description": "Default Cyckei plugin to demonstrate functionality. Generates random numbers.",
-    "requirements": {},
+    "requirements": [],
     "sources": [
         {
             "readable": "Randomizer I",
             "port": "1",
-            "range": [1, 10],
+            "range": [1, 10]
         },
         {
             "readable": "Randomizer II",
             "port": "2",
-            "range": [11, 20],
-        },
+            "range": [11, 20]
+        }
     ],
 }
 
