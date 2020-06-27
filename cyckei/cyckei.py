@@ -26,7 +26,7 @@ def main(args=None):
             args = parse_args()
         file_structure(args.dir, args.x)
         config = make_config(args)
-        config, plugins = load_plugins(config, args.x, args.launch)
+        config, plugins = load_plugins(config, args.x, args.launch, args.dir)
         start_logging(config)
         print("Done!\n")
         logger.debug(f"Using configuration: {config}")
@@ -135,7 +135,7 @@ def make_config(args):
     return config
 
 
-def load_plugins(config, overwrite, launch):
+def load_plugins(config, overwrite, launch, path):
     # create individual plugin configurations, if necessary
     print("Loading plugins:", end="")
     for plugin in config["data-plugins"]:
@@ -174,7 +174,7 @@ def load_plugins(config, overwrite, launch):
     # Cycle each plugin module up into its own object
     if launch == "server":
         for i, module in enumerate(plugins):
-            plugins[i] = module.DataController()
+            plugins[i] = module.DataController(path)
 
     return config, plugins
 
