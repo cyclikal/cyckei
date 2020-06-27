@@ -19,7 +19,7 @@ DEFAULT_CONFIG = {
     "sources": [
         {
             "readable": "Balance 1",
-            "port": "COM3"
+            "port": "COM5"
         }
     ],
 }
