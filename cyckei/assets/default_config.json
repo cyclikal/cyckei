@@ -21,7 +21,7 @@
     },
     "data-plugins": [
       "randomizer",
-      "mettler-scale"
+      "mettlerscale"
     ],
     "device": "keithley2602",
     "verbosity": 30
