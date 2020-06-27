@@ -90,8 +90,8 @@ class CellRunner(object):
 
         self.plugin_objects = plugin_objects
         if self.plugin_objects and self.meta["plugins"]:
-            for plugin in self.meta["plugins"]:
-                self.meta["format"].append(f"{plugin[0]}:{plugin[1]}")
+            for plugin, source in self.meta["plugins"].items():
+                self.meta["format"].append(f"{plugin}:{source}")
 
         # Enforce a str channel
         self.meta["channel"] = str(self.meta["channel"])

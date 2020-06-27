@@ -20,7 +20,7 @@
         "timeout": 10
     },
     "data-plugins": [
-      "randomizer",
+      "randomizer"
     ],
     "device": "keithley2602",
     "verbosity": 30
