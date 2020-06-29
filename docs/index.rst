@@ -5,6 +5,7 @@
 
   install
   usage
+  plugins
   contributing
   changes
   methods
