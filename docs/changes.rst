@@ -123,6 +123,11 @@ Release Candidates
 
 - 0.3rc1, 0/00/0000 -- TBD
 
+0.4 Skyler
+----------
+Adds plugin scheme.
+
+- 0.4.dev1, 6/29/2020 -- Implement Plugin System
 
 Possible Features
 ----------------
