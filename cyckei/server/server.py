@@ -43,7 +43,7 @@ def main(config):
     logger.debug("Socket bound successfully")
 
     # Initialize Device Plugins
-    logger.info(f"Loading device: {config['device']}")
+    logger.info("Loading device: %s", config['device'])
     try:
         if config['device'] == "keithley2602":
             from . import keithley2602 as device_module
@@ -56,7 +56,7 @@ def main(config):
         sys.exit()
 
     # Initialize Data Plugins
-    logger.info(f"Loading plugins: {config['data-plugins']}")
+    logger.info("Loading plugins: %s", config['data-plugins'])
     plugins = []
     for plugin in config["data-plugins"]:
         plugin_file = join(config["record_dir"], "plugins", f"{plugin}.py")

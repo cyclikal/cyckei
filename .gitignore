@@ -4,3 +4,5 @@ venv
 docs/_build
 *.egg-info
 dist
+.vscode
+build
