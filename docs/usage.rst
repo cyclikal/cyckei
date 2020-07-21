@@ -26,7 +26,7 @@ Various attributes of the cycle may be set in before starting a cycle:
 +----------------+------------+-------------------------------------------------------------------------+----------------------+
 | Cell ID        | text       | Identification for cell. Recorded to output file.                       | 0                    |
 +----------------+------------+-------------------------------------------------------------------------+----------------------+
-| Comment        | text       | Requester's comment for cycle. Recorded to output file.                 | "No Comment"         |
+| Comment        | text       | Requester's comment for cycle. Recorded to output file.                 | ""                   |
 +----------------+------------+-------------------------------------------------------------------------+----------------------+
 
 The available buttons can be used to Start, Stop, Pause, or Resume the

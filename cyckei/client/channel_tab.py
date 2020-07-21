@@ -92,7 +92,7 @@ class ChannelWidget(QWidget):
             "channel": channel,
             "path": "default.pyb",
             "cellid": 0,
-            "comment": "No Comment",
+            "comment": "",
             "package": "Pouch",
             "celltype": "Full",
             "requester": "Unspecified",
