@@ -86,7 +86,7 @@ class CellRunner(object):
             self.meta["cycler"] = "Keithley2602"
         if self.meta["celltype"] is None:
             self.meta["celltype"] = "unknown"
-        self.meta["format"] = ["time", "current", "voltage", "capacitance"]
+        self.meta["format"] = ["time", "current", "voltage", "capacity"]
 
         self.plugin_objects = plugin_objects
         if self.plugin_objects and self.meta["plugins"]:
