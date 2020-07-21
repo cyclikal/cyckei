@@ -94,7 +94,7 @@ class ChannelWidget(QWidget):
             "cellid": 0,
             "comment": "",
             "package": None,
-            "celltype": "Full",
+            "celltype": None,
             "requester": None,
             "plugins": {},
             "record_folder": config["record_dir"] + "/tests",
@@ -206,7 +206,7 @@ class ChannelWidget(QWidget):
             plugin_sources[-1].append(plugin["name"])
 
         for source in plugin_sources:
-            settings.append(gui.combo_box(*source, self.set))
+            settings.append(gui.combo_box(*source, self.set_plugin))
 
         # Zip Settings and layers together into elements
         elements = []
@@ -261,7 +261,11 @@ class ChannelWidget(QWidget):
 
     def set(self, key, text):
         """Sets object's script to one selected in dropdown"""
-        self.attributes["plugins"][key] = text
+        self.attributes[key] = text
+
+    def set_plugin(self, key, text):
+        """Sets object's script to one selected in dropdown"""
+        self.attributes["plugin"][key] = text
 
     def paintEvent(self, event):
         option = QStyleOption()
