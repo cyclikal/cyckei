@@ -127,14 +127,14 @@ class MettlerLogger(object):
         try:
             t = self.communicate("I2")
             return re.search(r'"(.+)"', t).groups()[0]
-        except:
+        except Exception:
             return None
 
     def get_balance_serial(self):
         try:
             t = self.communicate("I4")
             return re.search(r'"(.+)"', t).groups()[0]
-        except:
+        except Exception:
             return None
 
     def get_weight(self, command="SI"):
