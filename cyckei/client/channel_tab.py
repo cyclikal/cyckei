@@ -99,6 +99,7 @@ class ChannelWidget(QWidget):
             "plugins": {},
             "record_folder": config["record_dir"] + "/tests",
             "mass": None,
+            "protocol_name": None,
             "script_path": None,
             "script_content": None
         }
@@ -137,7 +138,7 @@ class ChannelWidget(QWidget):
             setting_box.addLayout(element)
 
         # Script
-        self.script_label = gui.label("Script: None", "Current script loaded")
+        self.script_label = gui.label("Script: None", "Current script")
         left.addWidget(self.script_label)
 
         # Status
@@ -179,7 +180,7 @@ class ChannelWidget(QWidget):
         # Script File Dialog
         labels.append("Script:")
         self.settings.append(gui.button("Open File", "Open Script file",
-                                   connect=self.set_script))
+                                        connect=self.set_script))
 
         # Line Edits
         labels.append("Log File:")
@@ -222,6 +223,8 @@ class ChannelWidget(QWidget):
             self,
             "Open Script",
             self.config["record_dir"] + "/scripts")
+
+        self.attributes["protocol_name"] = filename[0].split("/")[-1]
 
         if filename[0]:
             filepath = Path(filename[0]).resolve().absolute()
