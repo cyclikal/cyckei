@@ -6,7 +6,9 @@ from importlib.util import spec_from_file_location, module_from_spec
 import sys
 import shutil
 import logging
+from logging.handlers import RotatingFileHandler
 import json
+from datetime import datetime
 
 from cyckei.functions import func
 
@@ -86,6 +88,7 @@ def file_structure(path, overwrite):
 
     makedirs(path, exist_ok=True)
     makedirs(join(path, "tests"), exist_ok=True)
+    makedirs(join(path, "logs"), exist_ok=True)
     if not exists(join(path, "config.json")) or overwrite:
         shutil.copy(func.asset_path("default_config.json"),
                     join(path, "config.json"))
@@ -195,8 +198,11 @@ def start_logging(config):
 
     # Setting individual handlers and logging levels
     c_handler = logging.StreamHandler()
-    f_handler = logging.FileHandler(
-        join(config["record_dir"], f"{logger.name}.log"))
+    f_handler = RotatingFileHandler(
+        join(config["record_dir"], "logs",
+             f"{logger.name}-{datetime.now().strftime('%m-%d_%H-%M-%S')}.log"),
+        maxBytes=100000000,
+        backupCount=5)
 
     if config["verbose"]:
         c_handler.setLevel(logging.DEBUG)
