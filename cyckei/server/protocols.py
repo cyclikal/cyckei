@@ -329,19 +329,23 @@ class CellRunner(object):
             self.last_data = data
 
     def write_data(self, timestamp, current, voltage, capacity, plugin):
-        with open(self.fpath, 'a') as file:
-            try:
-                time = timestamp - self.start_time - self.total_pause_times
-            except AttributeError:
-                time = timestamp - self.start_time
-            data_format = "    " + ",".join(["{:0.8g}"] * 4)
-            writeout = data_format.format(time, current, voltage, capacity)
-            for value in plugin:
-                writeout += ",{:0.8g}".format(value[1])
-            writeout += "\n"
+        try:
+            with open(self.fpath, 'a') as file:
+                try:
+                    time = timestamp - self.start_time - self.total_pause_times
+                except AttributeError:
+                    time = timestamp - self.start_time
+                data_format = "    " + ",".join(["{:0.8g}"] * 4)
+                writeout = data_format.format(time, current, voltage, capacity)
+                for value in plugin:
+                    writeout += ",{:0.8g}".format(value[1])
+                writeout += "\n"
 
-            file.write(writeout)
-            logger.debug("Wrote data point to file.")
+                file.write(writeout)
+                logger.debug("Wrote data point to file.")
+        except PermissionError as e:
+            logger.critical(f"Permission Error, could not write data: {e}")
+            logger.critical(f"Saved data: {writeout}")
 
     def pause(self):
         """
