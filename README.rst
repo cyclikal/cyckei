@@ -17,7 +17,7 @@ The application uses a Python-like scripting format in order to write cycles tha
 
 Cyckei is open source, and we encourage users to modify the code to fit a given setup. Details on contributing to the project are in the Contributing of our `documentation`_.
 
-Cyckei is currently developed and maintained by Gabriel Ewig and Vincent Chevrier at Cyclikal, LLC. For more information about Cyclikal, visit `cyclikal.com`_.
+Cyckei is currently developed and maintained at Cyclikal, LLC. For more information about Cyclikal, visit `cyclikal.com`_.
 
 .. figure:: docs/_static/images/client-low.png
   Screen shot of Cyckei channel tab on Mac OS.
