@@ -128,6 +128,7 @@ Release Candidates
 Adds plugin scheme.
 
 - 0.4.dev1, 6/29/2020 -- Implement Plugin System
+- 0.4.dev2, 7/22/2020 -- Fix Metadata Values
 
 Possible Features
 ----------------
