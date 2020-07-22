@@ -90,7 +90,7 @@ class ChannelWidget(QWidget):
         # Default Values
         self.attributes = {
             "channel": channel,
-            "path": "default.pyb",
+            "path": "",
             "cellid": None,
             "comment": "",
             "package": None,
@@ -164,7 +164,7 @@ class ChannelWidget(QWidget):
     def get_settings(self):
         """Creates all UI settings and adds them to settings list"""
         labels = []
-        settings = []
+        self.settings = []
 
         # Cell channel label
         labels.append("")
@@ -173,12 +173,12 @@ class ChannelWidget(QWidget):
             "Channel {}".format(self.attributes["channel"]),
             "id_label"
         ]
-        settings.append(gui.label(*args))
-        settings[-1].setMinimumSize(25, 25)
+        self.settings.append(gui.label(*args))
+        self.settings[-1].setMinimumSize(25, 25)
 
         # Script File Dialog
         labels.append("Script:")
-        settings.append(gui.button("Open File", "Open Script file",
+        self.settings.append(gui.button("Open File", "Open Script file",
                                    connect=self.set_script))
 
         # Line Edits
@@ -192,7 +192,7 @@ class ChannelWidget(QWidget):
             ["Comment", "Unparsed Comment", "comment"],
         ]
         for line in editables:
-            settings.append(gui.line_edit(*line, self.set))
+            self.settings.append(gui.line_edit(*line, self.set))
 
         # Plugin Assignments
         plugin_sources = []
@@ -206,11 +206,11 @@ class ChannelWidget(QWidget):
             plugin_sources[-1].append(plugin["name"])
 
         for source in plugin_sources:
-            settings.append(gui.combo_box(*source, self.set_plugin))
+            self.settings.append(gui.combo_box(*source, self.set_plugin))
 
         # Zip Settings and layers together into elements
         elements = []
-        for label, setting in zip(labels, settings):
+        for label, setting in zip(labels, self.settings):
             elements.append(QVBoxLayout())
             elements[-1].addWidget(gui.label(f"<i><small>{label}</small></i>"))
             elements[-1].addWidget(setting)

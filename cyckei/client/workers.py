@@ -33,7 +33,7 @@ def prepare_json(channel, function, protocol, temp):
 
         os.makedirs(dir, exist_ok=True)
 
-    if channel.attributes["path"] == "default.pyb":
+    if channel.settings[2].text() == "":
         channel.attributes["path"] = datetime.now().strftime(
             '%m-%d_%H-%M-%S')
     packet["kwargs"]["meta"]["path"] \
