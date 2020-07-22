@@ -1,5 +1,4 @@
 import logging
-from random import randint
 from os.path import basename, join
 import json
 
@@ -8,7 +7,7 @@ logger = logging.getLogger('cyckei')
 DEFAULT_CONFIG = {
     "name":  basename(__file__)[:-3],
     "description": "Collects temperature",
-    "requirements": [],
+    "requirements": ["PicoSDK C Libraries"],
     "sources": [
         {
             "readable": "Thermocouple 1",
