@@ -91,14 +91,14 @@ class ChannelWidget(QWidget):
         self.attributes = {
             "channel": channel,
             "path": "default.pyb",
-            "cellid": 0,
+            "cellid": None,
             "comment": "",
             "package": None,
             "celltype": None,
             "requester": None,
             "plugins": {},
             "record_folder": config["record_dir"] + "/tests",
-            "mass": 1,
+            "mass": None,
             "script_path": None,
             "script_content": None
         }
@@ -265,7 +265,7 @@ class ChannelWidget(QWidget):
 
     def set_plugin(self, key, text):
         """Sets object's script to one selected in dropdown"""
-        self.attributes["plugin"][key] = text
+        self.attributes["plugins"][key] = text
 
     def paintEvent(self, event):
         option = QStyleOption()
