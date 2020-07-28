@@ -18,7 +18,7 @@ setup(
     url=var["url"],
 
     packages=["cyckei", "cyckei.server", "cyckei.client", "cyckei.explorer",
-              "cyckei.functions"],
+              "cyckei.functions", "cyckei.plugins"],
     include_package_data=True,
 
     classifiers=[

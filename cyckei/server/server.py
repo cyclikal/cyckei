@@ -116,6 +116,7 @@ def event_loop(config, socket, plugins, device_module):
         initial_time = time.time()
 
         while True:
+            import pdb; pdb.set_trace()
             current_time = '{0:02.0f}.{1:02.0f}'.format(
                 *divmod((time.time() - initial_time) * 60, 60)
             )
