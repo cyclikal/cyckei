@@ -35,7 +35,7 @@ class DataController(object):
             self.config = json.load(file)
 
         self.scales = {}
-        for scale in self.config["sources"]:
+        for scale in self.config["Sources"]:
             self.scales[scale["readable"]] = MettlerLogger(PORT=scale["port"])
 
     def match_source_attributes(self, source):

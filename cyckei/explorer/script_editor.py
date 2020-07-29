@@ -269,7 +269,7 @@ class Script(QListWidgetItem):
 class ScriptList(object):
     def __init__(self, config):
         self.script_list = []
-        self.default_scripts(config["record_dir"] + "/scripts")
+        self.default_scripts(config["Arguments"]["record_dir"] + "/scripts")
 
     def default_scripts(self, path):
         """Load scripts from scripts folder"""

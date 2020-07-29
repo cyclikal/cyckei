@@ -38,9 +38,9 @@ class ChannelTab(QWidget):
         rows.setSpacing(0)
 
         self.channels = []
-        for channel in config["channels"]:
+        for channel in config["Sources"]:
             self.channels.append(ChannelWidget(
-                channel["channel"],
+                channel,
                 config,
                 resource
             ))
@@ -97,7 +97,7 @@ class ChannelWidget(QWidget):
             "celltype": None,
             "requester": None,
             "plugins": {},
-            "record_folder": config["record_dir"] + "/tests",
+            "record_folder": config["Arguments"]["record_dir"] + "/tests",
             "mass": None,
             "protocol_name": None,
             "script_path": None,
@@ -106,8 +106,8 @@ class ChannelWidget(QWidget):
         self.config = config
 
         # Add default plugin values to attributes
-        for plugin in config["plugin_sources"]:
-            self.attributes["plugins"][plugin["name"]] = "None"
+        for plugin in config["Plugins"]:
+            self.attributes["plugins"][plugin] = "None"
 
         self.threadpool = resource["threadpool"]
         # self.scripts = resource["scripts"]
@@ -197,14 +197,15 @@ class ChannelWidget(QWidget):
 
         # Plugin Assignments
         plugin_sources = []
-        for plugin in self.config["plugin_sources"]:
-            labels.append(f"{plugin['name'].title()} Source:")
+        """
+        for plugin in self.config["Plugins"]:
+            labels.append(f"{plugin} Source:")
             plugin_sources.append([])
-            plugin_sources[-1].append([f"None"]
-                                      + plugin["sources"])
+            plugin_sources[-1].append(["None"] + plugin["sources"])
             plugin_sources[-1].append(
                 f"Set Measurement Source for '{plugin['name']}' Plugin.")
             plugin_sources[-1].append(plugin["name"])
+        """
 
         for source in plugin_sources:
             self.settings.append(gui.combo_box(*source, self.set_plugin))
@@ -222,7 +223,7 @@ class ChannelWidget(QWidget):
         filename = QFileDialog.getOpenFileName(
             self,
             "Open Script",
-            self.config["record_dir"] + "/scripts")
+            self.config["Arguments"]["record_dir"] + "/scripts")
 
         self.attributes["protocol_name"] = filename[0].split("/")[-1]
 

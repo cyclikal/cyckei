@@ -3,7 +3,6 @@
 import logging
 import time
 import traceback
-import sys
 from os.path import isfile, basename
 from collections import OrderedDict
 
@@ -11,6 +10,7 @@ import zmq
 from visa import VisaIOError
 
 from .protocols import STATUS, CellRunner
+from . import keithley2602 as device_module
 
 logger = logging.getLogger('cyckei')
 
@@ -25,34 +25,21 @@ def main(config, plugins):
         Result of app.exec_(), Qt's main event loop.
 
     """
-    logger.info(f"Initializing Cyckei Server {config['version']}")
+    logger.info(f"Initializing Cyckei Server {config['Versioning']['version']}")
 
     # Create Server's ZMQ Socket
     logger.debug("Binding socket")
     try:
         context = zmq.Context(1)
         socket = context.socket(zmq.REP)
-        socket.bind("{}:{}".format(config["zmq"]["server-address"],
-                                   config["zmq"]["port"]))
+        socket.bind("{}:{}".format(config["ZMQ"]["server-address"],
+                                   config["ZMQ"]["port"]))
 
     except zmq.error.ZMQError as error:
         logger.critical(
             "It appears the server is already running: {}".format(error))
         return
     logger.debug("Socket bound successfully")
-
-    # Initialize Device Plugins
-    logger.info(f"Loading device: {config['device']}")
-    try:
-        if config['device'] == "keithley2602":
-            from . import keithley2602 as device_module
-        elif config['device'] == "testresponder":
-            raise ImportError
-        else:
-            raise ImportError
-    except ImportError:
-        logger.critical("Could not find device configuration module. Exiting.")
-        sys.exit()
 
     # Start server event loop
     event_loop(config, socket, plugins, device_module)
@@ -76,9 +63,9 @@ def event_loop(config, socket, plugins, device_module):
         sources = []
 
         # Initialize sources
-        logger.info("Attemping {} channels.".format(len(config["channels"])))
-        for chd in config["channels"]:
-            gpib_addr = chd["gpib_address"]
+        logger.info("Attemping {} channels.".format(len(config["Sources"])))
+        for source in config["Sources"]:
+            gpib_addr = config["Sources"][source][0]
             keithley = None
             for k in keithleys:
                 if gpib_addr == k.gpib_addr:
@@ -89,8 +76,8 @@ def event_loop(config, socket, plugins, device_module):
                 except (ValueError, VisaIOError) as e:
                     logger.error("Could not establish connection: "
                                  "Channel {}, GPIB {}.".format(
-                                    chd["channel"],
-                                    chd["gpib_address"])
+                                    source,
+                                    config["Sources"][source][0])
                                  )
                     logger.error(e)
                     continue
@@ -107,7 +94,7 @@ def event_loop(config, socket, plugins, device_module):
 
         logger.info(
             "Socket bound to port {}. Entering main loop.".format(
-                config["zmq"]["port"])
+                config["ZMQ"]["port"])
         )
 
         time.sleep(2)
@@ -116,7 +103,6 @@ def event_loop(config, socket, plugins, device_module):
         initial_time = time.time()
 
         while True:
-            import pdb; pdb.set_trace()
             current_time = '{0:02.0f}.{1:02.0f}'.format(
                 *divmod((time.time() - initial_time) * 60, 60)
             )

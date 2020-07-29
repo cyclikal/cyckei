@@ -25,7 +25,7 @@ def main(config):
     """
 
     logger.info("Initializing Explorer version {}".format(
-        config["version"]))
+        config["Versioning"]["version"]))
 
     # Create QApplication
     logger.debug("Creating QApplication")

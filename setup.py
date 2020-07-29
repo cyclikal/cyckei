@@ -3,7 +3,7 @@ import json
 
 with open("README.rst", "r") as file:
     long_description = file.read()
-with open("cyckei/assets/variables.json", "r") as file:
+with open("cyckei/assets/variables.ini", "r") as file:
     var = json.load(file)
 
 setup(

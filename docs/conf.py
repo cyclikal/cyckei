@@ -12,21 +12,21 @@
 #
 import os
 import sys
-import json
+import configparser
 sys.path.insert(0, os.path.abspath(".."))
 
 
 # -- Project information -----------------------------------------------------
 
-with open("../cyckei/assets/variables.json") as file:
-    var = json.load(file)
+var = configparser.ConfigParser()
+var.read("../cyckei/assets/variables.ini")
 
-project = var["name"]
-copyright = var["copyright"]
-author = var["author"]
+project = var["Versioning"]["name"]
+copyright = var["Publishing"]["copyright"]
+author = var["Publishing"]["author"]
 
 # The full version, including alpha/beta/rc tags
-release = var["version"]
+release = var["Versioning"]["version"]
 
 
 # -- General configuration ---------------------------------------------------

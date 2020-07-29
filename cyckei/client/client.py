@@ -23,7 +23,7 @@ def main(config):
 
     """
 
-    logger.info(f"Initializing Cyckei Client {config['version']}")
+    logger.info(f"Initializing Cyckei Client {config['Versioning']['version']}")
 
     # Create QApplication
     logger.debug("Creating QApplication")
@@ -89,12 +89,12 @@ class MainWindow(QMainWindow):
         self.threadpool.start(worker)
 
     def plugin_info(self):
-        if self.config["plugin_sources"]:
+        if self.config["Plugins"]:
             text = "<h2>Plugins:</h2>"
         else:
             text = "<h2>No Loaded Plugins</h2>"
         info = ""
-        for plugin in self.config["plugin_sources"]:
+        for plugin in self.config["Plugins"]:
             info += f"<p><h3>{plugin['name']}</h3>"
             info += f"<i>{plugin['description']}</i><br>"
             info += f"Sources: {plugin['sources']}</p>"

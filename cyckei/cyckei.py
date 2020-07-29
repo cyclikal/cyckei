@@ -8,6 +8,7 @@ import shutil
 import logging
 from logging.handlers import RotatingFileHandler
 import json
+import configparser
 from datetime import datetime
 
 from cyckei.functions import func
@@ -28,7 +29,8 @@ def main(args=None):
             args = parse_args()
         file_structure(args.dir, args.x)
         config = make_config(args)
-        config, plugins = load_plugins(config, args.x, args.launch, args.dir)
+        # config, plugins = load_plugins(config, args.x, args.launch, args.dir)
+        plugins = []
         start_logging(config)
         print("Done!\n")
         logger.debug(f"Using configuration: {config}")
@@ -37,12 +39,12 @@ def main(args=None):
         print("Error occured before logging began.")
         raise Exception
 
-    logger.info(f"Launching {config['component']} with record "
-                f"directory '{config['record_dir']}'")
+    logger.info(f"Launching {config['Arguments']['component']} with record "
+                f"directory '{config['Arguments']['record_dir']}'")
 
     if args.launch == "server":
         from cyckei.server import server
-        server.main(config, plugins)
+        server.main(config, [plugins])
     elif args.launch == "client":
         from cyckei.client import client
         client.main(config)
@@ -56,9 +58,8 @@ def parse_args():
     Creates and parses command line arguments
 
     Returns:
-        Arguments.
+        ArgumentParser with filled arguments.
     """
-    default_path = join(expanduser("~"), "Cyckei")
 
     parser = argparse.ArgumentParser()
     parser.add_argument('launch', metavar="{server | client | explorer}",
@@ -68,10 +69,11 @@ def parse_args():
                         help='Toggle verbose console output.')
     parser.add_argument('-x', action="store_true",
                         help='Reset all configuration and plugins.')
-    parser.add_argument('--dir', metavar="[dir]", default=default_path,
-                        type=str, help='Recording directory.')
+    parser.add_argument('--dir', metavar="[dir]",
+                        default=join(expanduser("~"), "Cyckei"), type=str,
+                        help='Recording directory.')
     parser.add_argument('--log_level', metavar="[log_level]",
-                        default=30, type=int,
+                        default="30", type=int,
                         help='Set log file logging level.')
 
     return parser.parse_args()
@@ -89,9 +91,6 @@ def file_structure(path, overwrite):
     makedirs(path, exist_ok=True)
     makedirs(join(path, "tests"), exist_ok=True)
     makedirs(join(path, "logs"), exist_ok=True)
-    if not exists(join(path, "config.json")) or overwrite:
-        shutil.copy(func.asset_path("default_config.json"),
-                    join(path, "config.json"))
     if not exists(join(path, "scripts")):
         makedirs(join(path, "scripts"), exist_ok=True)
         files = listdir(func.asset_path("scripts"))
@@ -123,17 +122,17 @@ def make_config(args):
     Returns:
         Completed 'config' dictionary.
     """
+    # TODO: Setup rewrite of configuration
+    config = configparser.ConfigParser()
+    config.read(func.asset_path("variables.ini"))
+    config.read(func.asset_path("config.ini"))
+    config.read(join(args.dir, "config.ini"))
 
-    with open(join(args.dir, "config.json")) as file:
-        configuration = json.load(file)
-    with open(func.asset_path("variables.json")) as file:
-        variables = json.load(file)
-
-    config = {**configuration, **variables}
-    config["record_dir"] = args.dir
-    config["component"] = args.launch
-    config["verbose"] = args.v
-    config["log_level"] = args.log_level
+    config["Arguments"] = {}
+    config["Arguments"]["record_dir"] = args.dir
+    config["Arguments"]["component"] = args.launch
+    config["Arguments"]["verbose"] = str(args.v)
+    config["Arguments"]["log_level"] = str(args.log_level)
 
     return config
 
@@ -141,14 +140,15 @@ def make_config(args):
 def load_plugins(config, overwrite, launch, path):
     # create individual plugin configurations, if necessary
     print("Loading plugins:", end="")
-    for plugin in config["data-plugins"]:
+    for plugin in config["Plugins"]:
         print(f" {plugin},", end="")
     print("\b...", end="")
 
     plugins = []
     # Load plugin modules
-    for plugin in config["data-plugins"]:
-        plugin_file = join(config["record_dir"], "plugins", f"{plugin}.py")
+    for plugin in config["Plugins"]:
+        plugin_file = join(config["Arguments"]["record_dir"],
+                           "plugins", f"{plugin}.py")
         if isfile(plugin_file):
             spec = spec_from_file_location(f"plugin.{plugin}", plugin_file)
             plugin_module = module_from_spec(spec)
@@ -156,9 +156,9 @@ def load_plugins(config, overwrite, launch, path):
             plugins.append(plugin_module)
 
     # Rewrite individual configuration and load sources into config for client
-    config["plugin_sources"] = []
+    config["Plugins"] = []
     for plugin in plugins:
-        config_file = join(config["record_dir"], "plugins",
+        config_file = join(config["Arguments"]["record_dir"], "plugins",
                            f"{plugin.DEFAULT_CONFIG['name']}.json")
         if not exists(config_file) or overwrite:
             with open(config_file, "w") as file:
@@ -166,13 +166,13 @@ def load_plugins(config, overwrite, launch, path):
 
         with open(config_file) as file:
             plugin_config = json.load(file)
-        config["plugin_sources"].append({
+        config["Plugins"].append({
             "name": plugin_config["name"],
             "description": plugin_config["description"],
             "sources": []
         })
-        for source in plugin_config["sources"]:
-            config["plugin_sources"][-1]["sources"].append(source["readable"])
+        for source in plugin_config["Sources"]:
+            config["Plugins"][-1]["sources"].append(source["readable"])
 
     # Cycle each plugin module up into its own object
     if launch == "server":
@@ -199,16 +199,16 @@ def start_logging(config):
     # Setting individual handlers and logging levels
     c_handler = logging.StreamHandler()
     f_handler = RotatingFileHandler(
-        join(config["record_dir"], "logs",
+        join(config["Arguments"]["record_dir"], "logs",
              f"{logger.name}-{datetime.now().strftime('%m-%d_%H-%M-%S')}.log"),
         maxBytes=100000000,
         backupCount=5)
 
-    if config["verbose"]:
+    if config.getboolean("Arguments", "verbose"):
         c_handler.setLevel(logging.DEBUG)
     else:
         c_handler.setLevel(logging.INFO)
-    f_handler.setLevel(min(config["log_level"], config["verbosity"]))
+    f_handler.setLevel(config.getint("Arguments", "log_level"))
 
     print(f"C:{c_handler.level}, F:{f_handler.level}...", end="")
 

@@ -34,7 +34,7 @@ class DataController(object):
             self.config = json.load(file)
 
     def match_source_attributes(self, source):
-        for source_attribute in self.config["sources"]:
+        for source_attribute in self.config["Sources"]:
             if source_attribute["readable"] == source:
                 return source_attribute
         logger.critical("Could not match plugin source.")
