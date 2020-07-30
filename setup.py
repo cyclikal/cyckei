@@ -1,21 +1,21 @@
-from setuptools import setup
-import json
+import setuptools
+import configparser
 
 with open("README.rst", "r") as file:
     long_description = file.read()
-with open("cyckei/assets/variables.ini", "r") as file:
-    var = json.load(file)
+    var = configparser.ConfigParser()
+    var.read("cyckei/assets/variables.ini")
 
-setup(
-    name=var["name"],
-    version=var["version"],
-    author=var["author"],
-    author_email=var["email"],
-    description=var["description"],
+setuptools.setup(
+    name=var["Versioning"]["name"],
+    version=var["Versioning"]["version"],
+    author=var["Publishing"]["author"],
+    author_email=var["Publishing"]["email"],
+    description=var["Meta"]["description"],
     long_description=long_description,
     long_description_content_type="text/x-rst",
-    keywords=var["keywords"],
-    url=var["url"],
+    keywords=var["Meta"]["keywords"],
+    url=var["Meta"]["url"],
 
     packages=["cyckei", "cyckei.server", "cyckei.client", "cyckei.explorer",
               "cyckei.functions", "cyckei.plugins"],

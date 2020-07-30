@@ -4,6 +4,11 @@ logger = logging.getLogger("cyckei")
 
 
 class PluginController(object):
+    """
+    Parent class of plugin controller objects.
+    Creates default methods for interacting with plugin and handling sources.
+    """
+
     def __init__(self):
         """Setup logging and sources for plugin."""
 
@@ -34,23 +39,28 @@ class PluginController(object):
 
         raise NotImplementedError
 
-    def read(self, source):
-        return self.sources[source]
+    def read(self, source=None):
+        try:
+            return self.sources[source].read()
+        except (TypeError, KeyError) as e:
+            # Occurs when there is no source at that address
+            logger.error(f"Could not find plugin source: {e}")
 
 
 class SourceObject(object):
-    def __init__(self, port):
+    """
+    Parent class of plugin source object.
+    Controls communication with individual devices or channels.
+    """
+    def __init__(self):
         pass
-
-    def connect(self):
-        raise NotImplementedError
-
-    def ping(self):
-        raise NotImplementedError
 
     def read(self):
         raise NotImplementedError
 
 
-if __name__ == "__main__":
-    controller = PluginController()
+def read_all(controller):
+    values = []
+    for source in controller.sources:
+        values.append(f"{source}: {controller.read(source)}")
+    return values
