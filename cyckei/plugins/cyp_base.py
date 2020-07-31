@@ -46,6 +46,9 @@ class PluginController(object):
             # Occurs when there is no source at that address
             logger.error(f"Could not find plugin source: {e}")
 
+    def cleanup(self):
+        raise NotImplementedError
+
 
 class SourceObject(object):
     """
