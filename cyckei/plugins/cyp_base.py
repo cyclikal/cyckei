@@ -50,7 +50,7 @@ class PluginController(object):
             return self.sources[source].read()
         except (TypeError, KeyError) as e:
             # Occurs when there is no source at that address
-            logger.error(f"Could not find plugin source: {e}")
+            self.logger.error(f"Could not find plugin source: {e}")
 
     def cleanup(self):
         raise NotImplementedError
