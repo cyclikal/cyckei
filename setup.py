@@ -17,8 +17,7 @@ setuptools.setup(
     keywords=var["Meta"]["keywords"],
     url=var["Meta"]["url"],
 
-    packages=["cyckei", "cyckei.server", "cyckei.client", "cyckei.explorer",
-              "cyckei.functions", "cyckei.plugins"],
+    packages=setuptools.find_packages(),
     include_package_data=True,
 
     classifiers=[

@@ -56,7 +56,7 @@ class PluginController(object):
         raise NotImplementedError
 
 
-class SourceObject(object):
+class SourceHandler(object):
     """
     Parent class of plugin source object.
     Controls communication with individual devices or channels.
@@ -69,7 +69,7 @@ class SourceObject(object):
 
 
 def read_all(controller):
-    values = []
-    for source in controller.sources:
-        values.append(f"{source}: {controller.read(source)}")
+    values = {}
+    for name in controller.sources:
+        values[name] = controller.read(name)
     return values
