@@ -23,7 +23,7 @@ def main(config):
 
     """
 
-    logger.info(f"Initializing Cyckei Client {config['Versioning']['version']}")
+    logger.info(f"Initializing Cyckei Client {config['versioning']['version']}")
 
     # Create QApplication
     logger.debug("Creating QApplication")

@@ -21,12 +21,12 @@ sys.path.insert(0, os.path.abspath(".."))
 var = configparser.ConfigParser()
 var.read("../cyckei/assets/variables.ini")
 
-project = var["Versioning"]["name"]
-copyright = var["Publishing"]["copyright"]
-author = var["Publishing"]["author"]
+project = var["versioning"]["name"]
+copyright = var["publishing"]["copyright"]
+author = var["publishing"]["author"]
 
 # The full version, including alpha/beta/rc tags
-release = var["Versioning"]["version"]
+release = var["versioning"]["version"]
 
 
 # -- General configuration ---------------------------------------------------

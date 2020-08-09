@@ -1,8 +1,13 @@
 from os.path import join, dirname
+import os.path
 
 
 def asset_path(path):
-    return join(dirname(__file__), "..", "assets", path)
+    asset = join(dirname(__file__), "..", "assets", path)
+    if os.path.exists(asset):
+        return asset
+    else:
+        raise FileNotFoundError(f"could not find asset {asset}")
 
 
 def not_none(value):

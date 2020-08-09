@@ -25,15 +25,15 @@ def main(config, plugins):
         Result of app.exec_(), Qt's main event loop.
 
     """
-    logger.info(f"Initializing Cyckei Server {config['Versioning']['version']}")
+    logger.info(f"Initializing Cyckei Server {config['versioning']['version']}")
 
     # Create Server's ZMQ Socket
     logger.debug("Binding socket")
     try:
         context = zmq.Context(1)
         socket = context.socket(zmq.REP)
-        socket.bind("{}:{}".format(config["ZMQ"]["server-address"],
-                                   config["ZMQ"]["port"]))
+        socket.bind("{}:{}".format(config["zmq"]["server-address"],
+                                   config["zmq"]["port"]))
 
     except zmq.error.ZMQError as error:
         logger.critical(
@@ -63,9 +63,9 @@ def event_loop(config, socket, plugins, device_module):
         sources = []
 
         # Initialize sources
-        logger.info("Attemping {} channels.".format(len(config["Sources"])))
-        for source in config["Sources"]:
-            gpib_addr = config["Sources"][source][0]
+        logger.info("Attemping {} channels.".format(len(config["channels"])))
+        for source in config["channels"]:
+            gpib_addr = source["gpib_address"]
             keithley = None
             for k in keithleys:
                 if gpib_addr == k.gpib_addr:
@@ -77,15 +77,15 @@ def event_loop(config, socket, plugins, device_module):
                     logger.error("Could not establish connection: "
                                  "Channel {}, GPIB {}.".format(
                                     source,
-                                    config["Sources"][source][0])
+                                    config["channels"][source][0])
                                  )
                     logger.error(e)
                     continue
 
                 keithleys.append(keithley)
-            source = keithley.get_source(chd["keithley_channel"],
-                                         channel=chd["channel"])
-            sources.append(source)
+            source_object = keithley.get_source(source["keithley_channel"],
+                                                channel=source["channel"])
+            sources.append(source_object)
 
         logger.info("Connected {} channels.".format(len(sources)))
 
@@ -94,7 +94,7 @@ def event_loop(config, socket, plugins, device_module):
 
         logger.info(
             "Socket bound to port {}. Entering main loop.".format(
-                config["ZMQ"]["port"])
+                config["zmq"]["port"])
         )
 
         time.sleep(2)

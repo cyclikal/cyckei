@@ -7,15 +7,15 @@ with open("README.rst", "r") as file:
     var.read("cyckei/assets/variables.ini")
 
 setuptools.setup(
-    name=var["Versioning"]["name"],
-    version=var["Versioning"]["version"],
-    author=var["Publishing"]["author"],
-    author_email=var["Publishing"]["email"],
-    description=var["Meta"]["description"],
+    name=var["versioning"]["name"],
+    version=var["versioning"]["version"],
+    author=var["publishing"]["author"],
+    author_email=var["publishing"]["email"],
+    description=var["meta"]["description"],
     long_description=long_description,
     long_description_content_type="text/x-rst",
-    keywords=var["Meta"]["keywords"],
-    url=var["Meta"]["url"],
+    keywords=var["meta"]["keywords"],
+    url=var["meta"]["url"],
 
     packages=setuptools.find_packages(),
     include_package_data=True,

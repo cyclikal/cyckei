@@ -1,0 +1,33 @@
+{
+  "channels": [
+    {
+      "channel": 1,
+      "gpib_address": 1,
+      "keithley_channel": "a",
+      "model": "2602A"
+    },
+    {
+      "channel": 2,
+      "gpib_address": 1,
+      "keithley_channel": "b",
+      "model": "2602A"
+    },
+    {
+      "channel": 3,
+      "gpib_address": 2,
+      "keithley_channel": "a",
+      "model": "2602B"
+    },
+    {
+      "channel": 4,
+      "gpib_address": 2,
+      "keithley_channel": "b",
+      "model": "2602B"
+    }
+  ],
+  "plugins": {
+    "randomizer": true,
+    "pico-tc08": true,
+    "mettler-ag24": true
+  }
+}

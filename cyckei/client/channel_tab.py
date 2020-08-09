@@ -38,7 +38,7 @@ class ChannelTab(QWidget):
         rows.setSpacing(0)
 
         self.channels = []
-        for channel in config["Sources"]:
+        for channel in config["channels"]:
             self.channels.append(ChannelWidget(
                 channel,
                 config,
