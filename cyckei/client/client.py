@@ -89,12 +89,12 @@ class MainWindow(QMainWindow):
         self.threadpool.start(worker)
 
     def plugin_info(self):
-        if self.config["Plugins"]:
+        if self.config["plugins"]:
             text = "<h2>Plugins:</h2>"
         else:
             text = "<h2>No Loaded Plugins</h2>"
         info = ""
-        for plugin in self.config["Plugins"]:
+        for plugin in self.config["plugins"]:
             info += f"<p><h3>{plugin['name']}</h3>"
             info += f"<i>{plugin['description']}</i><br>"
             info += f"Sources: {plugin['sources']}</p>"

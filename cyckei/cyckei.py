@@ -157,8 +157,6 @@ def make_config(args):
         sys.exit()
 
     config = {**config, **json_config}
-    print(config)
-
     config["Arguments"] = {}
     config["Arguments"]["record_dir"] = args.dir
     config["Arguments"]["component"] = args.launch
@@ -171,13 +169,13 @@ def make_config(args):
 def load_plugins(config, overwrite, launch, path):
     # create individual plugin configurations, if necessary
     print("Loading plugins:", end="")
-    for plugin in config["Plugins"]:
+    for plugin in config["plugins"]:
         print(f" {plugin},", end="")
     print("\b...", end="")
 
     plugins = []
     # Load plugin modules
-    for plugin in config["Plugins"]:
+    for plugin in config["plugins"]:
         plugin_file = os.path.join(config["Arguments"]["record_dir"],
                                    "plugins", f"{plugin}.py")
         if os.path.isfile(plugin_file):
@@ -187,7 +185,7 @@ def load_plugins(config, overwrite, launch, path):
             plugins.append(plugin_module)
 
     # Rewrite individual configuration and load sources into config for client
-    config["Plugins"] = []
+    config["plugins"] = []
     for plugin in plugins:
         config_file = os.path.join(
             config["Arguments"]["record_dir"], "plugins",
@@ -198,13 +196,13 @@ def load_plugins(config, overwrite, launch, path):
 
         with open(config_file) as file:
             plugin_config = json.load(file)
-        config["Plugins"].append({
+        config["plugins"].append({
             "name": plugin_config["name"],
             "description": plugin_config["description"],
             "sources": []
         })
         for source in plugin_config["channels"]:
-            config["Plugins"][-1]["sources"].append(source["readable"])
+            config["plugins"][-1]["sources"].append(source["readable"])
 
     # Cycle each plugin module up into its own object
     if launch == "server":

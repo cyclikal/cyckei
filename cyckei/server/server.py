@@ -33,7 +33,7 @@ def main(config, plugins):
         context = zmq.Context(1)
         socket = context.socket(zmq.REP)
         socket.bind("{}:{}".format(config["zmq"]["server-address"],
-                                   config["zmq"]["port"]))
+                                   int(config["zmq"]["port"])))
 
     except zmq.error.ZMQError as error:
         logger.critical(
@@ -94,7 +94,7 @@ def event_loop(config, socket, plugins, device_module):
 
         logger.info(
             "Socket bound to port {}. Entering main loop.".format(
-                config["zmq"]["port"])
+                int(config["zmq"]["port"]))
         )
 
         time.sleep(2)

@@ -40,7 +40,7 @@ class ChannelTab(QWidget):
         self.channels = []
         for channel in config["channels"]:
             self.channels.append(ChannelWidget(
-                channel,
+                channel["channel"],
                 config,
                 resource
             ))
@@ -106,7 +106,7 @@ class ChannelWidget(QWidget):
         self.config = config
 
         # Add default plugin values to attributes
-        for plugin in config["Plugins"]:
+        for plugin in config["plugins"]:
             self.attributes["plugins"][plugin] = "None"
 
         self.threadpool = resource["threadpool"]
@@ -198,7 +198,7 @@ class ChannelWidget(QWidget):
         # Plugin Assignments
         plugin_sources = []
         """
-        for plugin in self.config["Plugins"]:
+        for plugin in self.config["plugins"]:
             labels.append(f"{plugin} Source:")
             plugin_sources.append([])
             plugin_sources[-1].append(["None"] + plugin["sources"])

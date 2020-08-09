@@ -13,7 +13,7 @@ class Socket(object):
         self.socket = zmq.Context().socket(zmq.REQ)
         self.socket.connect("{}:{}".format(
             config["zmq"]["client-address"],
-            config["zmq"]["port"]))
+            int(config["zmq"]["port"])))
         self.socket.setsockopt(zmq.LINGER, 0)
 
     def send(self, to_send):
@@ -23,7 +23,7 @@ class Socket(object):
         self.socket.send_json(to_send)
         poller = zmq.Poller()
         poller.register(self.socket, zmq.POLLIN)
-        if poller.poll(self.config["zmq"]["timeout"]*1000):
+        if poller.poll(int(self.config["zmq"]["timeout"])*1000):
             response = self.socket.recv_json()
         else:
             response = (
