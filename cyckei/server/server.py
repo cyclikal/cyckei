@@ -25,7 +25,8 @@ def main(config, plugins):
         Result of app.exec_(), Qt's main event loop.
 
     """
-    logger.info(f"Initializing Cyckei Server {config['versioning']['version']}")
+    logger.info(
+        f"Initializing Cyckei Server {config['versioning']['version']}")
 
     # Create Server's ZMQ Socket
     logger.debug("Binding socket")

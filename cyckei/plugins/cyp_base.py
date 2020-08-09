@@ -3,7 +3,7 @@ import os.path
 import configparser
 
 
-class PluginController(object):
+class BaseController(object):
     """
     Parent class of plugin controller objects.
     Creates default methods for interacting with plugin and handling sources.
@@ -102,7 +102,7 @@ class PluginController(object):
         raise NotImplementedError
 
 
-class SourceHandler(object):
+class BaseSource(object):
     """
     Parent class of plugin source object.
     Controls communication with individual devices or channels.

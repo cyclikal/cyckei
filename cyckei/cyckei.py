@@ -2,7 +2,7 @@
 import argparse
 from os import makedirs, listdir
 import os.path
-from importlib.util import spec_from_file_location, module_from_spec
+import importlib
 import sys
 import traceback
 import shutil
@@ -31,9 +31,8 @@ def main(args=None):
             args.dir = os.path.join(os.path.expanduser("~"), "Cyckei")
         file_structure(args.dir, args.x)
         config = make_config(args)
-        # config, plugins = load_plugins(config, args.x, args.launch, args.dir)
-        plugins = []
         start_logging(config)
+        plugins = load_plugins(config)
         print("Done!\n")
         logger.debug(f"Using configuration: {config}")
 
@@ -43,8 +42,8 @@ def main(args=None):
         traceback.print_exc()
         sys.exit()
 
-    logger.info(f"Launching {config['Arguments']['component']} with record "
-                f"directory '{config['Arguments']['record_dir']}'")
+    logger.info(f"Launching {config['arguments']['component']} with record "
+                f"directory '{config['arguments']['record_dir']}'")
 
     if args.launch == "server":
         from cyckei.server import server
@@ -106,15 +105,6 @@ def file_structure(path, overwrite):
                 shutil.copy(script, os.path.join(path, "scripts"))
     if not os.path.exists(os.path.join(path, "plugins")) or overwrite:
         makedirs(os.path.join(path, "plugins"), exist_ok=True)
-        configs = []
-        for file in listdir(os.path.join(path, "plugins")):
-            if file.endswith(".json"):
-                configs.append(file)
-        files = listdir(func.asset_path("plugins"))
-        for plugin in files:
-            plugin = os.path.join(func.asset_path("plugins"), plugin)
-            if os.path.isfile(plugin):
-                shutil.copy(plugin, os.path.join(path, "plugins"))
 
 
 def make_config(args):
@@ -157,59 +147,30 @@ def make_config(args):
         sys.exit()
 
     config = {**config, **json_config}
-    config["Arguments"] = {}
-    config["Arguments"]["record_dir"] = args.dir
-    config["Arguments"]["component"] = args.launch
-    config["Arguments"]["verbose"] = args.v
-    config["Arguments"]["log_level"] = args.log_level
+    config["arguments"] = {}
+    config["arguments"]["record_dir"] = args.dir
+    config["arguments"]["component"] = args.launch
+    config["arguments"]["verbose"] = args.v
+    config["arguments"]["log_level"] = args.log_level
 
     return config
 
 
-def load_plugins(config, overwrite, launch, path):
+def load_plugins(config):
     # create individual plugin configurations, if necessary
-    print("Loading plugins:", end="")
-    for plugin in config["plugins"]:
-        print(f" {plugin},", end="")
-    print("\b...", end="")
+    logger.info("Loading plugins...")
 
     plugins = []
     # Load plugin modules
     for plugin in config["plugins"]:
-        plugin_file = os.path.join(config["Arguments"]["record_dir"],
-                                   "plugins", f"{plugin}.py")
-        if os.path.isfile(plugin_file):
-            spec = spec_from_file_location(f"plugin.{plugin}", plugin_file)
-            plugin_module = module_from_spec(spec)
-            spec.loader.exec_module(plugin_module)
-            plugins.append(plugin_module)
+        try:
+            logger.debug(f"attempting to load {plugin['name']}")
+            module = importlib.import_module(plugin["name"])
+            plugins.append(module.PluginController(plugin["sources"]))
+        except ModuleNotFoundError as error:
+            logger.warning(f"Could not load plugin {plugin['name']}: {error}")
 
-    # Rewrite individual configuration and load sources into config for client
-    config["plugins"] = []
-    for plugin in plugins:
-        config_file = os.path.join(
-            config["Arguments"]["record_dir"], "plugins",
-            f"{plugin.DEFAULT_CONFIG['name']}.json")
-        if not os.path.exists(config_file) or overwrite:
-            with open(config_file, "w") as file:
-                json.dump(plugin.DEFAULT_CONFIG, file)
-
-        with open(config_file) as file:
-            plugin_config = json.load(file)
-        config["plugins"].append({
-            "name": plugin_config["name"],
-            "description": plugin_config["description"],
-            "sources": []
-        })
-        for source in plugin_config["channels"]:
-            config["plugins"][-1]["sources"].append(source["readable"])
-
-    # Cycle each plugin module up into its own object
-    if launch == "server":
-        for i, module in enumerate(plugins):
-            plugins[i] = module.DataController(path)
-
-    return config, plugins
+    return plugins
 
 
 def start_logging(config):
@@ -230,16 +191,16 @@ def start_logging(config):
     date_format = datetime.now().strftime('%m-%d_%H-%M-%S')
     c_handler = logging.StreamHandler()
     f_handler = RotatingFileHandler(
-        os.path.join(config["Arguments"]["record_dir"], "logs",
+        os.path.join(config["arguments"]["record_dir"], "logs",
                      f"{logger.name}-{date_format}.log"),
         maxBytes=100000000,
         backupCount=5)
 
-    if config["Arguments"]["verbose"]:
+    if config["arguments"]["verbose"]:
         c_handler.setLevel(logging.DEBUG)
     else:
         c_handler.setLevel(logging.INFO)
-    f_handler.setLevel(config["Arguments"]["log_level"])
+    f_handler.setLevel(config["arguments"]["log_level"])
 
     print(f"C:{c_handler.level}, F:{f_handler.level}...", end="")
 

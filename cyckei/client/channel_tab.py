@@ -97,7 +97,7 @@ class ChannelWidget(QWidget):
             "celltype": None,
             "requester": None,
             "plugins": {},
-            "record_folder": config["Arguments"]["record_dir"] + "/tests",
+            "record_folder": config["arguments"]["record_dir"] + "/tests",
             "mass": None,
             "protocol_name": None,
             "script_path": None,
@@ -223,7 +223,7 @@ class ChannelWidget(QWidget):
         filename = QFileDialog.getOpenFileName(
             self,
             "Open Script",
-            self.config["Arguments"]["record_dir"] + "/scripts")
+            self.config["arguments"]["record_dir"] + "/scripts")
 
         self.attributes["protocol_name"] = filename[0].split("/")[-1]
 

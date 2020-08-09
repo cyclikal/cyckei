@@ -1,4 +1,5 @@
 {
+  "channel_readme": "List of keithley channels to connect.",
   "channels": [
     {
       "channel": 1,
@@ -25,9 +26,91 @@
       "model": "2602B"
     }
   ],
-  "plugins": {
-    "randomizer": true,
-    "pico-tc08": true,
-    "mettler-ag24": true
-  }
+  "plugins_readme": "List of plugins to connect, each declaring sources.",
+  "plugins": [
+    {
+      "name": "randomizer",
+      "enabled": true,
+      "description": "Generates random numbers, as an example.",
+      "sources": [
+        {
+          "readable": "Randomizer 1",
+          "port": null,
+          "meta": [1, 10]
+        },
+        {
+          "readable": "Randomizer 2",
+          "port": null,
+          "meta": [11, 20]
+        }
+      ]
+    },
+    {
+      "name": "mettler_ag204",
+      "enabled": true,
+      "description": "Gets weight data from Mettler-Toledo AG204 scale.",
+      "sources": [
+        {
+          "readable": "Scale 1",
+          "port": "COM3",
+          "meta": null
+        }
+      ]
+    },
+    {
+      "name": "pico_tc08",
+      "enabled": true,
+      "description": "Gets temperature data from Pico-TC08 thermocouples.",
+      "sources": [
+        {
+          "readable": "Temp 1",
+          "port": 1,
+          "channel": 1,
+          "meta": "K"
+        },
+        {
+          "readable": "Temp 2",
+          "port": 1,
+          "channel": 2,
+          "meta": "K"
+        },
+        {
+          "readable": "Temp 3",
+          "port": 1,
+          "channel": 3,
+          "meta": "K"
+        },
+        {
+          "readable": "Temp 4",
+          "port": 1,
+          "channel": 4,
+          "meta": "K"
+        },
+        {
+          "readable": "Temp 5",
+          "port": 1,
+          "channel": 5,
+          "meta": "K"
+        },
+        {
+          "readable": "Temp 6",
+          "port": 1,
+          "channel": 6,
+          "meta": "K"
+        },
+        {
+          "readable": "Temp 7",
+          "port": 1,
+          "channel": 7,
+          "meta": "K"
+        },
+        {
+          "readable": "Temp 8",
+          "port": 1,
+          "channel": 8,
+          "meta": "K"
+        }
+      ]
+    }
+  ]
 }
