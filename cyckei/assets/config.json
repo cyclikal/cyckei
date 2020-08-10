@@ -31,7 +31,6 @@
     {
       "name": "randomizer",
       "enabled": true,
-      "description": "Generates random numbers, as an example.",
       "sources": [
         {
           "port": null,
@@ -46,7 +45,6 @@
     {
       "name": "mettler_ag204",
       "enabled": true,
-      "description": "Gets weight data from Mettler-Toledo AG204 scale.",
       "sources": [
         {
           "port": "COM3",
