@@ -15,7 +15,7 @@ from . import keithley2602 as device_module
 logger = logging.getLogger('cyckei')
 
 
-def main(config, plugins):
+def main(config, plugins, plugin_names):
     """
     Begins execution of Cyckei Server.
 
@@ -43,7 +43,7 @@ def main(config, plugins):
     logger.debug("Socket bound successfully")
 
     # Start server event loop
-    event_loop(config, socket, plugins, device_module)
+    event_loop(config, socket, plugins, plugin_names, device_module)
 
 
 # def handler(exception_type, value, tb):
@@ -54,7 +54,7 @@ def main(config, plugins):
 #     print(text)
 
 
-def event_loop(config, socket, plugins, device_module):
+def event_loop(config, socket, plugins, plugin_names, device_module):
     try:
         """Main start method and loop for server application"""
         logger.debug("Starting server event loop")
@@ -65,8 +65,8 @@ def event_loop(config, socket, plugins, device_module):
 
         # Initialize sources
         logger.info("Attemping {} channels.".format(len(config["channels"])))
-        for source in config["channels"]:
-            gpib_addr = source["gpib_address"]
+        for channel in config["channels"]:
+            gpib_addr = channel["gpib_address"]
             keithley = None
             for k in keithleys:
                 if gpib_addr == k.gpib_addr:
@@ -77,15 +77,16 @@ def event_loop(config, socket, plugins, device_module):
                 except (ValueError, VisaIOError) as e:
                     logger.error("Could not establish connection: "
                                  "Channel {}, GPIB {}.".format(
-                                    source,
-                                    config["channels"][source][0])
+                                        channel["channel"],
+                                        channel["gpib_address"]
+                                    )
                                  )
                     logger.error(e)
                     continue
 
                 keithleys.append(keithley)
-            source_object = keithley.get_source(source["keithley_channel"],
-                                                channel=source["channel"])
+            source_object = keithley.get_source(channel["keithley_channel"],
+                                                channel=channel["channel"])
             sources.append(source_object)
 
         logger.info("Connected {} channels.".format(len(sources)))
@@ -113,7 +114,8 @@ def event_loop(config, socket, plugins, device_module):
             # but it might not be necessary
             # main loop without problem
             # logger.debug("Processing socket messages")
-            process_socket(socket, runners, sources, current_time, plugins)
+            process_socket(socket, runners, sources, current_time,
+                           plugins, plugin_names)
 
             # execute runners or sleep if none
             if runners:
@@ -164,7 +166,8 @@ def event_loop(config, socket, plugins, device_module):
         logger.exception(e)
 
 
-def process_socket(socket, runners, sources, server_time, plugins):
+def process_socket(socket, runners, sources, server_time,
+                   plugins, plugin_names):
     """
 
     Parameters
@@ -233,6 +236,17 @@ def process_socket(socket, runners, sources, server_time, plugins):
                     ).split(":")[-1]
                     resp = "True: server is running on port {}".format(port)
                     logger.debug("Sending response: {}".format(resp))
+
+                elif fun == "info_plugins":
+                    plugin_info = []
+                    for plugin in plugins:
+                        info = {
+                            "name": plugin.name,
+                            "description": plugin.description,
+                            "sources": plugin.names
+                        }
+                        plugin_info.append(info)
+                    resp = plugin_info
 
                 elif fun == "info_channel":
                     resp = info_channel(kwargs["channel"], runners, sources)

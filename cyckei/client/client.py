@@ -8,6 +8,7 @@ from PySide2.QtCore import QThreadPool
 from .channel_tab import ChannelTab
 from . import workers
 from cyckei.functions import gui
+from .socket import Socket
 
 logger = logging.getLogger('cyckei')
 
@@ -23,7 +24,7 @@ def main(config):
 
     """
 
-    logger.info(f"Initializing Cyckei Client {config['versioning']['version']}")
+    logger.info(f"Starting Cyckei Client {config['versioning']['version']}")
 
     # Create QApplication
     logger.debug("Creating QApplication")
@@ -31,7 +32,7 @@ def main(config):
     gui.style(app, "icon-client.png", gui.orange)
 
     # Create Client
-    logger.debug("Creating Initial Client")
+    logger.debug("Creating initial xlient window")
     main_window = MainWindow(config)
     main_window.show()
 
@@ -59,12 +60,19 @@ class MainWindow(QMainWindow):
         # # Load scripts
         # resource["scripts"] = ScriptList(config)
 
+        # Obtain plugin information
+        logger.info("Connecting to server for plugin information")
+        self.plugin_info = Socket(config).info_plugins()
+        if type(self.plugin_info) is not list:
+            logger.error("Could not get any plugin info from server.")
+            raise Exception("Incorrect server response")
+
         # Create menu and status bar
         self.create_menu()
         self.status_bar = self.statusBar()
 
         # Create ChannelTab
-        self.channelView = ChannelTab(config, resource, self)
+        self.channelView = ChannelTab(config, resource, self, self.plugin_info)
         self.channels = self.channelView.channels
         self.setCentralWidget(self.channelView)
 
@@ -74,8 +82,8 @@ class MainWindow(QMainWindow):
         entries = {
             "Info": [
                 ["&Server", self.ping_server, "Test Connection to Server"],
-                ["&Plugins", self.plugin_info, "Check Loaded Plugins"]
-            ],
+                ["&Plugins", self.plugin_dialog, "Check Loaded Plugins"]
+            ]
         }
 
         for key, items in entries.items():
@@ -88,13 +96,13 @@ class MainWindow(QMainWindow):
         worker.signals.alert.connect(gui.message)
         self.threadpool.start(worker)
 
-    def plugin_info(self):
+    def plugin_dialog(self):
         if self.config["plugins"]:
             text = "<h2>Plugins:</h2>"
         else:
             text = "<h2>No Loaded Plugins</h2>"
         info = ""
-        for plugin in self.config["plugins"]:
+        for plugin in self.plugin_info:
             info += f"<p><h3>{plugin['name']}</h3>"
             info += f"<i>{plugin['description']}</i><br>"
             info += f"Sources: {plugin['sources']}</p>"

@@ -43,6 +43,12 @@ class Socket(object):
         response = self.send(script)["response"]
         return response
 
+    def info_plugins(self):
+        """Send "info_plugins" to server"""
+        script = json.loads('{"function": "info_plugins"}')
+        response = self.send(script)["response"]
+        return response
+
     def info_channel(self, channel):
         """Send "info_channel" to server"""
         script = json.loads(

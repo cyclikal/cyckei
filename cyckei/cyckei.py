@@ -32,9 +32,7 @@ def main(args=None):
         file_structure(args.dir, args.x)
         config = make_config(args)
         start_logging(config)
-        plugins = load_plugins(config)
         print("Done!\n")
-        logger.debug(f"Using configuration: {config}")
 
     except Exception as error:
         print("error occured before logging began")
@@ -47,7 +45,8 @@ def main(args=None):
 
     if args.launch == "server":
         from cyckei.server import server
-        server.main(config, [plugins])
+        plugins, plugin_names = load_plugins(config)
+        server.main(config, plugins, plugin_names)
     elif args.launch == "client":
         from cyckei.client import client
         client.main(config)
@@ -161,16 +160,20 @@ def load_plugins(config):
     logger.info("Loading plugins...")
 
     plugins = []
+    plugin_names = {}
     # Load plugin modules
     for plugin in config["plugins"]:
         try:
-            logger.debug(f"attempting to load {plugin['name']}")
-            module = importlib.import_module(plugin["name"])
+            logger.debug(f"Attempting to load {plugin['name']}")
+            module = importlib.import_module(
+                f"{plugin['name']}.{plugin['name']}")
             plugins.append(module.PluginController(plugin["sources"]))
+            plugin_names[plugins[-1].name] = (plugins[-1].names)
+            logger.info(f"Loaded {plugin['name']} plugin")
         except ModuleNotFoundError as error:
             logger.warning(f"Could not load plugin {plugin['name']}: {error}")
 
-    return plugins
+    return plugins, plugin_names
 
 
 def start_logging(config):

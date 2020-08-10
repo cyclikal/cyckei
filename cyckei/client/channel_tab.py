@@ -20,7 +20,7 @@ logger = logging.getLogger('cyckei')
 
 
 class ChannelTab(QWidget):
-    def __init__(self, config, resource, parent):
+    def __init__(self, config, resource, parent, plugin_info):
         """Setup each channel widget and place in QVBoxlayout"""
         QWidget.__init__(self, parent)
         self.config = config
@@ -42,7 +42,8 @@ class ChannelTab(QWidget):
             self.channels.append(ChannelWidget(
                 channel["channel"],
                 config,
-                resource
+                resource,
+                plugin_info
             ))
             rows.addWidget(self.channels[-1])
         self.alternate_colors()
@@ -85,7 +86,7 @@ class ChannelTab(QWidget):
 class ChannelWidget(QWidget):
     """Controls and stores information for a given channel"""
 
-    def __init__(self, channel, config, resource):
+    def __init__(self, channel, config, resource, plugin_info):
         super(ChannelWidget, self).__init__()
         # Default Values
         self.attributes = {
@@ -104,10 +105,6 @@ class ChannelWidget(QWidget):
             "script_content": None
         }
         self.config = config
-
-        # Add default plugin values to attributes
-        for plugin in config["plugins"]:
-            self.attributes["plugins"][plugin] = "None"
 
         self.threadpool = resource["threadpool"]
         # self.scripts = resource["scripts"]
@@ -133,7 +130,7 @@ class ChannelWidget(QWidget):
         # Settings
         setting_box = QHBoxLayout()
         left.addLayout(setting_box)
-        setting_elements = self.get_settings()
+        setting_elements = self.get_settings(plugin_info)
         for element in setting_elements:
             setting_box.addLayout(element)
 
@@ -162,7 +159,7 @@ class ChannelWidget(QWidget):
         self.json = json.load(open(
             func.asset_path("default_packet.json")))
 
-    def get_settings(self):
+    def get_settings(self, plugin_info):
         """Creates all UI settings and adds them to settings list"""
         labels = []
         self.settings = []
@@ -197,15 +194,13 @@ class ChannelWidget(QWidget):
 
         # Plugin Assignments
         plugin_sources = []
-        """
-        for plugin in self.config["plugins"]:
-            labels.append(f"{plugin} Source:")
+        for plugin in plugin_info:
+            labels.append(f"{plugin['name']} Source:")
             plugin_sources.append([])
             plugin_sources[-1].append(["None"] + plugin["sources"])
             plugin_sources[-1].append(
                 f"Set Measurement Source for '{plugin['name']}' Plugin.")
             plugin_sources[-1].append(plugin["name"])
-        """
 
         for source in plugin_sources:
             self.settings.append(gui.combo_box(*source, self.set_plugin))
