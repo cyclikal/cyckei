@@ -27,7 +27,7 @@ class Socket(object):
             response = self.socket.recv_json()
         else:
             response = (
-                json.loads('{"response": "No Connection", "message": ""}'))
+                json.loads('{"response": "Request Timed Out", "message": ""}'))
         logger.debug("Received: {}".format(response))
         self.socket.close()
         return response
