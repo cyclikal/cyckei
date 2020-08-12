@@ -96,19 +96,19 @@ class UpdateStatus(QRunnable):
                     logger.error(
                         f"Contents of info_all for diagnosis: {info_all}")
                     status = "Could not get status!"
-            else:
-                status = info_all
+        else:
+            status = info_all
 
-            #    channel.divider.setStyleSheet(
-            #        "background-color: {}".format(gui.gray))
-            logger.debug("cyckei.client.workers.UpdateStatus.run: \
-                         Updating channel {} with status {}".format(
-                         channel.attributes["channel"], status))
-            try:
-                channel.status.setText(status)
-            except RuntimeError as error:
-                print(f"Looks like QTimer ran after Cyckei closed: {error}")
-                sys.exit()
+        #    channel.divider.setStyleSheet(
+        #        "background-color: {}".format(gui.gray))
+        logger.debug("cyckei.client.workers.UpdateStatus.run: \
+                     Updating channel {} with status {}".format(
+                     channel.attributes["channel"], status))
+        try:
+            channel.status.setText(status)
+        except RuntimeError as error:
+            print(f"Looks like QTimer ran after Cyckei closed: {error}")
+            sys.exit()
 
 
 class Read(QRunnable):
