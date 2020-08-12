@@ -575,6 +575,8 @@ class ProtocolStep(object):
     def read_data(self, force_report=False):
         self.last_time = time.time()
         current, voltage = self.parent.source.read_iv()
+
+        # Get plugin values
         plugin_values = []
         for en_plugin, plugin_source in self.parent.meta["plugins"].items():
             if plugin_source != "None":
@@ -585,10 +587,16 @@ class ProtocolStep(object):
                         break
                 if plugin:
                     value = plugin.read(plugin_source)
+                    if type(value) not in [int, float]:
+                        # raise TypeError(
+                        #   f"Plugin {plugin.name} did not return int or foat")
+                        logger.error(
+                            f"Plugin {plugin.name} did not return int or foat")
+                        value = 0
                     plugin_values.append((plugin.name, value))
                 else:
                     value = 0
-                    logger.critical(f"Failed bind plugin {en_plugin[0]}")
+                    logger.error(f"Failed bind plugin {en_plugin[0]}")
         logger.debug(f"Values from plugins: {plugin_values}")
 
         self.check_in_control(self.last_time, current, voltage)
