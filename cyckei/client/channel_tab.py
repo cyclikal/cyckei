@@ -51,7 +51,8 @@ class ChannelTab(QWidget):
         self.update_status()
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_status)
-        self.timer.start(int(self.config["behavior"]["update-interval"]) * 1000)
+        self.timer.start(
+            int(self.config["behavior"]["update-interval"]) * 1000)
 
     def alternate_colors(self):
         # TODO: Make dark mode compatible with windows
