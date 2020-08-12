@@ -198,8 +198,8 @@ def process_socket(socket, runners, sources, server_time,
                 kwargs = msg.get("kwargs", None)
                 # response = {"version": __version__, "response": None}
                 resp = "Unknown function"
+                logger.debug("Packet request received: {}".format(fun))
                 if fun == "start":
-                    logger.debug("Packet request received: {}".format(fun))
                     try:
                         resp = start(kwargs["channel"], kwargs["meta"],
                                      kwargs["protocol"], runners, sources,
@@ -207,35 +207,24 @@ def process_socket(socket, runners, sources, server_time,
                     except Exception as e:
                         resp = "Error occured when running script."
                         logger.warning(e)
-                    logger.debug("Sending response: {}".format(resp))
 
                 elif fun == "pause":
-                    logger.debug("Packet request received: {}".format(fun))
                     resp = pause(kwargs["channel"], runners)
-                    logger.debug("Sending response: {}".format(resp))
 
                 elif fun == "resume":
-                    logger.debug("Packet request received: {}".format(fun))
                     resp = resume(kwargs["channel"], runners)
-                    logger.debug("Sending response: {}".format(resp))
 
                 elif fun == "test":
-                    logger.debug("Packet request received: {}".format(fun))
                     resp = test(kwargs["protocol"])
-                    logger.debug("Sending response: {}".format(resp))
 
                 elif fun == "stop":
-                    logger.debug("Packet request received: {}".format(fun))
                     resp = stop(kwargs["channel"], runners)
-                    logger.debug("Sending response: {}".format(resp))
 
                 elif fun == "ping":
-                    logger.debug("Packet request received: {}".format(fun))
                     port = socket.getsockopt_string(
                         zmq.LAST_ENDPOINT
                     ).split(":")[-1]
                     resp = "True: server is running on port {}".format(port)
-                    logger.debug("Sending response: {}".format(resp))
 
                 elif fun == "info_plugins":
                     plugin_info = []
@@ -254,6 +243,7 @@ def process_socket(socket, runners, sources, server_time,
                 elif fun == "info_all_channels":
                     resp = info_all_channels(runners, sources)
 
+                logger.debug("Sending response: {}".format(resp))
                 response["response"] = resp
 
                 socket.send_json(response)
