@@ -6,6 +6,10 @@ import os
 if __name__ == '__main__':
     try:
         cyckei.main()
+    except RuntimeError as error:
+        print("Runtime error. Usually this is an issue with PyQt closing")
+        print("Here's the issue:", error)
+        raise KeyboardInterrupt
     except KeyboardInterrupt as error:
         print(f"Got keyboard interrupt: {error}")
         try:
