@@ -3,6 +3,7 @@ import logging
 import os
 import tempfile
 import time
+import sys
 from datetime import date, datetime
 
 from PySide2.QtCore import QRunnable, Slot, Signal, QObject
@@ -98,7 +99,11 @@ class UpdateStatus(QRunnable):
             logger.debug("cyckei.client.workers.UpdateStatus.run: \
                          Updating channel {} with status {}".format(
                          channel.attributes["channel"], status))
-            channel.status.setText(status)
+            try:
+                channel.status.setText(status)
+            except RuntimeError as error:
+                print(f"Looks like QTimer ran after Cyckei closed: {error}")
+                sys.exit()
 
 
 class Read(QRunnable):
