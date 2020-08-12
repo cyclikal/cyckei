@@ -76,7 +76,7 @@ class UpdateStatus(QRunnable):
         info_all = Socket(self.config).info_all_channels()
         for channel in self.channels:
             try:
-                info = info_all[channel.attributes["channel"]]
+                info = info_all[str(channel.attributes["channel"])]
                 status = (func.not_none(info["status"])
                           + " - " + func.not_none(info["state"])
                           + " | C: " + func.not_none(info["current"])
@@ -88,8 +88,11 @@ class UpdateStatus(QRunnable):
                 # else:
                 #    channel.divider.setStyleSheet(
                 #        "background-color: {}".format(gui.gray))
-            except (TypeError, KeyError):
+
+            except (TypeError, KeyError) as error:
+                logger.error(f"Could not get status from server: {error}")
                 status = "Could not get status!"
+
             #    channel.divider.setStyleSheet(
             #        "background-color: {}".format(gui.gray))
             logger.debug("cyckei.client.workers.UpdateStatus.run: \
