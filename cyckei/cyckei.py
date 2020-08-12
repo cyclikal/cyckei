@@ -163,15 +163,17 @@ def load_plugins(config):
     plugin_names = {}
     # Load plugin modules
     for plugin in config["plugins"]:
-        try:
-            logger.debug(f"Attempting to load {plugin['name']}")
-            module = importlib.import_module(
-                f"{plugin['name']}.{plugin['name']}")
-            plugins.append(module.PluginController(plugin["sources"]))
-            plugin_names[plugins[-1].name] = (plugins[-1].names)
-            logger.info(f"Loaded {plugin['name']} plugin")
-        except ModuleNotFoundError as error:
-            logger.warning(f"Could not load plugin {plugin['name']}: {error}")
+        if plugin["enabled"]:
+            try:
+                logger.debug(f"Attempting to load {plugin['name']}")
+                module = importlib.import_module(
+                    f"{plugin['name']}.{plugin['name']}")
+                plugins.append(module.PluginController(plugin["sources"]))
+                plugin_names[plugins[-1].name] = (plugins[-1].names)
+                logger.info(f"Loaded {plugin['name']} plugin")
+            except ModuleNotFoundError as error:
+                logger.warning(
+                    f"Could not load plugin {plugin['name']}: {error}")
 
     return plugins, plugin_names
 
