@@ -15,7 +15,7 @@ from PySide2.QtGui import QPainter, QPalette
 from . import workers
 from cyckei.functions import func, gui
 
-UPDATE_INTERVAL = 1000  # milliseconds
+UPDATE_INTERVAL = 5000  # milliseconds
 logger = logging.getLogger('cyckei')
 
 
