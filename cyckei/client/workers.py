@@ -98,8 +98,7 @@ class UpdateStatus(QRunnable):
 
             #    channel.divider.setStyleSheet(
             #        "background-color: {}".format(gui.gray))
-            logger.debug("cyckei.client.workers.UpdateStatus.run: \
-                         Updating channel {} with status {}".format(
+            logger.debug("Updating channel {} with status {}".format(
                          channel.attributes["channel"], status))
             try:
                 channel.status.setText(status)
