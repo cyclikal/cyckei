@@ -75,29 +75,26 @@ class UpdateStatus(QRunnable):
     @Slot()
     def run(self):
         info_all = Socket(self.config).info_all_channels()
-        if type(info_all) is dict:
-            for channel in self.channels:
-                try:
-                    info = info_all[str(channel.attributes["channel"])]
-                    status = (func.not_none(info["status"])
-                              + " - " + func.not_none(info["state"])
-                              + " | C: " + func.not_none(info["current"])
-                              + ", V: " + func.not_none(info["voltage"]))
+        for channel in self.channels:
+            try:
+                info = info_all[str(channel.attributes["channel"])]
+                status = (func.not_none(info["status"])
+                          + " - " + func.not_none(info["state"])
+                          + " | C: " + func.not_none(info["current"])
+                          + ", V: " + func.not_none(info["voltage"]))
 
-                    # if info["status"] == "started":
-                    #    channel.divider.setStyleSheet(
-                    #        "background-color: {}".format(gui.orange))
-                    # else:
-                    #    channel.divider.setStyleSheet(
-                    #        "background-color: {}".format(gui.gray))
+                # if info["status"] == "started":
+                #    channel.divider.setStyleSheet(
+                #        "background-color: {}".format(gui.orange))
+                # else:
+                #    channel.divider.setStyleSheet(
+                #        "background-color: {}".format(gui.gray))
 
-                except (TypeError, KeyError) as error:
-                    logger.error(f"Could not get status from server: {error}")
-                    logger.error(
-                        f"Contents of info_all for diagnosis: {info_all}")
-                    status = "Could not get status!"
-        else:
-            status = info_all
+            except (TypeError, KeyError) as error:
+                logger.error(f"Could not get status from server: {error}")
+                logger.error(
+                    f"Contents of info_all for diagnosis: {info_all}")
+                status = "Could not get status!"
 
         #    channel.divider.setStyleSheet(
         #        "background-color: {}".format(gui.gray))
@@ -106,6 +103,11 @@ class UpdateStatus(QRunnable):
                      channel.attributes["channel"], status))
         try:
             channel.status.setText(status)
+        except TypeError as error:
+            logger.error(
+                f"Attempted to set status to '{status}', failed with: {error}")
+            channel.status.setText("No Status Update, Check Log")
+
         except RuntimeError as error:
             print(f"Looks like QTimer ran after Cyckei closed: {error}")
             sys.exit()
