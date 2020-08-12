@@ -1,6 +1,5 @@
 import logging
 import os.path
-import configparser
 
 
 class BaseController(object):
@@ -57,7 +56,6 @@ class BaseController(object):
 
         return logger
 
-
     def get_sources(self):
         """
         Searches for available sources, and establishes source objects.
@@ -72,9 +70,11 @@ class BaseController(object):
     def read(self, source):
         try:
             return self.sources[source].read()
-        except (TypeError, KeyError) as e:
+        except (TypeError, KeyError) as error:
             # Occurs when there is no source at that address
-            self.logger.error(f"Could not find plugin source: {e}")
+            self.logger.error(f"Could not find plugin source: {error}")
+        except Exception as error:
+            self.logger.error("Exception occured while reading plugin:", error)
 
     def cleanup(self):
         raise NotImplementedError
