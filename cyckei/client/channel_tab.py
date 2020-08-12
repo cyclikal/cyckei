@@ -15,7 +15,7 @@ from PySide2.QtGui import QPainter, QPalette
 from . import workers
 from cyckei.functions import func, gui
 
-UPDATE_INTERVAL = 5000  # milliseconds
+UPDATE_INTERVAL = 6000  # milliseconds
 logger = logging.getLogger('cyckei')
 
 
@@ -52,7 +52,7 @@ class ChannelTab(QWidget):
         self.update_status()
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_status)
-        self.timer.start(UPDATE_INTERVAL)
+        self.timer.start(self.config["behavior"]["update-interval"] * 1000)
 
     def alternate_colors(self):
         # TODO: Make dark mode compatible with windows
