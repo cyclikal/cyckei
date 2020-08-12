@@ -77,7 +77,7 @@ class UpdateStatus(QRunnable):
         info_all = Socket(self.config).info_all_channels()
         for channel in self.channels:
             try:
-                info = info_all[str(channel.attributes["channel"])]
+                info = info_all[channel.attributes["channel"]]
                 status = (func.not_none(info["status"])
                           + " - " + func.not_none(info["state"])
                           + " | C: " + func.not_none(info["current"])
@@ -92,6 +92,7 @@ class UpdateStatus(QRunnable):
 
             except (TypeError, KeyError) as error:
                 logger.error(f"Could not get status from server: {error}")
+                logger.error(f"Contents of info_all for diagnosis: {info_all}")
                 status = "Could not get status!"
 
             #    channel.divider.setStyleSheet(
