@@ -75,7 +75,11 @@ class UpdateStatus(QRunnable):
     @Slot()
     def run(self):
         info_all = Socket(self.config).info_all_channels()
+
         for channel in self.channels:
+            if type(info_all) is not dict:
+                channel.status.setText("No Response")
+                pass
             try:
                 info = info_all[str(channel.attributes["channel"])]
                 status = (func.not_none(info["status"])
