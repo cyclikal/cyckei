@@ -77,7 +77,7 @@ class UpdateStatus(QRunnable):
         info_all = Socket(self.config).info_all_channels()
         for channel in self.channels:
             try:
-                info = info_all[channel.attributes["channel"]]
+                info = info_all[str(channel.attributes["channel"])]
                 status = (func.not_none(info["status"])
                           + " - " + func.not_none(info["state"])
                           + " | C: " + func.not_none(info["current"])
