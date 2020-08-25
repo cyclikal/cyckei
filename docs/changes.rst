@@ -3,7 +3,7 @@ Changes & Features
 
 
 0.0 Yin - 11/14/2018
-----------------
+--------------------
 
 Original version of Cyckei.
 
@@ -133,7 +133,7 @@ Adds plugin scheme.
 - 0.4.rc2 8/25/2020 -- Update documentation for Cyckei and Plugins
 
 Possible Features
-----------------
+-----------------
 - Client Interface
    - Better batch management
    - Multi-folder script storage
