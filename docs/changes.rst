@@ -129,6 +129,8 @@ Adds plugin scheme.
 
 - 0.4.dev1, 6/29/2020 -- Implement Plugin System
 - 0.4.dev2, 7/22/2020 -- Fix Metadata Values
+- 0.4.rc1, 8/12/2020 -- Package-based Plugin System
+- 0.4.rc2 8/25/2020 -- Update documentation for Cyckei and Plugins
 
 Possible Features
 ----------------
