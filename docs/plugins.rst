@@ -1,3 +1,12 @@
+.. raw:: html
+
+    <style>
+      .red {color: red}
+      .green {color: green}
+      .orange {color: orange}
+    </style>
+
+
 Plugins
 =======
 
@@ -59,6 +68,26 @@ Once configured, the different data sources exposed by plugins will be visible i
 
 Once available, it is as simple as selecting the source in the corresponding dropdown to assign a device to each channel.
 Once assigned, data from the device will be merged into the output file for that channel.
+
+Available Plugins
+-----------------
+The following plugins are currently known to be available. Submit a pull request to add or update entries for custom plugins.
+
+.. role:: red
+.. role:: green
+.. role:: orange
+
+An example of using :red:`interpreted text`
+
++----------------+--------------------------------------------+-----------------------------------------------------------+---------------------+
+| Name           | Purpose                                    | Source                                                    | Version             |
++================+============================================+===========================================================+=====================+
+| Randomizer     | Example, produces random numbers.          | `GitHub <https://github.com/cyclikal/cyp-randomizer>`_    | :green:`0.1 Stable` |
++----------------+--------------------------------------------+-----------------------------------------------------------+---------------------+
+| Mettler AG-204 | Weight from Mettler Toledo AG-104.         | `GitHub <https://github.com/cyclikal/cyp-mettler-ag204>`_ | :green:`0.1 Stable` |
++----------------+--------------------------------------------+-----------------------------------------------------------+---------------------+
+| Pico TC-08     | Temperature from Pico TC-08 Thermocouples. | `GitHub <https://github.com/cyclikal/cyp-pico-tc08>`_     | :green:`0.1 Stable` |
++----------------+--------------------------------------------+-----------------------------------------------------------+---------------------+
 
 Custom Plugins
 --------------
