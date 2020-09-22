@@ -1,7 +1,11 @@
-"""Tab to view and edit scripts, also has access to checking procedure"""
+# Tab to view and edit scripts, also has access to checking procedure
 import logging
 from os.path import join
 from os import listdir
+
+from os import remove
+from os.path import exists
+
 import webbrowser
 
 from PySide2.QtWidgets import QVBoxLayout, QHBoxLayout, \
@@ -13,9 +17,8 @@ from cyckei.functions import gui
 
 logger = logging.getLogger('cyckei')
 
-
+# UI window for the script tab of Cyckei Explorer
 class ScriptEditor(QWidget):
-    """Main object of script tab"""
     def __init__(self, config, resource):
         QWidget.__init__(self)
         self.scripts = ScriptList(config)
@@ -49,6 +52,7 @@ class ScriptEditor(QWidget):
             ["New", "Start New Script", self.new],
             ["Save", "Save Current Script", self.save],
             ["Check", "Check for Basic Syntax Errors", self.check],
+            ['Delete', 'Delete Currently Active Script', self.delete],
             ["Help", "Script Writing Help", self.help]
         ]
         for button in buttons:
@@ -81,39 +85,99 @@ class ScriptEditor(QWidget):
             self.file_list.currentItem().content = self.editor.toPlainText()
             self.file_list.currentItem().update_status()
 
+    # Updates the UI when which script is active is changed
+    def update_editor(self, active_script_index):
+        # Checking for out of bounds error
+        if active_script_index >= 0 and active_script_index < self.file_list.count():
+            self.file_list.setCurrentItem(self.file_list.item(active_script_index))
+            self.title_bar.setText(join(self.file_list.currentItem().path, self.file_list.currentItem().title))
+            self.editor.setPlainText(self.file_list.currentItem().content)
+        else:
+            self.title_bar.setText("")
+            self.editor.setPlainText("")
+
+    # Opens a new file and adds it as a script
     def open(self, text):
-        """Open new file and add as script"""
         script_file = QFileDialog.getOpenFileName(
-            QWidget(), "Open Script File"
+            QWidget(), "Open Script File", ""
         )[0].rsplit("/", 1)
         if script_file[0]:
-            self.add(script_file)
+            # This section opens a new script if it is not already open
+            dupe = False
+            for script_index in range (len(self.scripts.script_list)):
+                script = self.scripts.script_list[script_index]
+                if(script.title == script_file[1]):
+                    self.update_editor(script_index)
+                    dupe = True
+                    break
+            if not dupe:
+                self.add(script_file)
+                self.update_editor(self.file_list.count()-1)
 
+    # Create new file and add to list as script
     def new(self, text):
-        """Create new file and add to list as script"""
         script_file = QFileDialog.getSaveFileName(QWidget(),
                                                   "Select Directory")[0]
         if script_file:
             open(script_file, "a")
             self.add(script_file.rsplit("/", 1))
+        self.update_editor(self.file_list.count()-1)
 
+    # Calls the save function of a Script object
     def save(self, text):
-        """Save script"""
         try:
             self.file_list.currentItem().save()
         except AttributeError:
             pass
 
+    # Creates and runs a worker to check protocol and verify the validity of a script
     def check(self, text):
-        """Run check protocol to verify validity"""
         worker = Check(self.config, self.file_list.currentItem().content)
         self.threadpool.start(worker)
         worker.signals.status.connect(self.alert_check)
 
+    # Deletes the active file and removes it from the UI
+    def delete(self, text):
+        active_file = self.file_list.currentItem()
+        path_to_delete = active_file.path + "/" + active_file.title
+        # Checking path with os.path.exists()
+        if exists(path_to_delete):
+            verify_msg = {
+                "text": "Are you sure you would like to delete:",
+                "info": path_to_delete + "  ?",
+                "confirm": True
+            }
+            delete = gui.message(**verify_msg)
+            if delete:
+                # removing path with os.path.remove()
+                remove(path_to_delete)
+                current_row = self.file_list.row(self.file_list.currentItem())
+                # takeItem removes the item at the row of the currentItem
+                self.file_list.takeItem(current_row)
+                        
+                result_msg = {
+                    "text": "Success!",
+                    "info": "You have deleted: "+path_to_delete,
+                }
+                if current_row <= self.file_list.count()-1:
+                    self.update_editor(current_row)
+                else:
+                    self.update_editor(current_row-1)
+        else:
+            result_msg = {
+                "text": "Failed!",
+                "info": "There was no file at the specified path.",
+                "icon": gui.Warning
+            }
+        
+        gui.message(**result_msg)
+
+    # Opens the Cyclikal Guide for creating scripts
     def help(self, text):
         webbrowser.open("https://docs.cyclikal.com/projects/cyckei/en/stable/"
                         "usage.html#creating-scripts")
 
+    # Opens a pop-up window with an input message
     def alert_check(self, result, message):
         if result:
             msg = {
@@ -129,9 +193,9 @@ class ScriptEditor(QWidget):
             }
         gui.message(**msg)
 
+    # Creates and adds a Script object to the front of the ScriptList and UI FileList
     def add(self, file):
-        """Add new script to list to make available"""
-        self.scripts.script_list.append(Script(file[1], file[0]))
+        self.scripts.script_list.append(Script(file[0], file[1]))
         self.file_list.addItem(self.scripts.script_list[-1])
 
 
@@ -234,10 +298,9 @@ class InsertBar(QWidget):
         if content:
             self.editor.appendPlainText(content)
 
-
+# An object that stores the File Path, Title, and content of a file
 class Script(QListWidgetItem):
-    """Object to store and manipulate scripts"""
-    def __init__(self, title, path):
+    def __init__(self, path, title):
         super(Script, self).__init__()
         self.title = title
         self.path = path
@@ -247,14 +310,14 @@ class Script(QListWidgetItem):
             self.content = "Could not read file: {}".format(error)
         self.setText(self.title)
 
+    # Overwrites the file that shares a file path and title witht the script
     def save(self):
-        """Saves script to file"""
         with open(self.path + "/" + self.title, "w") as file:
             file.write(self.content)
         self.update_status()
 
+    # Changes the title stored in the Script, not the actual file name, if the script and the file differ
     def update_status(self):
-        """Updates title with '*' if script has been edited"""
         try:
             file_content = open(self.path + "/" + self.title, "r").read()
         except UnicodeDecodeError as error:
@@ -271,15 +334,15 @@ class ScriptList(object):
         self.script_list = []
         self.default_scripts(config["arguments"]["record_dir"] + "/scripts")
 
+    # Load scripts from scripts folder in the directory specified by the config file
     def default_scripts(self, path):
-        """Load scripts from scripts folder"""
         files = listdir(path)
         if files is not None:
             for file in files:
-                self.script_list.append(Script(file, path))
+                self.script_list.append(Script(path, file))
 
+    #Returns the first script object with a matching title
     def by_title(self, title):
-        """Returns script object with given title"""
         for script in self.script_list:
             if script.title == title:
                 return script

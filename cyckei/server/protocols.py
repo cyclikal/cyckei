@@ -150,7 +150,7 @@ class CellRunner(object):
         ----------
         direction: str or None
             direction for the cell can be "pos", "neg", or None
-            if it is None, the "celltype" in teh meta data is used,
+            if it is None, the "celltype" in the meta data is used,
             if this is not set it defaults to "pos"
 
 
@@ -396,11 +396,11 @@ class ProtocolStep(object):
     Base class for a protocol step, needs to be subclassed with
     implementation of a start function
 
-    A protocol step stores stores its own data and the reported points
+    A protocol step stores its own data and the reported points
     Keeps track of time, current, voltage, capacity
 
     Because the protocol files are simply pure python the parent, which is a
-    CellRunner instance needs to be present in the global variables as "parent"
+    CellRunner instance, needs to be present in the global variables as "parent"
 
     """
 

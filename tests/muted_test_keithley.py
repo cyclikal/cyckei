@@ -122,4 +122,5 @@ class TestKeithleyConnection(unittest.TestCase):
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO,
                     format="%(message)s")
-unittest.main()
+if __name__ == '__main__':
+    unittest.main()
