@@ -24,7 +24,7 @@ def basic_cellrunner():
         "start_cycle": 0,
         "format": ["Test format"]
     }
-    return protocols.CellRunner(True, **test_meta)
+    return protocols.CellRunner({"testing" : "plugins", "second" : "test"}, **test_meta)
 
 @pytest.fixture()
 def basic_protocolstep(basic_cellrunner):
@@ -60,7 +60,7 @@ def test_make_cellrunner(basic_cellrunner):
     assert basic_cellrunner.meta["cycler"] == "Test cycler"
     assert basic_cellrunner.meta["celltype"] == "Test type"
     assert basic_cellrunner.meta["format"] == ["time", "current", "voltage", "capacity", "testing:plugins", "second:test"]
-    assert basic_cellrunner.plugin_objects == True
+    assert basic_cellrunner.plugin_objects == {"testing" : "plugins", "second" : "test"}
     assert basic_cellrunner.meta["channel"] == 'test channel'
     assert basic_cellrunner.fpath == "tests/test_path/test_output.txt"
     assert basic_cellrunner.steps == []
@@ -192,6 +192,7 @@ def test_cellrunner_step(basic_cellrunner):
     basic_cellrunner.i_current_step = 100
     assert basic_cellrunner.step == None
 
+# Should be covered by testing the functions it calls
 def test_cellrunner_run():
     assert True
 
@@ -234,31 +235,101 @@ def test_cellrunner_write_step_header(basic_cellrunner, basic_protocolstep):
     test_file.close()
     correct_test_file.close()
     
+    #Should be covered by testing the functions it calls
 def test_cellrunner_read_and_write(basic_cellrunner):
     assert True
 
+
 def test_cellrunner_write_data(basic_cellrunner):
-    assert True
+    basic_cellrunner._start()
+    basic_cellrunner.write_data(basic_cellrunner.start_time, 1, 1, 100, [])
+    test_file = open("tests/test_path/test_output.txt", "r")
+    lines = test_file.read().splitlines()
+    second_to_last_line = lines[-1]
+    split_line = second_to_last_line.split(",")
+    print(split_line)
+    timestamp = split_line[0]
+    current = split_line[1]
+    voltage = split_line[2]
+    capacity = split_line[3]
+    assert float(timestamp) == 0
+    assert current == '1'
+    assert voltage == '1'
+    assert capacity == '100'
+    test_file.close()
 
-def test_cellrunner_pause(basic_cellrunner):
-    assert True
-
-def test_cellrunner_resume(basic_cellrunner):
-    assert True
-
-def test_cellrunner_close(basic_cellrunner):
-    basic_cellrunner.close()
+def test_cellrunner_pause(basic_cellrunner, basic_protocolstep):
+    test_device = mock_device.MockDevice()
+    basic_cellrunner.channel = 'a'
+    basic_cellrunner.set_source(test_device.get_source(None))
+    basic_cellrunner.add_step(basic_protocolstep)
+    with pytest.raises(TypeError):
+        test_pause = basic_cellrunner.pause()
+    # It doesn't seem right that the status is changed to paused,
+    # yet since the protocolstep was never started it isn't really paused
+    basic_cellrunner._start()
+    with pytest.raises(NotImplementedError):
+        test_pause = basic_cellrunner.pause()
     
+    basic_currentstep = protocols.CurrentStep(20)
+    # Normally the parent is retrieved from globals()
+    # here I just hardcode it for testing purposed
+    # I've also eliminated the plugi
+    basic_currentstep.parent = basic_cellrunner
+    basic_cellrunner.meta["plugins"] = {}
+    basic_cellrunner.add_step(basic_currentstep)
+    basic_cellrunner.next_step()
+    basic_cellrunner.next_step()
+    test_pause = basic_cellrunner.pause()
+    assert basic_cellrunner.status == 2
+    assert test_pause == True
 
-def test_cellrunner_off(basic_cellrunner):
+
+def test_cellrunner_resume(basic_cellrunner, basic_protocolstep):
+    test_device = mock_device.MockDevice()
+    basic_cellrunner.channel = 'a'
+    basic_cellrunner.set_source(test_device.get_source(None))
+    basic_currentstep = protocols.CurrentStep(20)
+    basic_currentstep.parent = basic_cellrunner
+    basic_cellrunner.meta["plugins"] = {}
+    basic_cellrunner.add_step(basic_protocolstep)
+    basic_cellrunner.add_step(basic_currentstep)
+    basic_cellrunner._start()
+    basic_cellrunner.next_step()
+    basic_cellrunner.next_step()
+    basic_cellrunner.pause()
+    test_resume = basic_cellrunner.resume()
+    assert basic_cellrunner.status == 1
+    assert test_resume == True
+
+def test_cellrunner_close(basic_cellrunner, basic_protocolstep):
+    basic_cellrunner.add_step(basic_protocolstep)
+    test_device = mock_device.MockDevice()
+    basic_cellrunner.channel = 'a'
+    basic_cellrunner.set_source(test_device.get_source(None))
+
+    basic_cellrunner.close()
+    assert basic_cellrunner.source.current == 0
+    assert basic_cellrunner.source.mode == 'constant_current'
+
+def test_cellrunner_off(basic_cellrunner, basic_protocolstep):
+    test_device = mock_device.MockDevice()
+    basic_cellrunner.channel = 'a'
+    basic_cellrunner.set_source(test_device.get_source(None))
+
     basic_cellrunner.off()
     assert basic_cellrunner.source.current == 0
-    assert basic_cellrunner.source.curent == 0
+    assert basic_cellrunner.source.mode == 'constant_current'
+    
 
-def test_cellrunner_stop(basic_cellrunner):
+def test_cellrunner_stop(basic_cellrunner, basic_protocolstep):
+    test_device = mock_device.MockDevice()
+    basic_cellrunner.channel = 'a'
+    basic_cellrunner.set_source(test_device.get_source(None))
+
     assert basic_cellrunner.stop() == True
     assert basic_cellrunner.status == 3
-
+    assert basic_cellrunner.source.mode == 'constant_current'
 
 def test_make_protocolstep(basic_protocolstep, basic_cellrunner):
     assert basic_protocolstep.parent is basic_cellrunner  # noqa: F821
@@ -278,31 +349,36 @@ def test_make_protocolstep(basic_protocolstep, basic_cellrunner):
     assert basic_protocolstep.report_conditions == []
     assert basic_protocolstep.in_control == True
 
-def test_protocolstep__start():
+def test_protocolstep__start(basic_protocolstep):
+    with pytest.raises(NotImplementedError):
+        basic_protocolstep._start()
+
+def test_protocolstep_header(basic_protocolstep):
+    assert basic_protocolstep.header() == False
+
+def test_protocolstep_run(basic_protocolstep):
+
+    
+    basic_protocolstep.status = 2
+    assert basic_protocolstep.run() == None
+    assert basic_protocolstep.next_time == float('inf')
+
+def test_protocolstep_check_end_conditions(basic_protocolstep):
     assert True
 
-def test_protocolstep_header():
-    assert True
-
-def test_protocolstep_run():
-    assert True
-
-def test_protocolstep_check_end_conditions():
-    assert True
-
-def test_protocolstep_check_report_conditions():
+def test_protocolstep_check_report_conditions(basic_protocolstep):
     assert True
     
-def test_protocolstep_check_in_control():
+def test_protocolstep_check_in_control(basic_protocolstep):
     assert True
 
-def test_protocolstep_read_data():
+def test_protocolstep_read_data(basic_protocolstep):
     assert True
 
-def test_protocolstep_pause():
+def test_protocolstep_pause(basic_protocolstep):
     assert True
 
-def test_protocolstep_resume():
+def test_protocolstep_resume(basic_protocolstep):
     assert True
 
 def test_process_reports():
@@ -405,12 +481,6 @@ def test_sleep_run():
     assert True
 
 def test_sleep_check_in_control():
-    assert True
-    
-def test_make_condition():
-    assert True
-
-def test_condition_check():
     assert True
 
 def test_make_conditiondelta():

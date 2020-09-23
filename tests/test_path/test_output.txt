@@ -4,6 +4,8 @@
 #    "channel": "test channel",
 #    "comment": "Testing comments",
 #    "cycler": "Test cycler",
+#    "date_start_timestamp": 1600894616.3096907,
+#    "date_start_timestr": "2020-09-23_15:56:56.309691",
 #    "format": [
 #        "time",
 #        "current",
@@ -14,15 +16,11 @@
 #    ],
 #    "package": "Test package",
 #    "path": "tests/test_path/test_output.txt",
-#    "plugins": {
-#        "second": "test",
-#        "testing": "plugins"
-#    },
+#    "plugins": {},
 #    "protocol": "Test protocol",
 #    "protocol_name": "Test protocol name",
 #    "requester": "Test protocol name",
 #    "start_cycle": 0
 #}
-{"cycle": 1}
-{"cycle": 2}
-{"cycle": 3}
+{"cycle": 0}
+    0,20,42.780956,0
