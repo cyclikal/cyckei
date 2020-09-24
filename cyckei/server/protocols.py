@@ -419,8 +419,8 @@ class ProtocolStep(object):
                 the step will check V & I at this interval
         """
         # the parent is the CellRunner
-        if cellrunner_parent is None:
-            self.parent = parent  # noqa: F821
+        if cellrunner_parent is None: 
+            self.parent = parent  # noqa: F821)
         else:
             self.parent = cellrunner_parent
 

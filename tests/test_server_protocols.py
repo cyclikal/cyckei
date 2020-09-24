@@ -426,25 +426,23 @@ def test_make_cvcharge(basic_cellrunner):
     test_mock_device = mock_device.MockDevice()
     basic_cellrunner.channel = 'a'
     basic_cellrunner.set_source(test_mock_device.get_source(None))
-    test_CVCharge = protocols.CVCharge(4)
+    exec("test_cvcharge=protocols.CVCharge(4)\ntest_cvcharge.parent = parent\ntest_cvcharge.parent.add_step(test_cvcharge)", globals().update({"parent": basic_cellrunner}))
+    test_CVCharge = basic_cellrunner.steps[0]
+    
     assert test_CVCharge.state_str == "charge_constant_voltage"
-    # can't test i_limit. It requires a "parent" cellrunner
-    # however, a parent can not be assigned in the costruction.
-    # instead the parent is assigned via a global variable by 
-    # using a script to create this object
-    # assert test_CVCharge.i_limit == 3
+    test_CVCharge.guess_i_limit()
+    assert test_CVCharge.i_limit == 3
 
 def test_make_cvdischarge(basic_cellrunner):
     test_mock_device = mock_device.MockDevice()
     basic_cellrunner.channel = 'a'
     basic_cellrunner.set_source(test_mock_device.get_source(None))
-    test_CVDischarge = protocols.CVDischarge(4)
+    exec("test_cvdischarge=protocols.CVDischarge(4)\ntest_cvdischarge.parent = parent\ntest_cvdischarge.parent.add_step(test_cvdischarge)", globals().update({"parent": basic_cellrunner}))
+    test_CVDischarge = basic_cellrunner.steps[0]
+    
     assert test_CVDischarge.state_str == "discharge_constant_voltage"
-    # can't test i_limit. It requires a "parent" cellrunner
-    # however, a parent can not be assigned in the costruction.
-    # instead the parent is assigned via a global variable by 
-    # using a script to create this object
-    # assert test_CVDischarge.i_limit == -3
+    test_CVDischarge.guess_i_limit()
+    assert test_CVDischarge.i_limit == -3
 
 def test_advancecycle__start():
     test_advance_cycle = protocols.AdvanceCycle()

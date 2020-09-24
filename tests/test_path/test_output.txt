@@ -4,8 +4,8 @@
 #    "channel": "test channel",
 #    "comment": "Testing comments",
 #    "cycler": "Test cycler",
-#    "date_start_timestamp": 1600915426.337507,
-#    "date_start_timestr": "2020-09-23_21:43:46.337507",
+#    "date_start_timestamp": 1600962268.3400724,
+#    "date_start_timestr": "2020-09-24_10:44:28.340072",
 #    "format": [
 #        "time",
 #        "current",
@@ -23,5 +23,5 @@
 #    "start_cycle": 0
 #}
 {"cycle": 0}
-    0,20,42.780956,0
+    0.0099954605,20,42.780956,0
 {"cycle": 1}
