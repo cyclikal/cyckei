@@ -406,7 +406,9 @@ def test_make_ccdischarge():
     assert True
 
 def test_make_voltagestep():
-    assert True
+    test_voltage_step = protocols.VoltageStep(4)
+    assert test_voltage_step.i_limit == None
+    assert test_voltage_step.voltage == 4
 
 def test_voltagestep_guess_i_limit():
     assert True
@@ -420,26 +422,47 @@ def test_voltagestep_header():
 def test_voltagestep_check_in_control():
     assert True
 
-def test_make_cvcharge():
-    assert True
+def test_make_cvcharge(basic_cellrunner):
+    test_mock_device = mock_device.MockDevice()
+    basic_cellrunner.channel = 'a'
+    basic_cellrunner.set_source(test_mock_device.get_source(None))
+    test_CVCharge = protocols.CVCharge(4)
+    assert test_CVCharge.state_str == "charge_constant_voltage"
+    # can't test i_limit. It requires a "parent" cellrunner
+    # however, a parent can not be assigned in the costruction.
+    # instead the parent is assigned via a global variable by 
+    # using a script to create this object
+    # assert test_CVCharge.i_limit == 3
 
-def test_make_cvdischarge():
-    assert True
-
-def test_make_advancecycle():
-    assert True
+def test_make_cvdischarge(basic_cellrunner):
+    test_mock_device = mock_device.MockDevice()
+    basic_cellrunner.channel = 'a'
+    basic_cellrunner.set_source(test_mock_device.get_source(None))
+    test_CVDischarge = protocols.CVDischarge(4)
+    assert test_CVDischarge.state_str == "discharge_constant_voltage"
+    # can't test i_limit. It requires a "parent" cellrunner
+    # however, a parent can not be assigned in the costruction.
+    # instead the parent is assigned via a global variable by 
+    # using a script to create this object
+    # assert test_CVDischarge.i_limit == -3
 
 def test_advancecycle__start():
-    assert True
+    test_advance_cycle = protocols.AdvanceCycle()
+    test_advance_cycle._start()
+    assert test_advance_cycle.status == 1
 
 def test_advancecycle_run():
-    assert True
+    test_advance_cycle = protocols.AdvanceCycle()
+    test_advance_cycle.run() 
+    assert test_advance_cycle.status == 3
 
 def test_advancecycle_check_in_control():
-    assert True
+    test_advance_cycle = protocols.AdvanceCycle()
+    assert test_advance_cycle.check_in_control() == True
 
 def test_make_rest():
-    assert True
+    test_rest = protocols.Rest()
+    assert test_rest.state_str == "rest"
 
 def test_rest__start():
     assert True
@@ -451,7 +474,8 @@ def test_rest_check_in_control():
     assert True
 
 def test_make_pause():
-    assert True
+    test_pause = protocols.Pause()
+    assert test_pause.state_str == "pause"
 
 def test_pause__start():
     assert True
@@ -484,7 +508,36 @@ def test_sleep_check_in_control():
     assert True
 
 def test_make_conditiondelta():
-    assert True
+    test1_condition_delta = protocols.ConditionDelta("voltage", 11)
+    assert test1_condition_delta.value_str == "voltage"
+    assert test1_condition_delta.index == 2
+    assert test1_condition_delta.comparison(2, 1)
+    assert test1_condition_delta.delta == 11
+    assert test1_condition_delta.is_time == False
+    test1_condition_delta = protocols.ConditionDelta("voltage", -11)
+    assert test1_condition_delta.value_str == "voltage"
+    assert test1_condition_delta.index == 2
+    assert test1_condition_delta.comparison(2, 1)
+    assert test1_condition_delta.delta == 11
+    assert test1_condition_delta.is_time == False
+    test1_condition_delta = protocols.ConditionDelta("current", 11)
+    assert test1_condition_delta.value_str == "current"
+    assert test1_condition_delta.index == 1
+    assert test1_condition_delta.comparison(2, 1)
+    assert test1_condition_delta.delta == 11
+    assert test1_condition_delta.is_time == False
+    test1_condition_delta = protocols.ConditionDelta("time", 11)
+    assert test1_condition_delta.value_str == "time"
+    assert test1_condition_delta.index == 0
+    assert test1_condition_delta.comparison(2, 1)
+    assert test1_condition_delta.delta == 11
+    assert test1_condition_delta.is_time == True
+    test1_condition_delta = protocols.ConditionDelta("capacity", 11)
+    assert test1_condition_delta.value_str == "capacity"
+    assert test1_condition_delta.index == 3
+    assert test1_condition_delta.comparison(2, 1)
+    assert test1_condition_delta.delta == 11
+    assert test1_condition_delta.is_time == False
 
 def test_conditiondelta_check():
     assert True

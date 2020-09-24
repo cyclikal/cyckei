@@ -7,6 +7,9 @@ class MockSource():
     w = 100.  # mAh
     s = -1.  # shift to avoid dorppping too low in voltage
     R = 2.  # internal resistance in Ohms
+    current_ranges = [100 * 1e-9, 1e-6, 10e-6,
+                      100e-6, 1e-3, 0.01,
+                      0.1, 1.0, 3.0]
 
     def __init__(self, acceleration=1.0):
         self.channel = 'a'
