@@ -357,8 +357,6 @@ def test_protocolstep_header(basic_protocolstep):
     assert basic_protocolstep.header() == False
 
 def test_protocolstep_run(basic_protocolstep):
-
-    
     basic_protocolstep.status = 2
     assert basic_protocolstep.run() == None
     assert basic_protocolstep.next_time == float('inf')
@@ -387,8 +385,27 @@ def test_process_reports():
 def test_process_ends():
     assert True
 
-def test_make_currentstep():
-    assert True
+def test_make_currentstep(basic_cellrunner):
+    test_mock_device = mock_device.MockDevice()
+    basic_cellrunner.channel = 'a'
+    basic_cellrunner.set_source(test_mock_device.get_source(None))
+    test_currentstep = protocols.CurrentStep(20)
+    test_currentstep.parent = basic_cellrunner
+    test_currentstep.parent.add_step(test_currentstep)
+    
+    assert test_currentstep.state_str == "charge_constant_current"
+    assert test_currentstep.current == 20
+    assert test_currentstep.v_limit == 4.3
+
+    test_currentstep = protocols.CurrentStep(-20)
+    test_currentstep.parent = basic_cellrunner
+    test_currentstep.parent.add_step(test_currentstep)
+    assert test_currentstep.state_str == "discharge_constant_current"
+    assert test_currentstep.current == -20
+    assert test_currentstep.v_limit == 5
+
+    with pytest.raises(ValueError):
+        test_currentstep = protocols.CurrentStep(0)
 
 def test_currentstep__start():
     assert True
@@ -399,11 +416,47 @@ def test_currentstep_header():
 def test_currentstep_check_in_control():
     assert True
 
-def test_make_cccharge():
-    assert True
+def test_make_cccharge(basic_cellrunner):
+    test_mock_device = mock_device.MockDevice()
+    basic_cellrunner.channel = 'a'
+    basic_cellrunner.set_source(test_mock_device.get_source(None))
+    test_cccharge = protocols.CCCharge(20)
+    test_cccharge.parent = basic_cellrunner
+    test_cccharge.parent.add_step(test_cccharge)
 
-def test_make_ccdischarge():
-    assert True
+    assert test_cccharge.state_str == "charge_constant_current"
+    assert test_cccharge.current == 20
+
+    test_cccharge = protocols.CCCharge(-20)
+    test_cccharge.parent = basic_cellrunner
+    test_cccharge.parent.add_step(test_cccharge)
+
+    assert test_cccharge.state_str == "charge_constant_current"
+    assert test_cccharge.current == 20
+
+    with pytest.raises(ValueError):
+        test_cccharge = protocols.CCCharge(0)
+
+def test_make_ccdischarge(basic_cellrunner):
+    test_mock_device = mock_device.MockDevice()
+    basic_cellrunner.channel = 'a'
+    basic_cellrunner.set_source(test_mock_device.get_source(None))
+    test_ccdischarge = protocols.CCCharge(20)
+    test_ccdischarge.parent = basic_cellrunner
+    test_ccdischarge.parent.add_step(test_ccdischarge)
+
+    assert test_ccdischarge.state_str == "charge_constant_current"
+    assert test_ccdischarge.current == 20
+
+    test_ccdischarge = protocols.CCCharge(-20)
+    test_ccdischarge.parent = basic_cellrunner
+    test_ccdischarge.parent.add_step(test_ccdischarge)
+
+    assert test_ccdischarge.state_str == "charge_constant_current"
+    assert test_ccdischarge.current == 20
+
+    with pytest.raises(ValueError):
+        test_ccdischarge = protocols.CCCharge(0)
 
 def test_make_voltagestep():
     test_voltage_step = protocols.VoltageStep(4)
@@ -426,23 +479,25 @@ def test_make_cvcharge(basic_cellrunner):
     test_mock_device = mock_device.MockDevice()
     basic_cellrunner.channel = 'a'
     basic_cellrunner.set_source(test_mock_device.get_source(None))
-    exec("test_cvcharge=protocols.CVCharge(4)\ntest_cvcharge.parent = parent\ntest_cvcharge.parent.add_step(test_cvcharge)", globals().update({"parent": basic_cellrunner}))
-    test_CVCharge = basic_cellrunner.steps[0]
+    test_cvcharge = protocols.CVCharge(4)
+    test_cvcharge.parent = basic_cellrunner
+    test_cvcharge.parent.add_step(test_cvcharge)
     
-    assert test_CVCharge.state_str == "charge_constant_voltage"
-    test_CVCharge.guess_i_limit()
-    assert test_CVCharge.i_limit == 3
+    assert test_cvcharge.state_str == "charge_constant_voltage"
+    test_cvcharge.guess_i_limit()
+    assert test_cvcharge.i_limit == 3
 
 def test_make_cvdischarge(basic_cellrunner):
     test_mock_device = mock_device.MockDevice()
     basic_cellrunner.channel = 'a'
     basic_cellrunner.set_source(test_mock_device.get_source(None))
-    exec("test_cvdischarge=protocols.CVDischarge(4)\ntest_cvdischarge.parent = parent\ntest_cvdischarge.parent.add_step(test_cvdischarge)", globals().update({"parent": basic_cellrunner}))
-    test_CVDischarge = basic_cellrunner.steps[0]
+    test_cvdischarge = protocols.CVDischarge(4)
+    test_cvdischarge.parent = basic_cellrunner
+    test_cvdischarge.parent.add_step(test_cvdischarge)
     
-    assert test_CVDischarge.state_str == "discharge_constant_voltage"
-    test_CVDischarge.guess_i_limit()
-    assert test_CVDischarge.i_limit == -3
+    assert test_cvdischarge.state_str == "discharge_constant_voltage"
+    test_cvdischarge.guess_i_limit()
+    assert test_cvdischarge.i_limit == -3
 
 def test_advancecycle__start():
     test_advance_cycle = protocols.AdvanceCycle()
@@ -541,19 +596,81 @@ def test_conditiondelta_check():
     assert True
 
 def test_make_conditiontotaldelta():
-    assert True
+    test_conditiontotaldelta = protocols.ConditionTotalDelta("voltage", 1)
+    assert test_conditiontotaldelta.delta == 1
+    assert test_conditiontotaldelta.value_str == "voltage"
+    assert test_conditiontotaldelta.index == 2
+    assert test_conditiontotaldelta.comparison(2, 1)
+    assert test_conditiontotaldelta.next_time == float('inf')
+
+    test_conditiontotaldelta = protocols.ConditionTotalDelta("time", 1)
+    assert test_conditiontotaldelta.delta == 1
+    assert test_conditiontotaldelta.value_str == "time"
+    assert test_conditiontotaldelta.index == 0
+    assert test_conditiontotaldelta.comparison(2, 1)
+    assert test_conditiontotaldelta.next_time == float('inf')
+
+    test_conditiontotaldelta = protocols.ConditionTotalDelta("current", 1)
+    assert test_conditiontotaldelta.delta == 1
+    assert test_conditiontotaldelta.value_str == "current"
+    assert test_conditiontotaldelta.index == 1
+    assert test_conditiontotaldelta.comparison(2, 1)
+    assert test_conditiontotaldelta.next_time == float('inf')
+
+    test_conditiontotaldelta = protocols.ConditionTotalDelta("capacity", 1)
+    assert test_conditiontotaldelta.delta == 1
+    assert test_conditiontotaldelta.value_str == "capacity"
+    assert test_conditiontotaldelta.index == 3
+    assert test_conditiontotaldelta.comparison(2, 1)
+    assert test_conditiontotaldelta.next_time == float('inf')
+
     
 def test_conditiontotaldelta_check():
     assert True
 
 def test_make_conditiontotaltime():
-    assert True
+    test_conditiontotaltime = protocols.ConditionTotalTime(120)
+    assert test_conditiontotaltime.delta == 120
+    assert test_conditiontotaltime.value_str == "time"
+    assert test_conditiontotaltime.index == 0
+    assert test_conditiontotaltime.comparison(2, 1)
+    assert test_conditiontotaltime.next_time == float('inf')
 
 def test_conditiontotaltime_check():
     assert True
 
 def test_make_conditionabsolute():
-    assert True
+    test_condition_absolute = protocols.ConditionAbsolute("voltage", ">", 4.2)
+    assert test_condition_absolute.value == 4.2
+    assert test_condition_absolute.value_str == "voltage"
+    assert test_condition_absolute.index == 2
+    assert test_condition_absolute.comparison(3,1)
+    assert test_condition_absolute.next_time == float('inf')
+    assert test_condition_absolute.min_time == 1.0
+
+    test_condition_absolute = protocols.ConditionAbsolute("time", ">", 10)
+    assert test_condition_absolute.value == 10
+    assert test_condition_absolute.value_str == "time"
+    assert test_condition_absolute.index == 0
+    assert test_condition_absolute.comparison(3,1)
+    assert test_condition_absolute.next_time == float('inf')
+    assert test_condition_absolute.min_time == 1.0
+
+    test_condition_absolute = protocols.ConditionAbsolute("current", ">", 0.2)
+    assert test_condition_absolute.value == 0.2
+    assert test_condition_absolute.value_str == "current"
+    assert test_condition_absolute.index == 1
+    assert test_condition_absolute.comparison(3,1)
+    assert test_condition_absolute.next_time == float('inf')
+    assert test_condition_absolute.min_time == 1.0
+
+    test_condition_absolute = protocols.ConditionAbsolute("capacity", ">", 100)
+    assert test_condition_absolute.value == 100
+    assert test_condition_absolute.value_str == "capacity"
+    assert test_condition_absolute.index == 3
+    assert test_condition_absolute.comparison(3,1)
+    assert test_condition_absolute.next_time == float('inf')
+    assert test_condition_absolute.min_time == 1.0
 
 def test_conditionabsolute_check():
     assert True
