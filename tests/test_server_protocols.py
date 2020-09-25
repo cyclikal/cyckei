@@ -368,16 +368,40 @@ def test_protocolstep_check_report_conditions(basic_protocolstep):
     assert True
     
 def test_protocolstep_check_in_control(basic_protocolstep):
-    assert True
-
+    with pytest.raises(NotImplementedError):
+        basic_protocolstep.check_in_control()
+        
 def test_protocolstep_read_data(basic_protocolstep):
     assert True
 
-def test_protocolstep_pause(basic_protocolstep):
-    assert True
+def test_protocolstep_pause(basic_cellrunner, basic_protocolstep):
+    test_device = mock_device.MockDevice()
+    basic_cellrunner.channel = 'a'
+    basic_cellrunner.set_source(test_device.get_source(None))
 
-def test_protocolstep_resume(basic_protocolstep):
-    assert True
+    basic_cellrunner.add_step(basic_protocolstep)
+    basic_cellrunner.add_step(basic_protocolstep)
+    test_pause = basic_protocolstep.pause()
+    assert test_pause == False
+    basic_protocolstep.status = 1
+    test_pause = basic_protocolstep.pause()
+    assert test_pause == True
+    assert basic_protocolstep.status == 2
+    assert basic_protocolstep.next_time == float('inf')
+
+def test_protocolstep_resume(basic_cellrunner, basic_protocolstep):
+    test_device = mock_device.MockDevice()
+    basic_cellrunner.channel = 'a'
+    basic_cellrunner.set_source(test_device.get_source(None))
+
+    basic_cellrunner.add_step(basic_protocolstep)
+    basic_cellrunner.add_step(basic_protocolstep)
+    basic_cellrunner._start()
+    basic_cellrunner.next_step()
+    basic_cellrunner.next_step()
+    basic_protocolstep.pause()
+    basic_protocolstep.resume()
+    assert basic_protocolstep.parent.total_pause_time == 0 + basic_protocolstep.pause_time
 
 def test_process_reports():
     assert True
@@ -675,35 +699,94 @@ def test_make_conditionabsolute():
 def test_conditionabsolute_check():
     assert True
 
-def teset_condition_end_voltage():
-    assert True
+def test_condition_end_voltage():
+    test_condition_end_voltage = protocols.condition_end_voltage(4.2, ">=")
+    assert test_condition_end_voltage.value == 4.2
+    assert test_condition_end_voltage.value_str == "voltage"
+    assert test_condition_end_voltage.index == 2
+    assert test_condition_end_voltage.comparison(3,1)
+    assert test_condition_end_voltage.next_time == float('inf')
+    assert test_condition_end_voltage.min_time == 1.0
 
 def test_condition_ucv():
-    assert True
+    test_condition_ucv = protocols.condition_ucv(4.2)
+    assert test_condition_ucv.value == 4.2
+    assert test_condition_ucv.value_str == "voltage"
+    assert test_condition_ucv.index == 2
+    assert test_condition_ucv.comparison(3,1)
+    assert test_condition_ucv.comparison(1,3) == False
+    assert test_condition_ucv.next_time == float('inf')
+    assert test_condition_ucv.min_time == 1.0
 
 def test_condition_lcv():
-    assert True
+    test_condition_lcv = protocols.condition_lcv(4.2)
+    assert test_condition_lcv.value == 4.2
+    assert test_condition_lcv.value_str == "voltage"
+    assert test_condition_lcv.index == 2
+    assert test_condition_lcv.comparison(3,1) == False
+    assert test_condition_lcv.comparison(1,3)
+    assert test_condition_lcv.next_time == float('inf')
+    assert test_condition_lcv.min_time == 1.0
 
 def test_condition_min_current():
-    assert True
+    test_condition_min_current = protocols.condition_min_current(0.02)
+    assert test_condition_min_current.value == 0.02
+    assert test_condition_min_current.value_str == "current"
+    assert test_condition_min_current.index == 1
+    assert test_condition_min_current.comparison(3,1) == False
+    assert test_condition_min_current.comparison(1,3)
+    assert test_condition_min_current.next_time == float('inf')
+    assert test_condition_min_current.min_time == 1.0
 
 def test_condition_max_current():
-    assert True
+    test_condition_max_current = protocols.condition_max_current(0.02)
+    assert test_condition_max_current.value == 0.02
+    assert test_condition_max_current.value_str == "current"
+    assert test_condition_max_current.index == 1
+    assert test_condition_max_current.comparison(3,1)
+    assert test_condition_max_current.comparison(1,3) == False
+    assert test_condition_max_current.next_time == float('inf')
+    assert test_condition_max_current.min_time == 1.0
 
 def test_condition_total_time():
-    assert True
+    test_conditiontotaltime = protocols.condition_total_time(120)
+    assert test_conditiontotaltime.delta == 120
+    assert test_conditiontotaltime.value_str == "time"
+    assert test_conditiontotaltime.index == 0
+    assert test_conditiontotaltime.comparison(2, 1)
+    assert test_conditiontotaltime.next_time == float('inf')
 
 def test_condition_dt():
-    assert True
+    test_condition_delta = protocols.condition_dt(11)
+    assert test_condition_delta.value_str == "time"
+    assert test_condition_delta.index == 0
+    assert test_condition_delta.comparison(2, 1)
+    assert test_condition_delta.delta == 11
+    assert test_condition_delta.is_time == True
 
 def test_condition_di():
-    assert True
+    test_condition_delta = protocols.condition_di(11)
+    assert test_condition_delta.value_str == "current"
+    assert test_condition_delta.index == 1
+    assert test_condition_delta.comparison(2, 1)
+    assert test_condition_delta.delta == 11
+    assert test_condition_delta.is_time == False
 
 def test_condition_dv():
-    assert True
+    test_condition_delta = protocols.condition_dv(11)
+    assert test_condition_delta.value_str == "voltage"
+    assert test_condition_delta.index == 2
+    assert test_condition_delta.comparison(2, 1)
+    assert test_condition_delta.delta == 11
+    assert test_condition_delta.is_time == False
 
 def test_condition_dc():
-    assert True
+    test_condition_delta = protocols.condition_dc(11)
+    assert test_condition_delta.value_str == "capacity"
+    assert test_condition_delta.index == 3
+    assert test_condition_delta.comparison(2, 1)
+    assert test_condition_delta.delta == 11
+    assert test_condition_delta.is_time == False
 
 def test_extrapolate_time():
     assert True
