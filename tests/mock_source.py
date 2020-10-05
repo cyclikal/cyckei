@@ -5,7 +5,7 @@ import time
 
 class MockSource():
     w = 100.  # mAh
-    s = -1.  # shift to avoid dorppping too low in voltage
+    s = -1.  # shift to avoid dorpping too low in voltage
     R = 2.  # internal resistance in Ohms
     current_ranges = [100 * 1e-9, 1e-6, 10e-6,
                       100e-6, 1e-3, 0.01,
@@ -86,7 +86,7 @@ class MockSource():
         self._current = current
         self.mode = 'constant_current'
 
-    def set_voltage(self, voltage=3):
+    def set_voltage(self, voltage=3, i_limit=1):
         self.off()
         self._voltage = voltage
         self.mode = 'constant_voltage'

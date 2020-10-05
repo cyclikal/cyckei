@@ -6,8 +6,8 @@ class MockDevice(object):
                       100e-6, 1e-3, 0.01,
                       0.1, 1.0, 3.0]
 
-    def __init__(self):
-        self.source = mock_source.MockSource()
+    def __init__(self, accel=1):
+        self.source = mock_source.MockSource(accel)
         self.safety_reset_seconds = 120
 
     def get_source(self, kch, channel=None):

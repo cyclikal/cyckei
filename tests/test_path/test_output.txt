@@ -4,8 +4,8 @@
 #    "channel": "test channel",
 #    "comment": "Testing comments",
 #    "cycler": "Test cycler",
-#    "date_start_timestamp": 1601062626.6927636,
-#    "date_start_timestr": "2020-09-25_14:37:06.692764",
+#    "date_start_timestamp": 1601918109.5867856,
+#    "date_start_timestr": "2020-10-05_12:15:09.586786",
 #    "format": [
 #        "time",
 #        "current",
