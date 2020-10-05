@@ -3,10 +3,8 @@ import os
 import pytest
 import time
 import json
-from tests import mock_source
-from tests import mock_device
-from cyckei.server import protocols
-from cyckei.server import keithley2602
+from tests import mock_source, mock_device
+from cyckei.server import protocols, keithley2602
 
 # Test class created for testing in protocols.
 # Each individual condition will be tested to ensure they produce the 
