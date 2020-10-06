@@ -4,8 +4,8 @@
 #    "channel": "test channel",
 #    "comment": "Testing comments",
 #    "cycler": "Test cycler",
-#    "date_start_timestamp": 1601926128.082126,
-#    "date_start_timestr": "2020-10-05_14:28:48.082126",
+#    "date_start_timestamp": 1602019516.3945193,
+#    "date_start_timestr": "2020-10-06_16:25:16.394519",
 #    "format": [
 #        "time",
 #        "current",
@@ -23,6 +23,6 @@
 #    "start_cycle": 0
 #}
 {"cycle": 0}
-  {"state": "charge_constant_current", "date_start_timestr": "2020-10-05_14:28:48.082125"}
+  {"state": "charge_constant_current", "date_start_timestr": "2020-10-06_16:25:16.394519"}
     0,20,42.780956,0
     0,20,42.780956,0

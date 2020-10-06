@@ -139,7 +139,7 @@ def test_make_scripteditor():
     f3 = open("tests/scripts/test_file3.txt", "w")
     f3.close()
 
-    test_scripteditor1 = script_editor.ScriptEditor(config, resource)
+    #test_scripteditor1 = script_editor.ScriptEditor(config, resource)
 
     #Cleanup
     os.remove("tests/scripts/test_file1.txt")
