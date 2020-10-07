@@ -283,7 +283,6 @@ def test_cellrunner_write_data(basic_cellrunner):
     lines = test_file.read().splitlines()
     second_to_last_line = lines[-1]
     split_line = second_to_last_line.split(",")
-    print(split_line)
     timestamp = split_line[0]
     current = split_line[1]
     voltage = split_line[2]
@@ -682,22 +681,22 @@ def test_make_cccharge(basic_cellrunner):
 
 def test_make_ccdischarge(basic_cellrunner):
     
-    test_ccdischarge = protocols.CCCharge(20)
+    test_ccdischarge = protocols.CCDischarge(20)
     test_ccdischarge.parent = basic_cellrunner
     test_ccdischarge.parent.add_step(test_ccdischarge)
 
-    assert test_ccdischarge.state_str == "charge_constant_current"
-    assert test_ccdischarge.current == 20
+    assert test_ccdischarge.state_str == "discharge_constant_current"
+    assert test_ccdischarge.current == -20
 
-    test_ccdischarge = protocols.CCCharge(-20)
+    test_ccdischarge = protocols.CCDischarge(-20)
     test_ccdischarge.parent = basic_cellrunner
     test_ccdischarge.parent.add_step(test_ccdischarge)
 
-    assert test_ccdischarge.state_str == "charge_constant_current"
-    assert test_ccdischarge.current == 20
+    assert test_ccdischarge.state_str == "discharge_constant_current"
+    assert test_ccdischarge.current == -20
 
     with pytest.raises(ValueError):
-        test_ccdischarge = protocols.CCCharge(0)
+        test_ccdischarge = protocols.CCDischarge(0)
 
 def test_make_voltagestep():
     test_voltage_step = protocols.VoltageStep(4)
@@ -877,9 +876,11 @@ def test_sleep_run(basic_cellrunner):
     assert result[3] == 0.0
 
 def test_sleep_check_in_control(basic_cellrunner):
-    
     test_sleep = protocols.Sleep()
     test_sleep.parent = basic_cellrunner
+    assert test_sleep.check_in_control(1, 1, 4) == False
+    assert test_sleep.status == 5
+    assert test_sleep.check_in_control(1, 0, 4)
 
 def test_make_conditiondelta():
     test1_condition_delta = protocols.ConditionDelta("voltage", 11)
@@ -978,34 +979,46 @@ def test_make_conditiontotaldelta():
     assert test_conditiontotaldelta.next_time == float('inf')
 
     
-def test_conditiontotaldelta_check():
+def test_conditiontotaldelta_check(basic_cellrunner):
     test_conditiontotaldelta = protocols.ConditionTotalDelta("voltage", 1)
-    assert test_conditiontotaldelta.delta == 1
-    assert test_conditiontotaldelta.value_str == "voltage"
-    assert test_conditiontotaldelta.index == 2
-    assert test_conditiontotaldelta.comparison(2, 1)
-    assert test_conditiontotaldelta.next_time == float('inf')
+    test_voltage_step = protocols.VoltageStep(4)
+    basic_cellrunner.meta['plugins'] = {}
+    test_voltage_step.parent = basic_cellrunner
+    test_voltage_step.state_str = "charge"
+    test_voltage_step.guess_i_limit()
+    # setting initial values to be compared against
+    test_voltage_step.parent.source.set_current(1)
+    test_voltage_step.parent.source.set_voltage(6)
+    assert test_conditiontotaldelta.check(test_voltage_step) == False
+    test_voltage_step.run(True)
+    test_voltage_step.parent.source.set_voltage(5)
+    test_voltage_step.run()
+    assert test_conditiontotaldelta.check(test_voltage_step)
 
     test_conditiontotaldelta = protocols.ConditionTotalDelta("time", 1)
-    assert test_conditiontotaldelta.delta == 1
-    assert test_conditiontotaldelta.value_str == "time"
-    assert test_conditiontotaldelta.index == 0
-    assert test_conditiontotaldelta.comparison(2, 1)
-    assert test_conditiontotaldelta.next_time == float('inf')
+    assert test_conditiontotaldelta.check(test_voltage_step) == False
+    time.sleep(1)
+    test_voltage_step.run()
+    assert test_conditiontotaldelta.check(test_voltage_step)
 
     test_conditiontotaldelta = protocols.ConditionTotalDelta("current", 1)
-    assert test_conditiontotaldelta.delta == 1
-    assert test_conditiontotaldelta.value_str == "current"
-    assert test_conditiontotaldelta.index == 1
-    assert test_conditiontotaldelta.comparison(2, 1)
-    assert test_conditiontotaldelta.next_time == float('inf')
+    assert test_conditiontotaldelta.check(test_voltage_step) == False
+    test_voltage_step.parent.source.set_current(2)
+    test_voltage_step.run()
+    assert test_conditiontotaldelta.check(test_voltage_step)
 
     test_conditiontotaldelta = protocols.ConditionTotalDelta("capacity", 1)
-    assert test_conditiontotaldelta.delta == 1
-    assert test_conditiontotaldelta.value_str == "capacity"
-    assert test_conditiontotaldelta.index == 3
-    assert test_conditiontotaldelta.comparison(2, 1)
-    assert test_conditiontotaldelta.next_time == float('inf')
+    assert test_conditiontotaldelta.check(test_voltage_step) == False
+    test_voltage_step = protocols.VoltageStep(100)
+    basic_cellrunner.meta['plugins'] = {}
+    test_voltage_step.parent = basic_cellrunner
+    test_voltage_step.state_str = "charge"
+    test_voltage_step.guess_i_limit()
+    test_voltage_step.parent.source.set_current(20)
+    test_voltage_step.run()
+    time.sleep(2)
+    test_voltage_step.read_data()
+    assert test_conditiontotaldelta.check(test_voltage_step)
 
 def test_make_conditiontotaltime():
     test_conditiontotaltime = protocols.ConditionTotalTime(120)

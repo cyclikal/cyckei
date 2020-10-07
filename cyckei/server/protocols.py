@@ -801,7 +801,6 @@ class VoltageStep(ProtocolStep):
     def guess_i_limit(self):
         self.i_limit = 1.0
         if self.state_str.startswith("charge"):
-            print(self.parent.source.current_ranges[-1])
             self.i_limit = self.parent.source.current_ranges[-1]
         elif self.state_str.startswith("discharge"):
             self.i_limit = -self.parent.source.current_ranges[-1]
@@ -1123,9 +1122,6 @@ class ConditionDelta(Condition):
                 logger.debug("Set next_time to {:.2f} (in {:.2f} sec)".format(
                                 step.next_time, step.next_time-time.time()
                             ))
-                print(abs(val - step.report[-1][self.index]))
-                print(step.report[-1])
-                print()
                 if self.comparison(abs(val - step.report[-1][self.index]),
                                    self.delta):
                     return True
