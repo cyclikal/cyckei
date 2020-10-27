@@ -1,14 +1,14 @@
 """Classes to handle interfacing with Keithleys and their channels"""
 
 import time
-import visa
+import pyvisa
 
 import functions as func
 
 
 def source_from_gpib(gpib_address, channel):
     """Opens GPIB resource and returns as Source object"""
-    resource_manager = visa.ResourceManager()
+    resource_manager = pyvisa.ResourceManager()
     source_meter = resource_manager.open_resource(
         "GPIB0::{}::INSTR".format(gpib_address)
     )
@@ -26,7 +26,7 @@ class Keithley2602(object):
                       0.1, 1.0, 3.0]
 
     def __init__(self, gpib_addr, load_scripts=True):
-        resource_manager = visa.ResourceManager()
+        resource_manager = pyvisa.ResourceManager()
         self.gpib_addr = gpib_addr
         self.source_meter = resource_manager.open_resource(
             "GPIB0::{}::INSTR".format(gpib_addr)
@@ -53,7 +53,7 @@ class Source(object):
         Parameters
         ----------
         source_meter: sourcemeter
-            Obtained from an open_resource visa call
+            Obtained from an open_resource pyvisa call
         kch: str
             Keithley channel ("a" or "b").
             Stored lower case internally and accessible in the kch attribute
@@ -180,8 +180,8 @@ smu{ch}.source.output = smu{ch}.OUTPUT_ON""".format(ch=self.kch,
         self.source_meter.write(
             "current, voltage = smu{}.measure.iv()".format(self.kch)
         )
-        current = float(self.source_meter.ask("print(current)"))
-        voltage = float(self.source_meter.ask("print(voltage)"))
+        current = float(self.source_meter.query("print(current)"))
+        voltage = float(self.source_meter.query("print(voltage)"))
 
         # The Keithley will report totally out of range numbers like 9.91e+37
         # if asked to e.g. charge to 3.9V when the cell is already at 4.2V
@@ -198,8 +198,8 @@ smu{ch}.source.output = smu{ch}.OUTPUT_ON""".format(ch=self.kch,
         self.source_meter.write(
             "current, voltage = smu{}.measure.iv()".format(self.kch)
         )
-        current = float(self.source_meter.ask("print(current)"))
-        voltage = float(self.source_meter.ask("print(voltage)"))
+        current = float(self.source_meter.query("print(current)"))
+        voltage = float(self.source_meter.query("print(voltage)"))
         self.data.append([t, current, voltage])
 
         if len(self.data) > self.data_max_len:
@@ -243,4 +243,4 @@ smu{ch}.source.output = smu{ch}.OUTPUT_ON""".format(ch=self.kch,
         self.source_meter.write(*args, **kwargs)
 
     def ask(self, *args, **kwargs):
-        self.source_meter.ask(*args, **kwargs)
+        self.source_meter.query(*args, **kwargs)
