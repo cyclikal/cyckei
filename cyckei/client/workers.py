@@ -210,7 +210,8 @@ class Check(QRunnable):
                       "CVDischarge(",
                       "Rest(",
                       "Sleep("]
-
+        if protocol == "":
+            return False, "An empty file can not be run."
         for line in protocol.splitlines():
             line = line.replace(" ", "")
             line = line.replace("\t", "")
