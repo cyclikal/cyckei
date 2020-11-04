@@ -221,18 +221,18 @@ class ChannelWidget(QWidget):
             self.config["arguments"]["record_dir"] + "/scripts")
 
         self.attributes["protocol_name"] = filename[0].split("/")[-1]
-
         if filename[0]:
             filepath = Path(filename[0]).resolve().absolute()
-            self.attributes['script_path'] = str(filepath)
-            try:
-                self.attributes['script_content'] \
-                    = open(self.attributes['script_path'], "r").read()
-                self.script_label.setText(f'Script: {filepath.name}')
-            except (UnicodeDecodeError, PermissionError) as error:
-                logger.error(
-                    f"Could not read file: {self.attributes['script_path']}")
-                logger.exception(error)
+            if filepath.is_dir() is False:
+                self.attributes['script_path'] = str(filepath)
+                try:
+                    self.attributes['script_content'] \
+                        = open(self.attributes['script_path'], "r").read()
+                    self.script_label.setText(f'Script: {filepath.name}')
+                except (UnicodeDecodeError, PermissionError) as error:
+                    logger.error(
+                        f"Could not read file: {self.attributes['script_path']}")
+                    logger.exception(error)
 
     def get_controls(self):
         buttons = [
