@@ -1,0 +1,17 @@
+{
+  "set_text": {
+    "text": "Testing Connection"
+  },
+  "read_v": {
+    "validate": false,
+    "min": 3.4,
+    "max": 4.0
+  },
+  "charge": {
+    "README1": "Charge duration in minutes, Current in amps, Voltage in volts.",
+    "README2": "Set duration to zero to skip.",
+    "duration": 1,
+    "current": 0.001,
+    "voltage_limit": 5
+  }
+}

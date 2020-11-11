@@ -630,10 +630,18 @@ class CurrentStep(ProtocolStep):
             raise ValueError("current argument should be non-zero")
         self.current = current
 
+        # this is used in case symmetrical cells are used which can have a negative voltage
         self.v_limit = sign * 5.0
-        for e in ends:
-            if e[0] == "voltage":
-                self.v_limit = e[2] + sign * 0.1
+
+        # bump the limit to 0.1 V beyond the requested end voltage
+        end_voltages = [e[2] for e in ends if e[0] == "voltage"]
+        if end_voltages:
+            if sign > 0:
+                # min because we want most restrictive end condition
+                self.v_limit = min(end_voltages) + 0.1
+            else:
+                self.v_limit = max(end_voltages) - 0.1
+
 
         self.report_conditions = process_reports(reports)
         self.end_conditions = process_ends(ends)
