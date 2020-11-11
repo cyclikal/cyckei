@@ -88,7 +88,7 @@ def test_start(basic_cellrunner):
         "start_cycle": 0,
         "format": ["Test format"]
     }
-    test_protocol = "from cyckei.server import protocols\nprotocols.CurrentStep(20)"
+    test_protocol = "from cyckei.server import protocols\nprotocols.CurrentStep(0.01)"
     assert server.start('a', test_meta, test_protocol, [], [
                         basic_cellrunner.source], []) == "Log file 'test_output.txt' already in use."
     test_meta = {
@@ -119,7 +119,7 @@ def test_pause(basic_cellrunner):
     basic_cellrunner.set_source(test_device.get_source(None))
     basic_cellrunner.meta['plugins'] = {}
     basic_cellrunner.load_protocol(
-        "from cyckei.server import protocols\nprotocols.CurrentStep(20)")
+        "from cyckei.server import protocols\nprotocols.CurrentStep(0.01)")
     basic_cellrunner.run()
     assert server.pause('a', [basic_cellrunner]
                         ) == "Succeeded in pausing channel a"
@@ -132,7 +132,7 @@ def test_stop(basic_cellrunner):
     basic_cellrunner.set_source(test_device.get_source(None))
     basic_cellrunner.meta['plugins'] = {}
     basic_cellrunner.load_protocol(
-        "from cyckei.server import protocols\nprotocols.CurrentStep(20)")
+        "from cyckei.server import protocols\nprotocols.CurrentStep(0.01)")
     basic_cellrunner.run()
     assert server.stop('a', [basic_cellrunner]
                        ) == "Succeeded in stopping channel a"
@@ -146,7 +146,7 @@ def test_resume(basic_cellrunner):
     basic_cellrunner.set_source(test_device.get_source(None))
     basic_cellrunner.meta['plugins'] = {}
     basic_cellrunner.load_protocol(
-        "from cyckei.server import protocols\nprotocols.CurrentStep(20)")
+        "from cyckei.server import protocols\nprotocols.CurrentStep(0.01)")
     basic_cellrunner.run()
     basic_cellrunner.pause()
     assert server.resume('a', [basic_cellrunner]
