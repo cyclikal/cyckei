@@ -22,6 +22,7 @@ setuptools.setup(
 
     classifiers=[
         "Programming Language :: Python :: 3",
+        'Programming Language :: Python :: 3.7',
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: OS Independent",
         "Topic :: Scientific/Engineering",
@@ -30,8 +31,18 @@ setuptools.setup(
         "pyzmq",
         "pyvisa",
         "PySide2",
-        "matplotlib"
+        "matplotlib",
+        "numpy==1.19.3"
     ],
+    extras_require={
+        'dev': [
+            'pytest',
+            'pytest-cov',
+            'scipy',
+            'pylint',
+            'autopep8'
+        ]
+    },
     entry_points={
         "console_scripts": [
             "cyckei = cyckei.cyckei:main"

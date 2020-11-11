@@ -1,0 +1,28 @@
+#{
+#    "cellid": "test id",
+#    "celltype": "Test type",
+#    "channel": "test channel",
+#    "comment": "Testing comments",
+#    "cycler": "Test cycler",
+#    "date_start_timestamp": 1605061304.4062238,
+#    "date_start_timestr": "2020-11-10_20:21:44.406224",
+#    "format": [
+#        "time",
+#        "current",
+#        "voltage",
+#        "capacity",
+#        "testing:plugins",
+#        "second:test"
+#    ],
+#    "package": "Test package",
+#    "path": "tests/test_path/test_output.txt",
+#    "plugins": {},
+#    "protocol": "Test protocol",
+#    "protocol_name": "Test protocol name",
+#    "requester": "Test protocol name",
+#    "start_cycle": 0
+#}
+{"cycle": 0}
+  {"state": "charge_constant_current", "date_start_timestr": "2020-11-10_20:21:44.407184"}
+    0.00096082687,0.01,2.800956,0
+    0.00096082687,0.01,2.800956,0
