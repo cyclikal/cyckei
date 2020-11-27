@@ -47,7 +47,7 @@ class DeviceController(object):
         resource_manager = visa.ResourceManager()
         self.gpib_addr = gpib_addr
         self.source_meter = resource_manager.open_resource(
-            parse_gpib_address(gpib_address))
+            parse_gpib_address(gpib_addr))
         # TODO do not reset? Do something else, clear buffers I think
         self.source_meter.write("abort")
         self.source_meter.write("reset()")
