@@ -15,8 +15,14 @@ SCRIPT_RUN_TIME_BUFFER = 2  # seconds, extra time for Keithley to load program
 def source_from_gpib(gpib_address, channel):
     """Opens GPIB resource and returns as Source object"""
     resource_manager = visa.ResourceManager()
+    try:
+        gpib_address = int(gpib_address)
+        full_address = "GPIB0::{}::INSTR".format(gpib_address)
+    except ValueError:
+        full_address = gpib_address
+
     source_meter = resource_manager.open_resource(
-        "GPIB0::{}::INSTR".format(gpib_address)
+        full_address
     )
     return Source(source_meter, channel)
 
