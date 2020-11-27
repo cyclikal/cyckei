@@ -1,5 +1,5 @@
 import unittest
-import visa
+import pyvisa as visa
 import logging
 import sys
 import json

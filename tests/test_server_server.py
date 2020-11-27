@@ -5,7 +5,7 @@ from cyckei.server import server, protocols
 from tests import mock_source, mock_device
 from PySide2.QtCore import QThreadPool
 import zmq
-from visa import VisaIOError
+from pyvisa import VisaIOError
 
 
 @pytest.fixture()
