@@ -3,7 +3,7 @@
 import logging
 import time
 
-import visa
+import pyvisa as visa
 
 from cyckei.functions import func
 
