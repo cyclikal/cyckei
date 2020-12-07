@@ -344,8 +344,7 @@ class CellRunner(object):
                 file.write(writeout)
                 logger.debug("Wrote data point to file.")
         except PermissionError as e:
-            logger.critical(f"Permission Error, could not write data: {e}")
-            logger.critical(f"Saved data: {writeout}")
+            logger.critical("Permission Error, could not write data: %s", e)
 
     def pause(self):
         """
