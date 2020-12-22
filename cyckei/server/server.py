@@ -176,8 +176,6 @@ def record_data(data_path, data):
     data_file.write(json.dumps(data))
     data_file.close()
 
-
-
 def process_socket(socket, runners, sources, server_time,
                    plugins, plugin_names):
     """
