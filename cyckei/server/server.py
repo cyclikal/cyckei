@@ -5,7 +5,7 @@ import time
 import traceback
 from os.path import isfile, basename
 from collections import OrderedDict
-
+import json
 import zmq
 from visa import VisaIOError
 
@@ -103,6 +103,7 @@ def event_loop(config, socket, plugins, plugin_names, device_module):
         max_counter = 1e9
         counter = 0
         initial_time = time.time()
+        data_path = config["arguments"]["record_dir"]
 
         while True:
             current_time = '{0:02.0f}.{1:02.0f}'.format(
@@ -159,11 +160,22 @@ def event_loop(config, socket, plugins, plugin_names, device_module):
 
             time.sleep(0.1)
 
+            # records server status
+            record_data(data_path, info_all_channels(runners, sources))
+
             # mod it by a large value to avoid ever overflowing
             counter = counter % max_counter + 1
     except Exception as e:
         logger.error("Failed with uncaught exception:")
         logger.exception(e)
+
+#Saves server status to a file
+def record_data(data_path, data):
+    data_path = data_path + "\server_data.txt"
+    data_file = open(data_path, "w")
+    data_file.write(json.dumps(data))
+    data_file.close()
+
 
 
 def process_socket(socket, runners, sources, server_time,
