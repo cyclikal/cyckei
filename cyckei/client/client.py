@@ -60,6 +60,13 @@ class MainWindow(QMainWindow):
         # # Load scripts
         # resource["scripts"] = ScriptList(config)
 
+        # Obtain channel information
+        logger.info("Connecting to server for channel information")
+        self.channel_info = Socket(config).info_all_channels()
+        if type(self.channel_info) is not dict:
+            logger.error("Could not get any plugin info from server.")
+            raise Exception("Incorrect server response")
+
         # Obtain plugin information
         logger.info("Connecting to server for plugin information")
         self.plugin_info = Socket(config).info_plugins()
@@ -72,7 +79,7 @@ class MainWindow(QMainWindow):
         self.status_bar = self.statusBar()
 
         # Create ChannelTab
-        self.channelView = ChannelTab(config, resource, self, self.plugin_info)
+        self.channelView = ChannelTab(config, resource, self, self.plugin_info, self.channel_info)
         self.channels = self.channelView.channels
         self.setCentralWidget(self.channelView)
 

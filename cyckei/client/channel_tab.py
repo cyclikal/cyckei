@@ -19,7 +19,7 @@ logger = logging.getLogger('cyckei')
 
 
 class ChannelTab(QWidget):
-    def __init__(self, config, resource, parent, plugin_info):
+    def __init__(self, config, resource, parent, plugin_info, channel_info):
         """Setup each channel widget and place in QVBoxlayout"""
         QWidget.__init__(self, parent)
         self.config = config
@@ -42,7 +42,8 @@ class ChannelTab(QWidget):
                 channel["channel"],
                 config,
                 resource,
-                plugin_info
+                plugin_info,
+                channel_info[str(channel["channel"])]
             ))
             rows.addWidget(self.channels[-1])
         self.alternate_colors()
@@ -86,7 +87,7 @@ class ChannelTab(QWidget):
 class ChannelWidget(QWidget):
     """Controls and stores information for a given channel"""
 
-    def __init__(self, channel, config, resource, plugin_info):
+    def __init__(self, channel, config, resource, plugin_info, cur_channel_info):
         super(ChannelWidget, self).__init__()
         # Default Values
         self.attributes = {
@@ -104,6 +105,7 @@ class ChannelWidget(QWidget):
             "script_path": None,
             "script_content": None
         }
+        print(cur_channel_info)
         self.config = config
 
         self.threadpool = resource["threadpool"]
@@ -135,7 +137,10 @@ class ChannelWidget(QWidget):
             setting_box.addLayout(element)
 
         # Script
-        self.script_label = gui.label("Script: None", "Current script")
+        if cur_channel_info["protocol_name"] == None:
+            self.script_label = gui.label("Script: None", "Current script")
+        else:
+            self.script_label = gui.label("Script: "+cur_channel_info["protocol_name"], "Current script")
         left.addWidget(self.script_label)
 
         # Status
