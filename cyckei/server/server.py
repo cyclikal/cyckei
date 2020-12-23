@@ -283,7 +283,7 @@ def info_all_channels(runners, sources):
 
 def info_channel(channel, runners, sources):
     """Return info on specified channels"""
-    info = OrderedDict(channel=channel, path=None, cellid=None, comment=None, protocol_name=None, status=None, state=None,
+    info = OrderedDict(channel=channel, path=None, cellid=None, comment=None, protocol_name=None, protocol=None, status=None, state=None,
                        current=None, voltage=None)
     runner = get_runner_by_channel(channel, runners)
     if runner:

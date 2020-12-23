@@ -132,7 +132,7 @@ class ChannelWidget(QWidget):
         # Settings
         setting_box = QHBoxLayout()
         left.addLayout(setting_box)
-        setting_elements = self.get_settings(plugin_info)
+        setting_elements = self.get_settings(cur_channel_info, plugin_info)
         for element in setting_elements:
             setting_box.addLayout(element)
 
@@ -141,6 +141,8 @@ class ChannelWidget(QWidget):
             self.script_label = gui.label("Script: None", "Current script")
         else:
             self.script_label = gui.label("Script: "+cur_channel_info["protocol_name"], "Current script")
+            # If a script was running when the client was closed this line keeps that script as the active one
+            self.set_script("",self.config["arguments"]["record_dir"] + "/scripts/"+ cur_channel_info["protocol_name"])
         left.addWidget(self.script_label)
 
         # Status
@@ -164,7 +166,7 @@ class ChannelWidget(QWidget):
         self.json = json.load(open(
             func.asset_path("default_packet.json")))
 
-    def get_settings(self, plugin_info):
+    def get_settings(self, cur_channel_info, plugin_info):
         """Creates all UI settings and adds them to settings list"""
         labels = []
         self.settings = []
@@ -197,6 +199,19 @@ class ChannelWidget(QWidget):
         for line in editables:
             self.settings.append(gui.line_edit(*line, self.set))
 
+        # Now that the defaults are set check each spot to update
+        # if the client was closed while the server was still running
+        # protocols
+        if cur_channel_info['path'] != None:
+            split_path = cur_channel_info['path'].split('\\')
+            self.settings[2].setText(split_path[-1])
+
+        if cur_channel_info['cellid'] != None:
+             self.settings[3].setText(cur_channel_info['cellid'])
+
+        if cur_channel_info['comment'] != None:
+             self.settings[4].setText(cur_channel_info['comment'])
+
         # Plugin Assignments
         plugin_sources = []
         for plugin in plugin_info:
@@ -219,22 +234,26 @@ class ChannelWidget(QWidget):
 
         return elements
 
-    def set_script(self, button_text):
-        filename = QFileDialog.getOpenFileName(
-            self,
-            "Open Script",
-            self.config["arguments"]["record_dir"] + "/scripts")
+    # By default is used to open window to select a file
+    # If a filepath is provided then finder window is skipped
+    def set_script(self, button_text, filename=None):
+        if filename == None:
+            filename = QFileDialog.getOpenFileName(
+                self,
+                "Open Script",
+                self.config["arguments"]["record_dir"] + "/scripts")
+            filename = filename[0]
 
-        self.attributes["protocol_name"] = filename[0].split("/")[-1]
-        if filename[0]:
-            filepath = Path(filename[0]).resolve().absolute()
+        self.attributes["protocol_name"] = filename.split("/")[-1]
+        if filename:
+            filepath = Path(filename).resolve().absolute()
             if filepath.is_dir() is False:
                 self.attributes['script_path'] = str(filepath)
                 try:
                     self.attributes['script_content'] \
                         = open(self.attributes['script_path'], "r").read()
                     self.script_label.setText(f'Script: {filepath.name}')
-                except (UnicodeDecodeError, PermissionError) as error:
+                except (UnicodeDecodeError, PermissionError, FileNotFoundError) as error:
                     logger.error(
                         f"Could not read file: {self.attributes['script_path']}")
                     logger.exception(error)
