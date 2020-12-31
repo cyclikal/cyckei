@@ -56,7 +56,7 @@ class BaseController(object):
 
         return logger
 
-    def get_sources(self):
+    def load_sources(self):
         """
         Searches for available sources, and establishes source objects.
 

@@ -589,9 +589,9 @@ class ProtocolStep(object):
                     value = plugin.read(plugin_source)
                     if type(value) not in [int, float]:
                         # raise TypeError(
-                        #   f"Plugin {plugin.name} did not return int or foat")
+                        #   f"Plugin {plugin.name} did not return int or float")
                         logger.error(
-                            f"Plugin {plugin.name} did not return int or foat")
+                            f"Plugin {plugin.name} did not return int or float")
                         value = 0
                     plugin_values.append((plugin.name, value))
                 else:
