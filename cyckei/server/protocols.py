@@ -150,7 +150,7 @@ class CellRunner(object):
         ----------
         direction: str or None
             direction for the cell can be "pos", "neg", or None
-            if it is None, the "celltype" in teh meta data is used,
+            if it is None, the "celltype" in the meta data is used,
             if this is not set it defaults to "pos"
 
 
@@ -344,8 +344,7 @@ class CellRunner(object):
                 file.write(writeout)
                 logger.debug("Wrote data point to file.")
         except PermissionError as e:
-            logger.critical(f"Permission Error, could not write data: {e}")
-            logger.critical(f"Saved data: {writeout}")
+            logger.critical("Permission Error, could not write data: %s", e)
 
     def pause(self):
         """
@@ -396,11 +395,11 @@ class ProtocolStep(object):
     Base class for a protocol step, needs to be subclassed with
     implementation of a start function
 
-    A protocol step stores stores its own data and the reported points
+    A protocol step stores its own data and the reported points
     Keeps track of time, current, voltage, capacity
 
     Because the protocol files are simply pure python the parent, which is a
-    CellRunner instance needs to be present in the global variables as "parent"
+    CellRunner instance, needs to be present in the global variables as "parent"
 
     """
 
@@ -420,7 +419,7 @@ class ProtocolStep(object):
         """
         # the parent is the CellRunner
         if cellrunner_parent is None:
-            self.parent = parent  # noqa: F821
+            self.parent = parent  # noqa: F821)
         else:
             self.parent = cellrunner_parent
 
@@ -500,7 +499,7 @@ class ProtocolStep(object):
 
         """
         logger.debug("Running {} protocol on channel {}".format(
-                        self.state_str, self.parent.channel))
+            self.state_str, self.parent.channel))
         if self.status == STATUS.paused:
             self.next_time = NEVER
             return None
@@ -617,7 +616,7 @@ class ProtocolStep(object):
             capacity = self.starting_capacity
 
         self.data.append([self.last_time, current,
-                         voltage, capacity, plugin_values])
+                          voltage, capacity, plugin_values])
 
         if len(self.data) > self.data_max_len:
             # we pop 1 and not 0
@@ -734,8 +733,8 @@ class CurrentStep(ProtocolStep):
 
     def header(self):
         return json.dumps({"state": self.state_str,
-                          "date_start_timestr": datetime.now().strftime(
-                                DATETIME_FORMAT)}
+                           "date_start_timestr": datetime.now().strftime(
+                               DATETIME_FORMAT)}
                           )
 
     def check_in_control(self, last_time, current, voltage):
@@ -801,6 +800,7 @@ class VoltageStep(ProtocolStep):
     def guess_i_limit(self):
         self.i_limit = 1.0
         if self.state_str.startswith("charge"):
+            print(self.parent.source.current_ranges[-1])
             self.i_limit = self.parent.source.current_ranges[-1]
         elif self.state_str.startswith("discharge"):
             self.i_limit = -self.parent.source.current_ranges[-1]
@@ -817,8 +817,8 @@ class VoltageStep(ProtocolStep):
 
     def header(self):
         return json.dumps({"state": self.state_str,
-                          "date_start_timestr": datetime.now().strftime(
-                            DATETIME_FORMAT)}
+                           "date_start_timestr": datetime.now().strftime(
+                               DATETIME_FORMAT)}
                           )
 
     def check_in_control(self, last_time, current, voltage):
@@ -835,7 +835,6 @@ class VoltageStep(ProtocolStep):
         self.in_control
         '''
         if self.data:
-
             # Give some leeway if the protocol has just been started
             tolerance = 0.1
             dt = last_time - self.data[0][0]
@@ -910,8 +909,8 @@ class Rest(ProtocolStep):
 
     def header(self):
         return json.dumps({"state": self.state_str,
-                          "date_start_timestr": datetime.now().strftime(
-                            DATETIME_FORMAT)}
+                           "date_start_timestr": datetime.now().strftime(
+                               DATETIME_FORMAT)}
                           )
 
     def check_in_control(self, last_time, current, voltage):
@@ -982,8 +981,8 @@ class Sleep(ProtocolStep):
 
     def header(self):
         return json.dumps({"state": self.state_str,
-                          "date_start_timestr": datetime.now().strftime(
-                            DATETIME_FORMAT)}
+                           "date_start_timestr": datetime.now().strftime(
+                               DATETIME_FORMAT)}
                           )
 
     def read_data(self):
@@ -1023,14 +1022,12 @@ class Sleep(ProtocolStep):
         if self.status != STATUS.started:
             self._start()
             report_data = True
-
         self.next_time = time.time() + self.wait_time
 
         self.check_end_conditions()
 
         if self.status == STATUS.completed:
             report_data = True
-
         else:
             report_data = report_data or self.check_report_conditions()
 
@@ -1123,9 +1120,11 @@ class ConditionDelta(Condition):
                     step.next_time = min(next_time, step.next_time)
 
                 logger.debug("Set next_time to {:.2f} (in {:.2f} sec)".format(
-                                step.next_time, step.next_time-time.time()
-                            ))
-
+                    step.next_time, step.next_time-time.time()
+                ))
+                print(abs(val - step.report[-1][self.index]))
+                print(step.report[-1])
+                print()
                 if self.comparison(abs(val - step.report[-1][self.index]),
                                    self.delta):
                     return True
@@ -1185,7 +1184,7 @@ class ConditionTotalTime(ConditionTotalDelta):
             # the correct result
             # I see no downside to taking the clock time instead
             delta = abs(time.time() - step.report[0][self.index]) \
-                    - step.pause_time
+                - step.pause_time
 
             if self.comparison(delta, self.delta):
                 return True
@@ -1193,8 +1192,8 @@ class ConditionTotalTime(ConditionTotalDelta):
                 next_time = self.delta - delta + time.time()
                 step.next_time = min(step.next_time, next_time)
                 logger.debug("{}, set next_time to {}".format(
-                                self.value_str,
-                                step.next_time))
+                    self.value_str,
+                    step.next_time))
                 return False
         except IndexError:
             return False
@@ -1309,8 +1308,8 @@ def extrapolate_time(data, target, index):
         logger.debug("Current time {:.2f}, \
                       Extrapolated time {:.2f} (in {:.2f} sec) \
                       using {} index and target value {}".format(
-                        current_time, next_time, next_time-current_time,
-                        DATA_NAME_MAP[index], target))
+            current_time, next_time, next_time-current_time,
+            DATA_NAME_MAP[index], target))
 
     except (NameError, IndexError, ZeroDivisionError):
         next_time = NEVER

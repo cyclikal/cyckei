@@ -3,7 +3,7 @@
 import logging
 import time
 
-import visa
+import pyvisa as visa
 
 from cyckei.functions import func
 
@@ -12,13 +12,15 @@ logger = logging.getLogger('cyckei')
 SCRIPT_RUN_TIME_BUFFER = 2  # seconds, extra time for Keithley to load program
 
 
-def source_from_gpib(gpib_address, channel):
-    """Opens GPIB resource and returns as Source object"""
-    resource_manager = visa.ResourceManager()
-    source_meter = resource_manager.open_resource(
-        "GPIB0::{}::INSTR".format(gpib_address)
-    )
-    return Source(source_meter, channel)
+def parse_gpib_address(gpib_address):
+    """takes int or str and returns full str GPIB address"""
+    try:
+        int(gpib_address)
+        full_address = "GPIB0::{}::INSTR".format(gpib_address)
+    except ValueError:
+        full_address = gpib_address
+
+    return full_address
 
 
 # Wrapper function for the Source class to enforce the use of a safety script
@@ -45,8 +47,7 @@ class DeviceController(object):
         resource_manager = visa.ResourceManager()
         self.gpib_addr = gpib_addr
         self.source_meter = resource_manager.open_resource(
-            "GPIB0::{}::INSTR".format(gpib_addr)
-        )
+            parse_gpib_address(gpib_addr))
         # TODO do not reset? Do something else, clear buffers I think
         self.source_meter.write("abort")
         self.source_meter.write("reset()")

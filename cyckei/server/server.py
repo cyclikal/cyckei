@@ -7,7 +7,7 @@ from os.path import isfile, basename
 from collections import OrderedDict
 import json
 import zmq
-from visa import VisaIOError
+from pyvisa import VisaIOError
 
 from .protocols import STATUS, CellRunner
 from . import keithley2602 as device_module
@@ -77,9 +77,9 @@ def event_loop(config, socket, plugins, plugin_names, device_module):
                 except (ValueError, VisaIOError) as e:
                     logger.error("Could not establish connection: "
                                  "Channel {}, GPIB {}.".format(
-                                        channel["channel"],
-                                        channel["gpib_address"]
-                                    )
+                                     channel["channel"],
+                                     channel["gpib_address"]
+                                 )
                                  )
                     logger.error(e)
                     continue
@@ -267,7 +267,7 @@ def process_socket(socket, runners, sources, server_time,
                 )
                 response["message"] = msg
                 logger.debug("Error occurred, sent response: {}".format(
-                                response['response']))
+                    response['response']))
                 socket.send_json(response)
 
 

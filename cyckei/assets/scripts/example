@@ -4,6 +4,6 @@
 
 for i in range(10):
 	AdvanceCycle()
-	CCCharge(0.01, reports=(("voltage", 0.01), ("time", ":5:")), ends=(("voltage", ">", 4), ("time", ">", "2::")))
-	CCDischarge(0.01, reports=(("voltage", 0.01), ("time", ":5:")), ends=(("voltage", "<", 3), ("time", ">", "2::")))
+	CCCharge(0.02, reports=(("voltage", 0.01), ("time", ":5:")), ends=(("voltage", ">", 4), ("time", ">", "2::")))
+	CCDischarge(0.02, reports=(("voltage", 0.01), ("time", ":5:")), ends=(("voltage", "<", 3), ("time", ">", "2::")))
 	Sleep(reports=(("time", ":1:"),), ends=(("time", ">", ":5:"),))

@@ -11,7 +11,7 @@ Cyckei relies on the PyVISA wrapper to communicate with any devices, and general
 
 ::
 
-    import visa
+    import pyvisa as visa
     rm = visa.ResourceManager()
     print(rm.list_resources())
 

@@ -20,7 +20,7 @@ Client
     :members:
 
 Explorer
-------
+--------
   .. automodule:: explorer
     :members:
   .. automodule:: explorer.explorer
@@ -46,7 +46,7 @@ Server
     :members:
 
 Functions
-------
+---------
   .. automodule:: functions
     :members:
   .. automodule:: functions.func
