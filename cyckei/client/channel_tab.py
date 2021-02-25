@@ -105,7 +105,6 @@ class ChannelWidget(QWidget):
             "script_path": None,
             "script_content": None
         }
-        print(cur_channel_info)
         self.config = config
 
         self.threadpool = resource["threadpool"]
