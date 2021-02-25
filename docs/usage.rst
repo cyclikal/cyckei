@@ -15,46 +15,36 @@ generated, and instructions on further configuration can be found in the `Editin
 Starting a cycle
 ----------------
 
-Various attributes of the cycle must be set in order to start a cycle.
-All of these have default values to prevent errors, however it is a good
-idea to manually specify them. The following should be set under the
-desired channel:
+Various attributes of the cycle may be set in before starting a cycle:
 
-+----------------+------------+----------------------------------------------------------------------------------------------------------------------+----------------------+
-| Option         | Type       | Description                                                                                                          | Default              |
-+================+============+======================================================================================================================+======================+
-| Script         | dropdown   | Script with desired protocol. Automatically loaded from the 'cycleScripts' folder in the program's root directory.   | First scanned file   |
-+----------------+------------+----------------------------------------------------------------------------------------------------------------------+----------------------+
-| Cell ID        | text       | Identification for cell. Recorded to output file.                                                                    | 0                    |
-+----------------+------------+----------------------------------------------------------------------------------------------------------------------+----------------------+
-| Log file       | text       | Path to output file. Placed in the specified logs folder.                                                            | "defaultLog.txt"     |
-+----------------+------------+----------------------------------------------------------------------------------------------------------------------+----------------------+
-| Mass           | text       | Mass of cell.                                                                                                        | 1                    |
-+----------------+------------+----------------------------------------------------------------------------------------------------------------------+----------------------+
-| Comment        | text       | Requester's comment for cycle. Recorded to output file.                                                              | "No Comment"         |
-+----------------+------------+----------------------------------------------------------------------------------------------------------------------+----------------------+
-| Package type   | dropdown   | Type of cell package. Recorded to output file.                                                                       | "Pouch"              |
-+----------------+------------+----------------------------------------------------------------------------------------------------------------------+----------------------+
-| Cell type      | dropdown   | Type of cell. Recorded to output file.                                                                               | "Full"               |
-+----------------+------------+----------------------------------------------------------------------------------------------------------------------+----------------------+
-| Requester      | dropdown   | Name of person starting cycle.                                                                                       | "Unspecified"        |
-+----------------+------------+----------------------------------------------------------------------------------------------------------------------+----------------------+
++----------------+------------+-------------------------------------------------------------------------+----------------------+
+| Option         | Type       | Description                                                             | Default              |
++================+============+=========================================================================+======================+
+| Script         | file       | Script with desired protocol. Gives option to select any local file.    | First scanned file   |
++----------------+------------+-------------------------------------------------------------------------+----------------------+
+| Log file       | text       | Path to output file. Placed in the specified logs folder.               | "default.pdb"        |
++----------------+------------+-------------------------------------------------------------------------+----------------------+
+| Cell ID        | text       | Identification for cell. Recorded to output file.                       | 0                    |
++----------------+------------+-------------------------------------------------------------------------+----------------------+
+| Comment        | text       | Requester's comment for cycle. Recorded to output file.                 | ""                   |
++----------------+------------+-------------------------------------------------------------------------+----------------------+
 
 The available buttons can be used to Start, Stop, Pause, or Resume the
-protocol. Note that the program will overwrite any existing output files
-if an identical log file is specified. The *Fill* button allows you to
-automatically create a log file name based on the entered cell ID. This
-takes the format of [id]A.pyb where the "A" designates which log file
-within a series.
+protocol.
 
 .. _Creating Scripts:
 
 Creating Scripts
 ----------------
 
-Scripts can be created in the scripts tab of the client. This editor
+Scripts can be created in the separate explorer application. This editor
 will automatically load the default included scripts, but can be used to
-open and edit additional files.
+open and edit any local files.
+
+.. figure:: _static/images/explorer-scripts.png
+
+The explorer includes a protocol generator above the editor to streamline script creation.
+This can be used to specify attributes, and insert generated lines of code into the script.
 
 Scripts are written in regular python code, and can contain loops and
 other statements to control cycle flow. There are seven built in
@@ -96,44 +86,63 @@ the scripts folder which is available whenever the client is started.
 
 ::
 
-    for i in range(3):
-      AdvanceCycle()
-      CCCharge(0.1, reports=(("voltage", 0.01), ("time", ":5:")), ends=(("voltage", ">", 4.2), ("time", ">", "4::")))
-      CCDischarge(0.1, reports=(("voltage", 0.01), ("time", ":5:")), ends=(("voltage", "<", 3.0), ("time", ">", "4::")))
-      Rest(reports=(("time", "::1"),), ends=(("time", ">", "::15"),))
+  for i in range(3):
+    AdvanceCycle()
+    CCCharge(0.1, reports=(("voltage", 0.01), ("time", ":5:")), ends=(("voltage", ">", 4.2), ("time", ">", "4::")))
+    CCDischarge(0.1, reports=(("voltage", 0.01), ("time", ":5:")), ends=(("voltage", "<", 3.0), ("time", ">", "4::")))
+    Rest(reports=(("time", "::1"),), ends=(("time", ">", "::15"),))
 
 Scripts are automatically checked when they are sent to the server. They
-can also be manually checked by clicking the "Check" button in the
-scripts tab. Checking a script ensures that (1) the script only contains
+can also be manually checked by clicking the "Check" button below the editor.
+Checking a script ensures that (1) the script only contains
 legal arguments and (2) can be loaded by the server without immediate
 errors. Checking your scripts is a good practice to mitigate possible
 formatting issues and errors. However, care should still be taken while
 writing scripts as they are executed as any other python code within the
 application.
 
-Working With Batches
---------------------
+Using Plugins
+-------------
 
-The "Batch" menu allows large tests with multiple cells to be run more
-easily. Saving a batch writes the IDs and log files of each channel to
-the "batch" file which can be loaded later. The "Fill All" and
-"Increment" options allow you to automatically create log files based on
-each ID, and increment the last letter to indicate which test is being
-run on the same cell.
+Data plugins are available to supplement current and voltage data measurements.
+The plugin scheme is designed to be flexible in order to support any device with the use of custom configuration.
+A random plugin is included by default with the Cyckei distribution.
+Other plugins can be written by developing a similar DataController object and including it in the ``plugins`` folder of the Cyckei recording directory.
+Below is an example plugin for reference.
+
+.. code-block:: python
+
+  import logging
+  from random import randint
+
+  logger = logging.getLogger('cyckei')
+
+
+  class DataController(object):
+      def __init__(self):
+          self.name = "random"
+          logger.info("Initializing Random Recorder plugin")
+
+      def read(self):
+          logger.debug("Generating random integer...")
+          return randint(1, 101)
+
 
 Viewing Logs
 ------------
 
 Logs are created to document measurements from each cell throughout it's
 cycle. They also have details about the cell and the cycle that was run
-on it. Log files are saved to the "tests" folder specified in the
+on it. Log files are saved to the ``tests`` folder specified in the
 configuration under the specified name. To view a log from the client
-application, just open the logging tab. All logs are automatically
+application, just open the explorer application . All logs are automatically
 loaded on startup, and new or updated ones can be viewed after clicking
 reload. Although you can copy the contents of a log file to an excel
 spreadsheet, log files *should not* be opened with excel or another
 application directly. Doing this can cause the file to become locked and
 prevent Cyckei from editing it.
+
+.. figure:: _static/images/explorer-results.png
 
 .. _Editing Configuration:
 
@@ -145,8 +154,7 @@ properly. Any custom configuration files should be written in JSON and
 should mirror the default config.json in the program's root directory.
 Each section is described in more detail below:
 
--  **channels** - A list of channels currently connected to the
-   computer.
+-  **channels** - A list of channels currently connected to the computer.
 
    -  *channel (string)* - Channel number for identification within the application.
    -  *gpib\_address (int)* - Hardware address of GPIB interface can be found with a NI VISA application or wth the code in :ref:`Host System Setup`.
@@ -160,6 +168,11 @@ Each section is described in more detail below:
    -  *client-address (string)* - Address for the client to connect to. Usually localhost.
    -  *server-address (string)* - Address for the server to listen on. Usually all.
    -  *timeout (int)* - Number of seconds to wait for server response. 10 seconds seems to work well for most configurations.
+
+- **data-plugins** - A list of data plugins to load and execute alongside normal data collection.
+  Plugins should be placed in the ``plugins`` directory of the Cyckei recording folder.
+
+- **device** - The identifier for which device to load. Currently, ``keithley2602`` is the only acceptable model.
 
 -  **verbosity** - The amount of information to be saved to log files.
    Generally should be set to 20, but the following levels can also be
@@ -177,28 +190,31 @@ Here is an example configuration file for a simple setup running on port
 
 .. code-block:: json
 
-    {
-        "channels": [
-            {
-                "channel": "1",
-                "gpib_address": 5,
-                "keithley_model": "2602A",
-                "keithley_channel": "a"
-            },
-            {
-                "channel": "2",
-                "gpib_address": 5,
-                "keithley_model": "2602A",
-                "keithley_channel": "b"
-            }
-        ],
-        "zmq":{
-            "port": 5556,
-            "client-address":"tcp://localhost",
-            "server-address":"tcp://*",
-            "timeout": 10
-        },
-        "verbosity": 20,
-    }
+  {
+      "channels": [
+          {
+              "channel": "1",
+              "gpib_address": 5,
+              "keithley_channel": "a"
+          },
+          {
+              "channel": "2",
+              "gpib_address": 5,
+              "keithley_channel": "b"
+          }
+      ],
+      "zmq":{
+          "port": 5556,
+          "client-address":"tcp://localhost",
+          "server-address":"tcp://*",
+          "timeout": 10
+      },
+      "data-plugins": [
+        "temperature"
+      ],
+      "device": "keithley2602",
+      "verbosity": 30
+  }
+
 
 .. _GitLab: https://gitlab.com

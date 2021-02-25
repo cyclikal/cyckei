@@ -1,0 +1,28 @@
+#{
+#    "cellid": "test id",
+#    "celltype": "Test type",
+#    "channel": "test channel",
+#    "comment": "Testing comments",
+#    "cycler": "Test cycler",
+#    "format": [
+#        "time",
+#        "current",
+#        "voltage",
+#        "capacity",
+#        "testing:plugins",
+#        "second:test"
+#    ],
+#    "package": "Test package",
+#    "path": "tests/test_path/test_output.txt",
+#    "plugins": {
+#        "second": "test",
+#        "testing": "plugins"
+#    },
+#    "protocol": "Test protocol",
+#    "protocol_name": "Test protocol name",
+#    "requester": "Test protocol name",
+#    "start_cycle": 0
+#}
+{"cycle": 1}
+{"cycle": 2}
+{"cycle": 3}
