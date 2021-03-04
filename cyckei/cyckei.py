@@ -14,8 +14,8 @@ from datetime import datetime
 
 from cyckei.functions import func
 
-logger = logging.getLogger('cyckei')
-
+server_logger = logging.getLogger('cyckei_server')
+client_logger = logging.getLogger('cyckei_client')
 
 def main(args=None):
     """
@@ -29,9 +29,13 @@ def main(args=None):
         if args is None:
             args = parse_args()
             args.dir = os.path.join(os.path.expanduser("~"), "Cyckei")
+        if args.launch == "client":
+            logger = client_logger
+        else:
+            logger = server_logger
         file_structure(args.dir, args.x)
-        config = make_config(args)
-        start_logging(config)
+        config = make_config(args, logger)
+        start_logging(config, logger)
         print("Done!\n")
 
     except Exception as error:
@@ -106,7 +110,7 @@ def file_structure(path, overwrite):
         makedirs(os.path.join(path, "plugins"), exist_ok=True)
 
 
-def make_config(args):
+def make_config(args, logger):
     """
     Loads configuration and variables from respective files.
     Merges them and adds command line arguments for universal access.
@@ -157,7 +161,7 @@ def make_config(args):
 
 def load_plugins(config):
     # create individual plugin configurations, if necessary
-    logger.info("Loading plugins...")
+    server_logger.info("Loading plugins...")
 
     plugins = []
     plugin_names = {}
@@ -165,20 +169,20 @@ def load_plugins(config):
     for plugin in config["plugins"]:
         if plugin["enabled"]:
             try:
-                logger.debug(f"Attempting to load {plugin['name']}")
+                server_logger.debug(f"Attempting to load {plugin['name']}")
                 module = importlib.import_module(
                     f"{plugin['module']}.{plugin['module']}")
                 plugins.append(module.PluginController(plugin["sources"]))
                 plugin_names[plugins[-1].name] = (plugins[-1].names)
-                logger.info(f"Loaded {plugin['module']} plugin for {plugin['name']}")
+                server_logger.info(f"Loaded {plugin['module']} plugin for {plugin['name']}")
             except ModuleNotFoundError as error:
-                logger.warning(
+                server_logger.warning(
                     f"Could not load plugin {plugin['module']}: {error}")
 
     return plugins, plugin_names
 
 
-def start_logging(config):
+def start_logging(config, logger):
     """
     Creates handlers and starts logging.
     Logs to both file (f_handler) and console (c_console).
@@ -198,8 +202,8 @@ def start_logging(config):
     f_handler = RotatingFileHandler(
         os.path.join(config["arguments"]["record_dir"], "logs",
                      f"{logger.name}-{date_format}.log"),
-        maxBytes=100000000,
-        backupCount=5)
+        maxBytes=10000000,
+        backupCount=10)
 
     if config["arguments"]["verbose"]:
         c_handler.setLevel(logging.DEBUG)

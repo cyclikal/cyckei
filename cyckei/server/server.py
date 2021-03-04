@@ -12,7 +12,7 @@ from pyvisa import VisaIOError
 from .protocols import STATUS, CellRunner
 from . import keithley2602 as device_module
 
-logger = logging.getLogger('cyckei')
+logger = logging.getLogger('cyckei_server')
 
 
 def main(config, plugins, plugin_names):

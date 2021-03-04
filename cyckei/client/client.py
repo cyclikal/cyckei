@@ -10,7 +10,7 @@ from . import workers
 from cyckei.functions import gui
 from .socket import Socket
 
-logger = logging.getLogger('cyckei')
+logger = logging.getLogger('cyckei_client')
 
 
 def main(config):

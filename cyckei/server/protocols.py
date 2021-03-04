@@ -4,7 +4,7 @@ from datetime import datetime
 import operator
 import logging
 
-logger = logging.getLogger('cyckei')
+logger = logging.getLogger('cyckei_server')
 
 
 DATETIME_FORMAT = '%Y-%m-%d_%H:%M:%S.%f'

@@ -11,7 +11,7 @@ from PySide2.QtCore import QRunnable, Slot, Signal, QObject
 from .socket import Socket
 from cyckei.functions import func
 
-logger = logging.getLogger('cyckei')
+logger = logging.getLogger('cyckei_client')
 
 
 def prepare_json(channel, function, protocol, temp):
