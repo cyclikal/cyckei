@@ -15,7 +15,7 @@ from PySide2.QtGui import QPainter, QPalette
 from . import workers
 from cyckei.functions import func, gui
 
-logger = logging.getLogger('cyckei')
+logger = logging.getLogger('cyckei_client')
 
 
 class ChannelTab(QWidget):

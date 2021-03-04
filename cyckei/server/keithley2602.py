@@ -7,7 +7,7 @@ import pyvisa as visa
 
 from cyckei.functions import func
 
-logger = logging.getLogger('cyckei')
+logger = logging.getLogger('cyckei_server')
 
 SCRIPT_RUN_TIME_BUFFER = 2  # seconds, extra time for Keithley to load program
 

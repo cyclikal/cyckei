@@ -2,7 +2,7 @@ import zmq
 import json
 import logging
 
-logger = logging.getLogger('cyckei')
+logger = logging.getLogger('cyckei_client')
 
 
 class Socket(object):
