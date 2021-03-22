@@ -83,6 +83,10 @@ class MainWindow(QMainWindow):
         self.channels = self.channelView.channels
         self.setCentralWidget(self.channelView)
 
+    def closeEvent(self, event):
+        logger.info("Client window closed by user.")
+        event.accept() # let the window close
+
     def create_menu(self):
         """Setup menu bar"""
 
