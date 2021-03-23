@@ -2,6 +2,7 @@
 
 import logging
 import sys
+import time
 
 from PySide2.QtWidgets import QApplication, QMainWindow
 from PySide2.QtCore import QThreadPool
@@ -84,7 +85,8 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.channelView)
 
     def closeEvent(self, event):
-        logger.info("Client window closed by user.")
+        close_time = time.strftime("%m-%d-%y %H:%M", time.localtime(time.time()))
+        logger.info("Client window closed by user on {} ".format(close_time))
         event.accept() # let the window close
 
     def create_menu(self):
