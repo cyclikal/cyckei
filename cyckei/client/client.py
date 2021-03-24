@@ -19,7 +19,7 @@ def main(config):
     Begins execution of Cyckei.
 
     Args:
-        record_dir: Optional path to recording directory.
+        config (dict): Holds Cyckei launch settings.
     Returns:
         Result of app.exec_(), Qt's main event loop.
 
@@ -41,10 +41,23 @@ def main(config):
 
 
 class MainWindow(QMainWindow):
-    """Main Window class which is and sets up itself"""
-    
-    # Setup main windows
+    """
+    An object for generating the main client window and holding information about it.
+
+    Attributes:
+        config (dict): Holds Cyckei launch settings.
+        channel_info (dict): Holds info on channels available on the server.
+        channels (list): A list of all of the ChannelWidgets in channelView
+        channelView (ChannelTab): Wrapper object that holds all of the ChannelWidgets.
+        status_bar (QStatusBar): Default status bar for the QWindow.
+        threadpool (QThreadPool): Threadpool of workers for communicating with the server
+    """ 
     def __init__(self, config):
+        """Inits Mainwindow with config, channel_info, channels, channelView, status_bar, and threadpool.
+        
+        Args:
+        config (dict): Holds Cyckei launch settings. Is copied to MainWindow's version of config.
+        """
         super(MainWindow, self).__init__()
         # Set basic window properties
         self.setWindowTitle("Cyckei Client")
