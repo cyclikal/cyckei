@@ -5,6 +5,7 @@ import os.path
 class BaseController(object):
     """
     Parent class of plugin controller objects.
+
     Creates default methods for interacting with plugin and handling sources.
     """
 
@@ -27,7 +28,9 @@ class BaseController(object):
 
     def get_logger(self, name, cyckei_plugin_path):
         """
-        Plugin initially tries to connect to to Cyckei's main loggin handlers.
+        Connects the pluging to main Cyckei loggers.
+
+        Plugin initially tries to connect to to Cyckei's main logging handlers.
         If this fails, this method establishes a new console handler.
         Usually this should be as a result of running the plugin independantly.
         """
@@ -64,7 +67,6 @@ class BaseController(object):
         -------
         Dictionary of sources in format "name": SourceObject.
         """
-
         raise NotImplementedError
 
     def read(self, source):
@@ -85,6 +87,7 @@ class BaseSource(object):
     Parent class of plugin source object.
     Controls communication with individual devices or channels.
     """
+
     def __init__(self):
         pass
 

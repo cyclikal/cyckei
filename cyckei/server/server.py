@@ -23,8 +23,8 @@ def main(config, plugins, plugin_names):
         record_dir: Optional path to recording directory.
     Returns:
         Result of app.exec_(), Qt's main event loop.
-
     """
+
     logger.info(
         f"Initializing Cyckei Server {config['versioning']['version']}")
 
@@ -55,8 +55,8 @@ def main(config, plugins, plugin_names):
 
 
 def event_loop(config, socket, plugins, plugin_names, device_module):
+    """Main start method and loop for server application"""
     try:
-        """Main start method and loop for server application"""
         logger.debug("Starting server event loop")
 
         # Create list of sources (outputs)
@@ -169,8 +169,8 @@ def event_loop(config, socket, plugins, plugin_names, device_module):
         logger.error("Failed with uncaught exception:")
         logger.exception(e)
 
-#Saves server status to a file
 def record_data(data_path, data):
+    """Saves server status to a file"""
     data_path = data_path + "\server_data.txt"
     data_file = open(data_path, "w")
     data_file.write(json.dumps(data))
@@ -319,7 +319,6 @@ def info_channel(channel, runners, sources):
 
 def start(channel, meta, protocol, runners, sources, plugin_objects):
     """Start channel with given protocol"""
-
     # check to see if there is a already a runner on that channel
     meta["channel"] = channel
     if get_runner_by_channel(channel, runners):

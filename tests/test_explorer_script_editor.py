@@ -4,10 +4,8 @@ import pytest
 from cyckei.explorer import script_editor
 from PySide2.QtCore import QThreadPool
 
-# Testing the initialization of Script objects in script_editor
-
-
 def test_make_script():
+    """Testing the initialization of Script objects in script_editor"""
     # Script objects need a real file or they throw an exception
     f1 = open("tests/test_file1.txt", "w")
     f2 = open("tests/test_file2.txt", "w")
@@ -27,10 +25,12 @@ def test_make_script():
     os.remove("tests/test_file1.txt")
     os.remove("tests/test_file2.txt")
 
-# Testing the save function on a Script object, which should overwrite the real file it is based off of
-
-
 def test_save_script():
+    """
+    Testing the save function on a Script object
+
+    Should overwrite the real file it is based off of.
+    """
     with open("tests/test_file1.txt", "w") as f1:
         f1.write("Testing the ability to read in some data.")
 
@@ -51,11 +51,13 @@ def test_save_script():
     # cleaning up files created for testing
     os.remove("tests/test_file1.txt")
 
-# Testing the Script status function which compares Script content to the file it is based off of
-# and inserts and * at the front of the script title if there are differences
-
-
 def test_status_script():
+    """
+    Testing the Script status function
+
+    Status function compares Script content to the file it is based off of
+    and inserts an * at the front of the script title if there are differences
+    """
     f1 = open("tests/test_file1.txt", "w")
     f1.write("Testing the ability to read in some data.")
     f1.close()
@@ -72,10 +74,8 @@ def test_status_script():
     # cleaning up files created for testing
     os.remove("tests/test_file1.txt")
 
-# Testing the constructor for ScriptList objects
-
-
 def test_make_scriptlist():
+    """Testing the constructor for ScriptList objects"""
     # creating a directory and scripts for testing. If a directory already exists
     # with the requested name an error is thrown, so we chack first.
     if os.path.isdir("tests/scripts") == False:
@@ -105,10 +105,8 @@ def test_make_scriptlist():
     # removing the directory created for testing
     os.rmdir("tests/scripts")
 
-# Testing the title seraching in ScriptList
-
-
 def test_by_title_scriptlist():
+    """Testing the title seraching in ScriptList"""
     # creating a directory and files for testing
     if os.path.isdir("tests/scripts") == False:
         os.mkdir("tests/scripts")
@@ -138,10 +136,8 @@ def test_by_title_scriptlist():
     os.remove("tests/scripts/test_file3.txt")
     os.rmdir("tests/scripts")
 
-# Testing initializing a ScriptEditor object
-
-
 def test_make_scripteditor():
+    """Testing initializing a ScriptEditor object"""
     # setup required for creating a ScriptEditor object (setup for Script and ScriptList is required too)
     resource = {}
     resource["threadpool"] = QThreadPool()

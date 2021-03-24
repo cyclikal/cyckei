@@ -13,7 +13,7 @@ SCRIPT_RUN_TIME_BUFFER = 2  # seconds, extra time for Keithley to load program
 
 
 def parse_gpib_address(gpib_address):
-    """takes int or str and returns full str GPIB address"""
+    """Takes int or str and returns full str GPIB address"""
     try:
         int(gpib_address)
         full_address = "GPIB0::{}::INSTR".format(gpib_address)
@@ -22,11 +22,13 @@ def parse_gpib_address(gpib_address):
 
     return full_address
 
-
-# Wrapper function for the Source class to enforce the use of a safety script
-# Safety cutoff will shut the keithley off after {safety_reset_seconds}
-# if it is not at least checked
 def with_safety(fn):
+    """ 
+    Wrapper function for the Source class to enforce the use of a safety script
+    
+    Safety cutoff will shut the keithley off after {safety_reset_seconds}
+    if it is not at least checked
+    """
     def decorated(self, *args, **kwargs):
         self.write('abort')
         self.write('errorqueue.clear()')
@@ -38,6 +40,7 @@ def with_safety(fn):
 
 class DeviceController(object):
     """Represents a single keithley Interface"""
+
     script_startup = open(func.asset_path("startup.lua")).read()
     current_ranges = [100 * 1e-9, 1e-6, 10e-6,
                       100e-6, 1e-3, 0.01,
@@ -82,6 +85,7 @@ class DeviceController(object):
 
 class Source(object):
     """Represents an individual source"""
+
     current_ranges = [100 * 1e-9, 1e-6, 10e-6,
                       100e-6, 1e-3, 0.01,
                       0.1, 1.0, 3.0]
@@ -89,6 +93,7 @@ class Source(object):
     def __init__(self, source_meter, kch, channel=None,
                  safety_reset_seconds=120):
         """
+        Constructs necessary parameters for a Source object.
 
         Parameters
         ----------
@@ -214,7 +219,6 @@ smu{ch}.source.output = smu{ch}.OUTPUT_ON"""
         -------
 
         """
-        ''
         letters = "".join(map(chr, range(65, 91)))
         letters += letters.lower()
         numbers = "".join(map(chr, range(48, 58)))

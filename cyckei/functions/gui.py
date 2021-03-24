@@ -49,6 +49,7 @@ def style(app, icon="icon-client.png", highlight=orange):
 
 def not_none(value):
     """Sets a None value to "None" string"""
+
     return "None" if value is None else str(value)
 
 
@@ -71,6 +72,7 @@ def message(text=None, info=None, icon=QMessageBox.Information,
 
 def button(text=None, status=None, connect=None, enabled=True):
     """Creates a button with given information"""
+
     button = QPushButton()
     button.setText(text)
     button.setStatusTip(status)
@@ -81,6 +83,7 @@ def button(text=None, status=None, connect=None, enabled=True):
 
 def combo_box(items, status, key, connect):
     """Creates a combo box with given information"""
+
     box = QComboBox()
     box.addItems(items)
     box.setStatusTip(status)
@@ -98,6 +101,7 @@ def label(text, status=None, tag=None):
 
 def line_edit(label, status, key, connect):
     """Creates text edit field with given information"""
+    
     text = QLineEdit()
     text.setMinimumSize(60, 20)
     text.setPlaceholderText(label)

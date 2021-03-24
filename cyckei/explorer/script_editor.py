@@ -17,8 +17,9 @@ from cyckei.functions import gui
 
 logger = logging.getLogger('cyckei')
 
-# UI window for the script tab of Cyckei Explorer
 class ScriptEditor(QWidget):
+    """ UI window for the script tab of Cyckei Explorer """
+
     def __init__(self, config, resource):
         QWidget.__init__(self)
         self.scripts = ScriptList(config)
@@ -85,8 +86,8 @@ class ScriptEditor(QWidget):
             self.file_list.currentItem().content = self.editor.toPlainText()
             self.file_list.currentItem().update_status()
 
-    # Updates the UI when which script is active is changed
     def update_editor(self, active_script_index):
+        """Updates the UI when which script is active is changed"""
         # Checking for out of bounds error
         if active_script_index >= 0 and active_script_index < self.file_list.count():
             self.file_list.setCurrentItem(self.file_list.item(active_script_index))
@@ -96,8 +97,8 @@ class ScriptEditor(QWidget):
             self.title_bar.setText("")
             self.editor.setPlainText("")
 
-    # Opens a new file and adds it as a script
     def open(self, text):
+        """Opens a new file and adds it as a script"""
         script_file = QFileDialog.getOpenFileName(
             QWidget(), "Open Script File", ""
         )[0].rsplit("/", 1)
@@ -114,8 +115,8 @@ class ScriptEditor(QWidget):
                 self.add(script_file)
                 self.update_editor(self.file_list.count()-1)
 
-    # Create new file and add to list as script
     def new(self, text):
+        """Creates new file and adds it to list as script"""
         script_file = QFileDialog.getSaveFileName(QWidget(),
                                                   "Select Directory")[0]
         if script_file:
@@ -123,21 +124,21 @@ class ScriptEditor(QWidget):
             self.add(script_file.rsplit("/", 1))
         self.update_editor(self.file_list.count()-1)
 
-    # Calls the save function of a Script object
     def save(self, text):
+        """Calls the save function of a Script object"""
         try:
             self.file_list.currentItem().save()
         except AttributeError:
             pass
 
-    # Creates and runs a worker to check protocol and verify the validity of a script
     def check(self, text):
+        """Creates and runs a worker to check protocol and verify the validity of a script"""
         worker = Check(self.config, self.file_list.currentItem().content)
         self.threadpool.start(worker)
         worker.signals.status.connect(self.alert_check)
 
-    # Deletes the active file and removes it from the UI
     def delete(self, text):
+        """Deletes the active file and removes it from the UI"""
         active_file = self.file_list.currentItem()
         path_to_delete = active_file.path + "/" + active_file.title
         # Checking path with os.path.exists()
@@ -172,13 +173,13 @@ class ScriptEditor(QWidget):
         
         gui.message(**result_msg)
 
-    # Opens the Cyclikal Guide for creating scripts
     def help(self, text):
+        """Opens the Cyclikal Guide for creating scripts"""
         webbrowser.open("https://docs.cyclikal.com/projects/cyckei/en/stable/"
                         "usage.html#creating-scripts")
 
-    # Opens a pop-up window with an input message
     def alert_check(self, result, message):
+        """Opens a pop-up window with an input message"""
         if result:
             msg = {
                 "text": message,
@@ -193,14 +194,15 @@ class ScriptEditor(QWidget):
             }
         gui.message(**msg)
 
-    # Creates and adds a Script object to the front of the ScriptList and UI FileList
     def add(self, file):
+        """Creates and adds a Script object to the front of the ScriptList and UI FileList"""
         self.scripts.script_list.append(Script(file[0], file[1]))
         self.file_list.addItem(self.scripts.script_list[-1])
 
 
 class InsertBar(QWidget):
     """Controls and stores information for a given channel"""
+
     def __init__(self, editor):
         super(InsertBar, self).__init__()
         self.attributes = {
@@ -297,9 +299,10 @@ class InsertBar(QWidget):
         content = self.output.toPlainText()
         if content:
             self.editor.appendPlainText(content)
-
-# An object that stores the File Path, Title, and content of a file
+ 
 class Script(QListWidgetItem):
+    """Stores the File Path, Title, and content of a file"""
+
     def __init__(self, path, title):
         super(Script, self).__init__()
         self.title = title
@@ -310,14 +313,14 @@ class Script(QListWidgetItem):
             self.content = "Could not read file: {}".format(error)
         self.setText(self.title)
 
-    # Overwrites the file that shares a file path and title witht the script
     def save(self):
+        """Overwrites the file that shares a file path and title witht the script"""
         with open(self.path + "/" + self.title, "w") as file:
             file.write(self.content)
         self.update_status()
 
-    # Changes the title stored in the Script, not the actual file name, if the script and the file differ
     def update_status(self):
+        """Changes the file title in the Script interface if the script and the file differ"""
         try:
             file_content = open(self.path + "/" + self.title, "r").read()
         except UnicodeDecodeError as error:
@@ -334,15 +337,15 @@ class ScriptList(object):
         self.script_list = []
         self.default_scripts(config["arguments"]["record_dir"] + "/scripts")
 
-    # Load scripts from scripts folder in the directory specified by the config file
     def default_scripts(self, path):
+        """Load scripts from scripts folder in the directory specified by the config file"""
         files = listdir(path)
         if files is not None:
             for file in files:
                 self.script_list.append(Script(path, file))
 
-    #Returns the first script object with a matching title
     def by_title(self, title):
+        """Returns the first script object with a matching title"""
         for script in self.script_list:
             if script.title == title:
                 return script

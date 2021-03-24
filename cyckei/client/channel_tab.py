@@ -198,9 +198,8 @@ class ChannelWidget(QWidget):
         for line in editables:
             self.settings.append(gui.line_edit(*line, self.set))
 
-        # Now that the defaults are set check each spot to update
-        # if the client was closed while the server was still running
-        # protocols
+        # Check each spot and update if the client was closed while the
+        # server was still running protocols
         if cur_channel_info['path'] != None:
             split_path = cur_channel_info['path'].split('\\')
             self.settings[2].setText(split_path[-1])
@@ -233,9 +232,13 @@ class ChannelWidget(QWidget):
 
         return elements
 
-    # By default is used to open window to select a file
-    # If a filepath is provided then finder window is skipped
+    # 
     def set_script(self, button_text, filename=None):
+        """Sets the protocol for a channel to run
+        
+        By default opens a finder window to select a file
+        If a filepath is already provided then the finder window is skipped.
+        """
         if filename == None:
             filename = QFileDialog.getOpenFileName(
                 self,

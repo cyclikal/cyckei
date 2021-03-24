@@ -190,6 +190,7 @@ class CellRunner(object):
 
     def load_protocol(self, protocol: str, isTest=False):
         """
+        Executes a string of python code to add a step to the steps list
 
         Parameters
         ----------
@@ -349,6 +350,7 @@ class CellRunner(object):
     def pause(self):
         """
         User must be able to pause a cell arbitrarily
+        
         Returns
         -------
 
@@ -369,6 +371,7 @@ class CellRunner(object):
     def close(self):
         """
         This is to close
+        
         Returns
         -------
 
@@ -378,6 +381,7 @@ class CellRunner(object):
     def off(self):
         """
         This is just to turn off the current
+        
         Returns
         -------
 

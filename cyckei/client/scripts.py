@@ -25,6 +25,7 @@ from PySide2.QtWidgets import QListWidgetItem
 
 class Script(QListWidgetItem):
     """Object to store and manipulate scripts"""
+
     def __init__(self, title, path):
         super(Script, self).__init__()
         self.title = title

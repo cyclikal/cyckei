@@ -42,6 +42,7 @@ def main(config):
 
 class MainWindow(QMainWindow):
     """Main Window class which is and sets up itself"""
+    
     # Setup main windows
     def __init__(self, config):
         super(MainWindow, self).__init__()
@@ -91,7 +92,6 @@ class MainWindow(QMainWindow):
 
     def create_menu(self):
         """Setup menu bar"""
-
         entries = {
             "Info": [
                 ["&Server", self.ping_server, "Test Connection to Server"],

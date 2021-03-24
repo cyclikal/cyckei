@@ -66,7 +66,6 @@ def parse_args():
     Returns:
         ArgumentParser with filled arguments.
     """
-
     parser = argparse.ArgumentParser()
     parser.add_argument('launch', metavar="{server | client | explorer}",
                         choices=['server', 'client', 'explorer'],
@@ -231,7 +230,6 @@ def handle_exception(exc_type, exc_value, exc_traceback):
 
 class ColorFormatter(logging.Formatter):
     """Logging Formatter to add colors and count warning / errors"""
-
     gray = "\x1b[38;21m"
     blue = "\x1b[34;21m"
     yellow = "\x1b[33;21m"

@@ -67,6 +67,7 @@ class Ping(QRunnable):
 
 class UpdateStatus(QRunnable):
     """Update status shown below controls by contacting server"""
+
     def __init__(self, channels, config):
         super(UpdateStatus, self).__init__()
         self.channels = channels
@@ -117,6 +118,7 @@ class UpdateStatus(QRunnable):
 
 class Read(QRunnable):
     """Tell channel to Rest() long enough to get voltage reading on cell"""
+
     def __init__(self, config, channel):
         super(Read, self).__init__()
         self.channel = channel
@@ -147,6 +149,7 @@ class Read(QRunnable):
 
 class Control(QRunnable):
     """Update json and send "start" function to server"""
+
     def __init__(self, config, channel, command, script=None, temp=False):
         # TODO: Make sure read passes correct script
         super(Control, self).__init__()
@@ -237,7 +240,7 @@ class Check(QRunnable):
             "Server failed to run script. Error: \"{}\".".format(response)
 
     def prepare_json(self, protocol):
-        """create json to send to server"""
+        """Creates json to send to server"""
         packet = json.load(
             open(func.asset_path("default_packet.json")))
 
