@@ -99,12 +99,17 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.channelView)
 
     def closeEvent(self, event):
+        """Overridden method from QMainWindow for closing the application. 
+
+        Args:
+            event (QCloseEvent): An event carrying flags for closing the Q application.
+        """
         close_time = time.strftime("%m-%d-%y %H:%M", time.localtime(time.time()))
         logger.info("Client window closed by user on {} ".format(close_time))
         event.accept() # let the window close
 
     def create_menu(self):
-        """Setup menu bar"""
+        """Sets up the menu bar at the top of the Main Window."""
         entries = {
             "Info": [
                 ["&Server", self.ping_server, "Test Connection to Server"],
@@ -118,11 +123,13 @@ class MainWindow(QMainWindow):
                 menu.addAction(gui.action(*item, parent=self))
 
     def ping_server(self):
+        """Checks for an active server and returns a result message in a new window."""
         worker = workers.Ping(self.config)
         worker.signals.alert.connect(gui.message)
         self.threadpool.start(worker)
 
     def plugin_dialog(self):
+        """Compiles and formats info for installed plugins on the server for display."""
         if self.config["plugins"]:
             text = "<h2>Plugins:</h2>"
         else:
