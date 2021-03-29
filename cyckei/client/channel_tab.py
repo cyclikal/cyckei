@@ -23,12 +23,20 @@ class ChannelTab(QWidget):
 
     Attributes:
         config (dict): Holds Cyckei launch settings.
-        resource (dict): 
-        channels (list):
-        timer (QTimer): A timer for the status of cells
+        resource (dict): A dict holding the Threadpool object for threads to be pulled from.
+        channels (list): A list of ChannelWidget objects.
+        timer (QTimer): A timer for the status of cells.
     """
     def __init__(self, config, resource, parent, plugin_info, channel_info):
-        """Setup each channel widget and place in QVBoxlayout"""
+        """Inits ChannelTab with channels, config, resource, and timer. Creates each channel widget and place in QVBoxlayout.
+
+        Args:
+            config (dict): Holds Cyckei launch settings.
+            resource (dict): A dict holding the Threadpool object for threads to be pulled from.
+            parent (MainWindow): The MainWindow object that created this ChannelTab.
+            plugin_info (list): A list of dicts holding info about installed plugins.
+            channel_info (dict): A dict of nested dicts holding info about each connected channel.
+        """
         QWidget.__init__(self, parent)
         self.config = config
         self.resource = resource
@@ -64,6 +72,7 @@ class ChannelTab(QWidget):
             int(self.config["behavior"]["update-interval"]) * 1000)
 
     def alternate_colors(self):
+        """Sets the channels to alternate between light and dark."""
         # TODO: Make dark mode compatible with windows
         base = self.palette().color(QPalette.Window)
         text = self.palette().color(QPalette.WindowText)
@@ -82,10 +91,12 @@ class ChannelTab(QWidget):
             )
 
     def update_status(self):
+        """Updates the status section of a channel."""
         updater = workers.UpdateStatus(self.channels, self.config)
         self.resource["threadpool"].start(updater)
 
     def paintEvent(self, event):
+        """Redraws the window with the current visual settings. Overrides the defaul QT paintEvent."""
         option = QStyleOption()
         option.initFrom(self)
         painter = QPainter(self)
@@ -93,8 +104,19 @@ class ChannelTab(QWidget):
 
 
 class ChannelWidget(QWidget):
-    """Controls and stores information for a given channel"""
+    """Object that controls and stores information for a given channel.
 
+    Attributes:
+        attributes ():
+        config ():
+        divider ():
+        feddback ():
+        json ():
+        script_label ():
+        settings ():
+        status ():
+        threadpool ():
+    """
     def __init__(self, channel, config, resource, plugin_info, cur_channel_info):
         super(ChannelWidget, self).__init__()
         # Default Values
