@@ -19,6 +19,14 @@ logger = logging.getLogger('cyckei_client')
 
 
 class ChannelTab(QWidget):
+    """Object that creates a window to interact with cycler channels from the server.
+
+    Attributes:
+        config (dict): Holds Cyckei launch settings.
+        resource (dict): 
+        channels (list):
+        timer (QTimer): A timer for the status of cells
+    """
     def __init__(self, config, resource, parent, plugin_info, channel_info):
         """Setup each channel widget and place in QVBoxlayout"""
         QWidget.__init__(self, parent)

@@ -61,7 +61,7 @@ class Ping(QRunnable):
 
     @Slot()
     def run(self):
-        response = Socket(self.config).ping()
+        response = (self.config).ping()
         self.signals.alert.emit(response)
 
 
