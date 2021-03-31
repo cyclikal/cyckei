@@ -27,6 +27,7 @@ class ChannelTab(QWidget):
         channels (list): A list of ChannelWidget objects.
         timer (QTimer): A timer for the status of cells.
     """
+
     def __init__(self, config, resource, parent, plugin_info, channel_info):
         """Inits ChannelTab with channels, config, resource, and timer. Creates each channel widget and place in QVBoxlayout.
 
@@ -107,17 +108,27 @@ class ChannelWidget(QWidget):
     """Object that controls and stores information for a given channel.
 
     Attributes:
-        attributes ():
-        config ():
-        divider ():
-        feddback ():
-        json ():
-        script_label ():
-        settings ():
-        status ():
-        threadpool ():
+        attributes (dict): Holds info about the ChannelWidget: Channel info, cell info, script info, etc.
+        config (dict): Holds Cyckei launch settings.
+        divider (QWidget): Divides the channel widget vertically between info and controls.
+        feedback (QLabel): A label under the controls that gives info when a control is pressed.
+        json (dict): Holds the default attribtues of a ChannelWidget. Taken from an outside file.
+        script_label (QLabel): A gui label that indicates if there is a selected script.
+        settings (list): A list of gui elements to be added to the window, set in the set_settings function.
+        status (QLabel): A gui label that indicates a cell's status.
+        threadpool (dict):  Holds the Threadpool object from resource for threads to be pulled from.
     """
+
     def __init__(self, channel, config, resource, plugin_info, cur_channel_info):
+        """Inits ChannelWidget with attributes, config, divider, feedback, json, script_label, status, and threadpool.
+
+        Args:
+            channel (int): Id number for the channel corresponding with this Widget.
+            config (dict): Holds Cyckei launch settings.
+            resource (dict): A dict holding the Threadpool object for threads to be pulled from.
+            plugin_info (list): A list of dicts holding info about installed plugins.
+            cur_channel_info (dict): A dict holding info about the corresponding channel for this Widget.
+        """
         super(ChannelWidget, self).__init__()
         # Default Values
         self.attributes = {
@@ -196,7 +207,15 @@ class ChannelWidget(QWidget):
             func.asset_path("default_packet.json")))
 
     def get_settings(self, cur_channel_info, plugin_info):
-        """Creates all UI settings and adds them to settings list"""
+        """Creates all UI settings and adds them to settings list
+
+        Args:
+            cur_channel_info (dict): A dict holding info about the corresponding channel for this Widget.
+            plugin_info (list): A list of dicts holding info about installed plugins.
+
+        Returns:
+            list: a list of gui elements to be added to the window
+        """
         labels = []
         self.settings = []
 
@@ -268,6 +287,10 @@ class ChannelWidget(QWidget):
         
         By default opens a finder window to select a file
         If a filepath is already provided then the finder window is skipped.
+
+        Args:
+            button_text (str): The text of the button being pressed.
+            filename (str, optional): The name of the script file at the end of the stored script path. Defaults to None.
         """
         if filename == None:
             filename = QFileDialog.getOpenFileName(
@@ -291,6 +314,11 @@ class ChannelWidget(QWidget):
                     logger.exception(error)
 
     def get_controls(self):
+        """Creates a set of buttons in an element that control the cycler.
+
+        Returns:
+            list: A list of gui buttons that control the cycler.
+        """
         buttons = [
             ["Start", "Start Cycle", self.button],
             ["Stop", "Stop Cycle", self.button],
@@ -305,6 +333,13 @@ class ChannelWidget(QWidget):
         return elements
 
     def button(self, text):
+        """Controls what happens when a button on the control panel is pressed.
+
+        Creates workers and uses the threadpool to run cycler functions.
+
+        Args:
+            text (str): Button text that determines which function to do.
+        """
         gui.feedback("{} in progress...".format(text), self)
         if text == "Check":
             worker = workers.Read(self.config, self)
@@ -315,14 +350,27 @@ class ChannelWidget(QWidget):
         self.threadpool.start(worker)
 
     def set(self, key, text):
-        """Sets object's script to one selected in dropdown"""
+        """Sets the attributes dict using the corresponding key and text.
+        
+        Used to set ChannelWidget's script to the one selected in dropdown.
+
+        Args:
+            key (str): The key in the attributes dict in the ChannelWidget to have its value changed.
+            text (str): The new value for the corresponding key in the attributes dict.
+        """
         self.attributes[key] = text
 
     def set_plugin(self, key, text):
-        """Sets object's script to one selected in dropdown"""
+        """Sets object's plugin to one selected in dropdown
+
+        Args:
+            key (str): The key in the "plugins" section of the attributes dict in the ChannelWidget to have its value changed.
+            text (str): The new value for the corresponding key in the "plugins" section of the attributes dict.
+        """
         self.attributes["plugins"][key] = text
 
     def paintEvent(self, event):
+        """Redraws the window with the current visual settings. Overrides the defaul QT paintEvent."""
         option = QStyleOption()
         option.initFrom(self)
         painter = QPainter(self)

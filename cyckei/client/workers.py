@@ -15,7 +15,17 @@ logger = logging.getLogger('cyckei_client')
 
 
 def prepare_json(channel, function, protocol, temp):
-    """Sets the channel's json script to current values"""
+    """Sets the channel's json script to current values
+
+    Args:
+        channel ([type]): [description]
+        function ([type]): [description]
+        protocol (str): [description]
+        temp ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
     with open(func.asset_path("default_packet.json")) as file:
         packet = json.load(file)
 
@@ -46,27 +56,48 @@ def prepare_json(channel, function, protocol, temp):
 
     return packet
 
-
 class Signals(QObject):
+    """[summary]
+
+    Args:
+        QObject ([type]): [description]
+    """
+
     alert = Signal(object)
     status = Signal(object, object)
     info = Signal(object)
 
-
 class Ping(QRunnable):
+    """[summary]
+
+    Attributes:
+        config ():
+        signals ():
+    """
+
     def __init__(self, config):
+        """[summary]
+
+        Args:
+            config ([type]): [description]
+        """
         super(Ping, self).__init__()
         self.signals = Signals()
         self.config = config
 
     @Slot()
     def run(self):
-        response = (self.config).ping()
+        """[summary]"""
+        response = Socket(self.config).ping()
         self.signals.alert.emit(response)
 
-
 class UpdateStatus(QRunnable):
-    """Update status shown below controls by contacting server"""
+    """Update status shown below controls by contacting server
+    
+    Attributes:
+        channels ():
+        config ():
+    """
 
     def __init__(self, channels, config):
         super(UpdateStatus, self).__init__()
@@ -75,6 +106,7 @@ class UpdateStatus(QRunnable):
 
     @Slot()
     def run(self):
+        """        """
         info_all = Socket(self.config).info_all_channels()
 
         for channel in self.channels:
@@ -115,11 +147,22 @@ class UpdateStatus(QRunnable):
                 print(f"Looks like QTimer ran after Cyckei closed: {error}")
                 sys.exit()
 
-
 class Read(QRunnable):
-    """Tell channel to Rest() long enough to get voltage reading on cell"""
+    """Tell channel to Rest() long enough to get voltage reading on cell
+    
+    Attributes:
+        channel ():
+        config ():
+        signals ():
+    """
 
     def __init__(self, config, channel):
+        """[summary]
+
+        Args:
+            channel ([type]): [description]
+            config ([type]): [description]
+        """
         super(Read, self).__init__()
         self.channel = channel
         self.config = config
@@ -127,6 +170,7 @@ class Read(QRunnable):
 
     @Slot()
     def run(self):
+        """ """
         status = Socket(self.config).info_channel(
             self.channel.attributes["channel"])["response"]
         if status["status"] == "available":
@@ -146,11 +190,28 @@ class Read(QRunnable):
 
         self.signals.status.emit(status, self.channel)
 
-
 class Control(QRunnable):
-    """Update json and send "start" function to server"""
+    """Update json and send "start" function to server
+    
+    Attributes:
+        channel (int):
+        command ():
+        config (dict):
+        script ():
+        signals ():
+        temp ():
+    """
 
     def __init__(self, config, channel, command, script=None, temp=False):
+        """[summary]
+
+        Args:
+            channel (int): [description]
+            command ([type]): [description]
+            config (dict): [description]
+            script ([type], optional): [description]. Defaults to None.
+            temp (bool, optional): [description]. Defaults to False.
+        """
         # TODO: Make sure read passes correct script
         super(Control, self).__init__()
         self.channel = channel
@@ -165,6 +226,7 @@ class Control(QRunnable):
 
     @Slot()
     def run(self):
+        """[summary]"""
         try:
             if self.script is None:
                 self.script = None
@@ -183,9 +245,22 @@ class Control(QRunnable):
         response = Socket(self.config).send(packet)["response"]
         self.signals.status.emit(response, self.channel)
 
-
 class Check(QRunnable):
+    """[summary]
+
+    Attributes:
+        protocol (str):
+        config (dict):
+        signals ():
+    """
+
     def __init__(self, config, protocol):
+        """[summary]
+
+        Args:
+            config (dict): [description]
+            protocol (str): [description]
+        """
         super(Check, self).__init__()
         self.protocol = protocol
         self.config = config
@@ -193,7 +268,12 @@ class Check(QRunnable):
 
     @Slot()
     def run(self):
-        """Initiates checking tests"""
+        """Initiates checking tests
+
+        Returns:
+            bool: [description]
+            str: 
+        """
         passed, msg = self.legal_test(self.protocol)
         if not passed:
             self.signals.status.emit(passed, msg)
@@ -203,7 +283,15 @@ class Check(QRunnable):
         return passed, msg
 
     def legal_test(self, protocol):
-        """Checks if script only contains valid commands"""
+        """Checks if script only contains valid commands
+
+        Args:
+            protocol (str): [description]
+
+        Returns:
+            bool: [description]
+            str: 
+        """
         conditions = ["#",
                       "for",
                       "AdvanceCycle()",
@@ -231,7 +319,15 @@ class Check(QRunnable):
         return True, "Passed"
 
     def run_test(self, protocol):
-        """Checks if server can load script successfully"""
+        """Checks if server can load script successfully
+
+        Args:
+            protocol (str): [description]
+
+        Returns:
+            bool: [description]
+            str: 
+        """
         packet = self.prepare_json(protocol)
         response = Socket(self.config).send(packet)["response"]
         if response == "Passed":
@@ -240,7 +336,14 @@ class Check(QRunnable):
             "Server failed to run script. Error: \"{}\".".format(response)
 
     def prepare_json(self, protocol):
-        """Creates json to send to server"""
+        """Packages protocol in json dict to send to server.
+
+        Args:
+            protocol (str): [description]
+
+        Returns:
+            dict: [description]
+        """
         packet = json.load(
             open(func.asset_path("default_packet.json")))
 
