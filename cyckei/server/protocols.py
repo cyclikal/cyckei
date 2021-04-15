@@ -832,7 +832,7 @@ class VoltageStep(ProtocolStep):
 
         Returns
         -------
-        bool: True of cell is in control, False otherwise
+        bool: True if cell is in control, False otherwise
 
         Modifies
         --------

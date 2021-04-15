@@ -15,16 +15,16 @@ logger = logging.getLogger('cyckei_client')
 
 
 def prepare_json(channel, function, protocol, temp):
-    """Sets the channel's json script to current values
+    """Populates a new package with channel data and returns it
 
     Args:
-        channel ([type]): [description]
-        function ([type]): [description]
-        protocol (str): [description]
-        temp ([type]): [description]
+        channel (ChannelWidget): Channel object that stores info about itself.
+        function (str): Used by the server when determining what action to take.
+        protocol (str): A protocol for the server to execute. 
+        temp (bool): True records in a temporary file, false records to the proper record directory.
 
     Returns:
-        [type]: [description]
+        dict: A package populated with the protocol and info about the specified channel.
     """
     with open(func.asset_path("default_packet.json")) as file:
         packet = json.load(file)
@@ -57,10 +57,7 @@ def prepare_json(channel, function, protocol, temp):
     return packet
 
 class Signals(QObject):
-    """[summary]
-
-    Args:
-        QObject ([type]): [description]
+    """Object used by other objects to alert the user to changes, statuses, etc.
     """
 
     alert = Signal(object)
@@ -68,18 +65,18 @@ class Signals(QObject):
     info = Signal(object)
 
 class Ping(QRunnable):
-    """[summary]
+    """Object used to check for an active server.
 
     Attributes:
-        config ():
-        signals ():
+        config (dict): Holds Cyckei launch settings.
+        signals (Signals): Used for gui signals. Shows the server's response.
     """
 
     def __init__(self, config):
-        """[summary]
+        """Inits Ping with signals and config.
 
         Args:
-            config ([type]): [description]
+            config (dict): Holds Cyckei launch settings.
         """
         super(Ping, self).__init__()
         self.signals = Signals()
@@ -92,21 +89,27 @@ class Ping(QRunnable):
         self.signals.alert.emit(response)
 
 class UpdateStatus(QRunnable):
-    """Update status shown below controls by contacting server
+    """Updates the status below the controls, shown after contacting server
     
     Attributes:
-        channels ():
-        config ():
+        channels (list): A list of all of the ChannelWidget objects to be updated.
+        config (dict): Holds Cyckei launch settings.
     """
 
     def __init__(self, channels, config):
+        """Inits UpdateStatus with channles and config
+
+        Args:
+            channels (list): A list of all of the ChannelWidget objects to be updated.
+            config (dict): Holds Cyckei launch settings.
+        """
         super(UpdateStatus, self).__init__()
         self.channels = channels
         self.config = config
 
     @Slot()
     def run(self):
-        """        """
+        """Goes through the channels list and sets the gui status text depending on server response from info_all query."""
         info_all = Socket(self.config).info_all_channels()
 
         for channel in self.channels:
@@ -148,20 +151,20 @@ class UpdateStatus(QRunnable):
                 sys.exit()
 
 class Read(QRunnable):
-    """Tell channel to Rest() long enough to get voltage reading on cell
+    """Object used in reading cell information from the server.
     
     Attributes:
-        channel ():
-        config ():
-        signals ():
+        channel (ChannelWidget): Channel object that stores info about itself.
+        config (dict): Holds Cyckei launch settings.
+        signals (Signals): Used for gui signals. Shows the server's response.
     """
 
     def __init__(self, config, channel):
-        """[summary]
+        """Inits Read with channel, config, and signals.
 
         Args:
-            channel ([type]): [description]
-            config ([type]): [description]
+            channel (ChannelWidget): Channel object that stores info about itself.
+            config (dict): Holds Cyckei launch settings.
         """
         super(Read, self).__init__()
         self.channel = channel
@@ -170,7 +173,7 @@ class Read(QRunnable):
 
     @Slot()
     def run(self):
-        """ """
+        """Tell channel to Rest() long enough to get voltage reading on cell."""
         status = Socket(self.config).info_channel(
             self.channel.attributes["channel"])["response"]
         if status["status"] == "available":
@@ -191,26 +194,26 @@ class Read(QRunnable):
         self.signals.status.emit(status, self.channel)
 
 class Control(QRunnable):
-    """Update json and send "start" function to server
+    """Object for storing a script and sendng it to the server.
     
     Attributes:
-        channel (int):
-        command ():
-        config (dict):
-        script ():
-        signals ():
-        temp ():
+        channel (ChannelWidget): Channel object that stores info about itself.
+        command (str): Used by Control in determining which actions to take.
+        config (dict): Holds Cyckei launch settings.
+        script (str): The script for the server to execute. Passed in or taken from the channel.
+        signals (Signals): Used for gui signals. Shows the server's response.
+        temp (bool): Indicates whether recording should be done in temporary files (true) or not (false)
     """
 
     def __init__(self, config, channel, command, script=None, temp=False):
-        """[summary]
+        """Inits Control with channel, command, config, script, signals, and temp.
 
         Args:
-            channel (int): [description]
-            command ([type]): [description]
-            config (dict): [description]
-            script ([type], optional): [description]. Defaults to None.
-            temp (bool, optional): [description]. Defaults to False.
+            channel (ChannelWidget): Channel object that stores info about itself. 
+            command (str): Used by Control in determining which actions to take.
+            config (dict): Holds Cyckei launch settings.
+            script (str, optional): The script for the server to execute. Defaults to None.
+            temp (bool, optional): Indicates whether recording should be done in temporary files (true) or not (false). Defaults to False.
         """
         # TODO: Make sure read passes correct script
         super(Control, self).__init__()
@@ -226,7 +229,7 @@ class Control(QRunnable):
 
     @Slot()
     def run(self):
-        """[summary]"""
+        """Calls for a viability check on the loaded script and then sends it to the server."""
         try:
             if self.script is None:
                 self.script = None
@@ -240,26 +243,26 @@ class Control(QRunnable):
                 logger.warning(msg)
                 return
 
-        packet = prepare_json(self.channel, self.command,
+        packet =  json(self.channel, self.command,
                               self.script, self.temp)
         response = Socket(self.config).send(packet)["response"]
         self.signals.status.emit(response, self.channel)
 
 class Check(QRunnable):
-    """[summary]
+    """Object used for testing whether a certain protocol can be run.
 
     Attributes:
-        protocol (str):
-        config (dict):
-        signals ():
+        protocol (str): The protocol being checked for legality.
+        config (dict): Holds Cyckei launch settings.
+        signals (Signals): Used for gui signals. Shows the server's response.
     """
 
     def __init__(self, config, protocol):
-        """[summary]
+        """Inits Check with config, protocol, and signals.
 
         Args:
-            config (dict): [description]
-            protocol (str): [description]
+            config (dict): Holds Cyckei launch settings.
+            protocol (str): The protocol being checked for legality.
         """
         super(Check, self).__init__()
         self.protocol = protocol
@@ -268,11 +271,11 @@ class Check(QRunnable):
 
     @Slot()
     def run(self):
-        """Initiates checking tests
+        """Runs the tests for checking the script.
 
         Returns:
-            bool: [description]
-            str: 
+            bool: True if protocol is legal and loaded, False otherwise.
+            str: The message that goes with the legality/load test results.
         """
         passed, msg = self.legal_test(self.protocol)
         if not passed:
@@ -283,14 +286,14 @@ class Check(QRunnable):
         return passed, msg
 
     def legal_test(self, protocol):
-        """Checks if script only contains valid commands
+        """Checks if script only contains valid commands.
 
         Args:
-            protocol (str): [description]
+            protocol (str): The protocol being checked for legality.
 
         Returns:
-            bool: [description]
-            str: 
+            bool: True if protocol is legal, False otherwise.
+            str: The message that goes with the legality test results.
         """
         conditions = ["#",
                       "for",
@@ -319,14 +322,14 @@ class Check(QRunnable):
         return True, "Passed"
 
     def run_test(self, protocol):
-        """Checks if server can load script successfully
+        """Checks if server can load script successfully.
 
         Args:
-            protocol (str): [description]
+            protocol (str): The protocol being checked for server loading.
 
         Returns:
-            bool: [description]
-            str: 
+            bool: True if protocol is loaded, False otherwise.
+            str: The message that goes with the load test results.
         """
         packet = self.prepare_json(protocol)
         response = Socket(self.config).send(packet)["response"]
@@ -339,10 +342,10 @@ class Check(QRunnable):
         """Packages protocol in json dict to send to server.
 
         Args:
-            protocol (str): [description]
+            protocol (str): The protocol being sent to the server.
 
         Returns:
-            dict: [description]
+            dict: The protocol packaged with an indication that this is a test for the server.
         """
         packet = json.load(
             open(func.asset_path("default_packet.json")))
