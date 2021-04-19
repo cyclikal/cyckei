@@ -33,7 +33,7 @@ def main(config):
     gui.style(app, "icon-client.png", gui.orange)
 
     # Create Client
-    logger.debug("Creating initial xlient window")
+    logger.debug("Creating initial client window")
     main_window = MainWindow(config)
     main_window.show()
 

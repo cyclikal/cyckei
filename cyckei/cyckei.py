@@ -80,7 +80,7 @@ def parse_args():
     #                         "Cyckei"),
     #                     type=str, help='Recording directory.')
     parser.add_argument('--log_level', metavar="[log_level]",
-                        default=30, type=int,
+                        default=20, type=int,
                         help='Set log file logging level.')
 
     return parser.parse_args()
