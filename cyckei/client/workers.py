@@ -243,7 +243,7 @@ class Control(QRunnable):
                 logger.warning(msg)
                 return
 
-        packet =  json(self.channel, self.command,
+        packet = prepare_json(self.channel, self.command,
                               self.script, self.temp)
         response = Socket(self.config).send(packet)["response"]
         self.signals.status.emit(response, self.channel)
