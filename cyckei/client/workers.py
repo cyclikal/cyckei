@@ -122,7 +122,13 @@ class UpdateStatus(QRunnable):
                           + " - " + func.not_none(info["state"])
                           + " | C: " + func.not_none(info["current"])
                           + ", V: " + func.not_none(info["voltage"]))
-
+                # This section handles enabling/disabling client gui when cell is or isn't running
+                if info["status"] == "available" or info["status"] == "completed":
+                    for setting in channel.settings:
+                        setting.setEnabled(True)
+                else:
+                    for setting in channel.settings:
+                        setting.setDisabled(True)
                 # if info["status"] == "started":
                 #    channel.divider.setStyleSheet(
                 #        "background-color: {}".format(gui.orange))
