@@ -282,10 +282,12 @@ class ChannelWidget(QWidget):
         return elements
 
     def unlock_settings(self):
+        """Sets the status of each QObject in settings to be interactable"""
         for setting in self.settings:
             setting.setEnabled(True)
 
     def lock_settings(self):
+        """Sets the status of each QObject in settings to be uninteractable"""
         for setting in self.settings:
             setting.setDisabled(True)
             

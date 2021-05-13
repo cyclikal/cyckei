@@ -111,7 +111,6 @@ class UpdateStatus(QRunnable):
     def run(self):
         """Goes through the channels list and sets the gui status text depending on server response from info_all query."""
         info_all = Socket(self.config).info_all_channels()
-
         for channel in self.channels:
             if type(info_all) is not dict:
                 channel.status.setText("No Response")
@@ -176,6 +175,7 @@ class Read(QRunnable):
     @Slot()
     def run(self):
         """Tell channel to Rest() long enough to get voltage reading on cell."""
+        # immediately lock settings so they can't be changed
         self.channel.lock_settings()
         status = Socket(self.config).info_channel(
             self.channel.attributes["channel"])["response"]
@@ -233,6 +233,7 @@ class Control(QRunnable):
     @Slot()
     def run(self):
         """Calls for a viability check on the loaded script and then sends it to the server."""
+        # immediately lock settings so they can't be changed
         self.channel.lock_settings()
         try:
             if self.script is None:
