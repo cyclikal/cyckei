@@ -77,7 +77,7 @@ class MainWindow(QMainWindow):
 
         # Obtain channel information
         logger.info("Connecting to server for channel information")
-        self.channel_info = Socket(config).info_all_channels()
+        self.channel_info = Socket(config).info_server_file()
         if type(self.channel_info) is not dict:
             logger.error("Could not get any plugin info from server.")
             raise Exception("Incorrect server response")

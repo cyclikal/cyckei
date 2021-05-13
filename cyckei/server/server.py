@@ -115,7 +115,7 @@ def event_loop(config, socket, plugins, plugin_names, device_module):
             # but it might not be necessary
             # main loop without problem
             # logger.debug("Processing socket messages")
-            process_socket(socket, runners, sources, current_time,
+            process_socket(config, socket, runners, sources, current_time,
                            plugins, plugin_names)
 
             # execute runners or sleep if none
@@ -171,12 +171,22 @@ def event_loop(config, socket, plugins, plugin_names, device_module):
 
 def record_data(data_path, data):
     """Saves server status to a file"""
-    data_path = data_path + "\server_data.txt"
+    data_path = data_path + "\\server_data.txt"
+    #loads server_file into a dict
+    data_file = open(data_path, "r")
+    old_data = json.load(data_file)
+    data_file.close()
+    #This section is to avoid overwriting the previous protocol with the nulls
+    #from when a cell runner finishes and is deleted from runners
+    for i in data:
+        if old_data[i]["state"] != None and data[i]["state"] == None:
+            data[i] = old_data[i]
+    #writes the data to the server file
     data_file = open(data_path, "w")
     data_file.write(json.dumps(data))
     data_file.close()
 
-def process_socket(socket, runners, sources, server_time,
+def process_socket(config, socket, runners, sources, server_time,
                    plugins, plugin_names):
     """
 
@@ -253,6 +263,9 @@ def process_socket(socket, runners, sources, server_time,
                 elif fun == "info_all_channels":
                     resp = info_all_channels(runners, sources)
 
+                elif fun == "info_server_file":
+                    resp = info_server_file(config)
+
                 logger.debug("Sending response: {}".format(resp))
                 response["response"] = resp
 
@@ -270,6 +283,15 @@ def process_socket(socket, runners, sources, server_time,
                     response['response']))
                 socket.send_json(response)
 
+def info_server_file(config):
+    """Return the dict of channels in the server file"""
+    data_path = config["arguments"]["record_dir"] + "\\server_data.txt"
+    #loads server_file into a dict
+    data_file = open(data_path, "r")
+    server_data = json.load(data_file)
+    data_file.close()
+    return server_data
+    
 
 def info_all_channels(runners, sources):
     """Return info on all channels"""

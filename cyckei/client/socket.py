@@ -105,3 +105,12 @@ class Socket(object):
         """
         script = json.loads("""{"function": "info_all_channels"}""")
         return self.send(script)["response"]
+
+    def info_server_file(self):
+        """Sends a JSON request for the server file kept by the server.
+        
+        Returns:
+            dict: A dict of nested dicts containing info about all connected channels from the server file.
+        """
+        script = json.loads("""{"function": "info_server_file"}""")
+        return self.send(script)["response"]
