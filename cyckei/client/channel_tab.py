@@ -281,7 +281,14 @@ class ChannelWidget(QWidget):
 
         return elements
 
-    # 
+    def unlock_settings(self):
+        for setting in self.settings:
+            setting.setEnabled(True)
+
+    def lock_settings(self):
+        for setting in self.settings:
+            setting.setDisabled(True)
+            
     def set_script(self, button_text, filename=None):
         """Sets the protocol for a channel to run
         

@@ -122,13 +122,9 @@ class UpdateStatus(QRunnable):
                           + " - " + func.not_none(info["state"])
                           + " | C: " + func.not_none(info["current"])
                           + ", V: " + func.not_none(info["voltage"]))
-                # This section handles enabling/disabling client gui when cell is or isn't running
+                # This section handles enabling client gui when cell is done running
                 if info["status"] == "available" or info["status"] == "completed":
-                    for setting in channel.settings:
-                        setting.setEnabled(True)
-                else:
-                    for setting in channel.settings:
-                        setting.setDisabled(True)
+                    channel.unlock_settings()
                 # if info["status"] == "started":
                 #    channel.divider.setStyleSheet(
                 #        "background-color: {}".format(gui.orange))
@@ -180,6 +176,7 @@ class Read(QRunnable):
     @Slot()
     def run(self):
         """Tell channel to Rest() long enough to get voltage reading on cell."""
+        self.channel.lock_settings()
         status = Socket(self.config).info_channel(
             self.channel.attributes["channel"])["response"]
         if status["status"] == "available":
@@ -236,6 +233,7 @@ class Control(QRunnable):
     @Slot()
     def run(self):
         """Calls for a viability check on the loaded script and then sends it to the server."""
+        self.channel.lock_settings()
         try:
             if self.script is None:
                 self.script = None
