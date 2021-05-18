@@ -1,0 +1,3 @@
+# This script rapidly checks a cell for code testing purposes
+
+Sleep(reports=(("time", "::5"),), ends=(("time", ">", ":5:"),))

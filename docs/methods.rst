@@ -6,20 +6,6 @@ Main
   .. automodule:: cyckei
     :members:
 
-Functions
----------
-  .. automodule:: functions
-    :members:
-  .. automodule:: functions.gui
-    :members:
-
-Applet
-------
-  .. automodule:: applet
-    :members:
-  .. automodule:: applet.applet
-    :members:
-
 Client
 ------
   .. automodule:: client
@@ -28,15 +14,22 @@ Client
     :members:
   .. automodule:: client.client
     :members:
-  .. automodule:: client.log_tab
-    :members:
-  .. automodule:: client.script_tab
-    :members:
-  .. automodule:: client.scripts
-    :members:
   .. automodule:: client.socket
     :members:
   .. automodule:: client.workers
+    :members:
+
+Explorer
+--------
+  .. automodule:: explorer
+    :members:
+  .. automodule:: explorer.explorer
+    :members:
+  .. automodule:: explorer.log_viewer
+    :members:
+  .. automodule:: explorer.script_editor
+    :members:
+  .. automodule:: explorer.workers
     :members:
 
 Server
@@ -48,4 +41,15 @@ Server
   .. automodule:: server.protocols
     :members:
   .. automodule:: server.server
+    :members:
+  .. automodule:: server.keithley2602
+    :members:
+
+Functions
+---------
+  .. automodule:: functions
+    :members:
+  .. automodule:: functions.func
+    :members:
+  .. automodule:: functions.gui
     :members:

@@ -2,8 +2,8 @@ Changes & Features
 ==================
 
 
-0.0
-----------------
+0.0 Yin - 11/14/2018
+--------------------
 
 Original version of Cyckei.
 
@@ -50,8 +50,8 @@ Release Candidates
 -  0.1rc2, 06/29/2019 -- Fixed some bugs, enable MenuBar on Windows, and added exception logging
 
 
-0.2 Alviss
-----------
+0.2 Alviss - 8/01/2019
+----------------------
 
 Smaller update focused on simplifying the code to aid in further
 development. This includes unifying as many commonly used functions as
@@ -85,68 +85,65 @@ Release Candidates
 -  0.2rc4, 7/31/2019 -- Fix file naming while reading cell, unify versioning
 -  0.2rc5, 8/01/2019 -- Report pre-logging runtime errors
 
-0.2.1
-----------
 
-Hotfix updates to Alviss
+0.2.1
+-----
+
+Hotfix updates to Alviss. Includes fixes to delay and improper current measurement and a basic test suite.
 
 Notable Changes
 ^^^^^^^^^^^^^^^
 
--  None, yet
+-  Fixes to measurement and report timing
+-  Basic test suite
 
 Development Releases
 ^^^^^^^^^^^^^^^^^^^^
 
--  0.2.1.dev1, 0/00/0000 -- None
+-  0.2.1.dev1, 8/19/2019 -- Fix issues with delay and improper current measurement
 
-Release Candidates
-^^^^^^^^^^^^^^^^^^
 
--  0.2.1rc1, 0/00/0000 -- None
-
-0.3 Tenjin
+0.3 Tenzin
 ----------
 
-Add significant features which make the platform more efficient. This
-includes automatic scripting, better batch management, pretty log view,
-multi-folder scripts, and more.
+Rebuilding existing interfaces after fixing an OS-level threading error.
+Adds Cyckei Explorer for editing scripts and viewing recent log files.
+Now, again, uses PyPI release system as opposed to freezing.
 
 Development Releases
 ^^^^^^^^^^^^^^^^^^^^
 
-- 0.3.dev1, 0/00/0000 -- TBD
+- 0.3.dev1, 1/16/2020 -- Implements Cyckei Explorer and rebuilds distribution system
+- 0.3.dev2, 1/31/2020 -- Rebuild check, pause, & resume functionality
+- 0.3.dev3, 3/28/2020 -- Add plugin scheme to support additional data collection
+- 0.3.dev4, 0/00/0000 -- Highlight scripts in explorer & Fix Flickering
 
 Release Candidates
 ^^^^^^^^^^^^^^^^^^
 
 - 0.3rc1, 0/00/0000 -- TBD
 
+0.4 Skyler
+----------
+Adds plugin scheme.
+
+- 0.4.dev1, 6/29/2020 -- Implement Plugin System
+- 0.4.dev2, 7/22/2020 -- Fix Metadata Values
+- 0.4.rc1, 8/12/2020 -- Package-based Plugin System
+- 0.4.rc2 8/25/2020 -- Update documentation for Cyckei and Plugins
 
 Possible Features
-----------------
+-----------------
 - Client Interface
-   - Automatic scripting
    - Better batch management
-   - Pretty log view
    - Multi-folder script storage
    - Script highlighting
 - Server Software
    - "Plug-in" style core (lua) script management for different devices
    - Implement Cython and threading for improved performance with massive cycles
-   - Auto shutoff due to crash or inactivity
-   - Possibly better logging format, dependent on Cell Explorer
-   - Stop all cycles on exit
 - Hardware Support
-   - Complete Support for Mac and Linux
-   - Make equivalent for Windows
+   - Complete Support for Linux
    - Simplify VISA and driver installation for end user
 - Miscellaneous
    - Automated release delivery
    - Add test suite
-
-
-Bug Tracker
------------
-
--  ``Segmentation Fault: 11`` on Darwin
