@@ -173,14 +173,18 @@ def record_data(data_path, data):
     """Saves server status to a file"""
     data_path = data_path + "\\server_data.txt"
     #loads server_file into a dict
-    data_file = open(data_path, "r")
-    old_data = json.load(data_file)
-    data_file.close()
-    #This section is to avoid overwriting the previous protocol with the nulls
-    #from when a cell runner finishes and is deleted from runners
-    for i in data:
-        if old_data[i]["state"] != None and data[i]["state"] == None:
-            data[i] = old_data[i]
+    try:
+        data_file = open(data_path, "r")
+        old_data = json.load(data_file)
+        data_file.close()
+        #This section is to avoid overwriting the previous protocol with the nulls
+        #from when a cell runner finishes and is deleted from runners
+        for i in old_data:
+            if old_data[i]["state"] != None and data[i]["state"] == None:
+                data[i] = old_data[i]
+    # The server_data file does not exist yet
+    except IOError:
+        pass
     #writes the data to the server file
     data_file = open(data_path, "w")
     data_file.write(json.dumps(data))
@@ -287,10 +291,15 @@ def info_server_file(config):
     """Return the dict of channels in the server file"""
     data_path = config["arguments"]["record_dir"] + "\\server_data.txt"
     #loads server_file into a dict
-    data_file = open(data_path, "r")
-    server_data = json.load(data_file)
-    data_file.close()
+    try:
+        data_file = open(data_path, "r")
+        server_data = json.load(data_file)
+        data_file.close()
+    #Server file doesn't exist
+    except IOError:
+        server_data = None
     return server_data
+    
     
 
 def info_all_channels(runners, sources):
