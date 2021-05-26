@@ -306,15 +306,19 @@ class ChannelWidget(QWidget):
             if self.state == "charge":
                 self.setStyleSheet(
                     f"background-color: {gui.green}")
+                self.state_changed = False
             elif self.state == "discharge":
                 self.setStyleSheet(
                     f"background-color: {gui.red}")
+                self.state_changed = False
             elif self.state == "sleep":
                 self.setStyleSheet(
                     f"background-color: {gui.yellow}")
+                self.state_changed = False
             else:
                 self.setStyleSheet(
                     f"background-color: {self.default_color}")
+                self.state_changed = False
 
     def unlock_settings(self):
         """Sets the status of each QObject in settings to be interactable"""
