@@ -82,6 +82,7 @@ class ChannelTab(QWidget):
                 color = base.lighter(110)
             else:
                 color = base.darker(110)
+            channel.default_color = color.name()
             channel.setStyleSheet(
                 "QComboBox {{"
                 "   color: {};"
@@ -110,11 +111,14 @@ class ChannelWidget(QWidget):
     Attributes:
         attributes (dict): Holds info about the ChannelWidget: Channel info, cell info, script info, etc.
         config (dict): Holds Cyckei launch settings.
+        default_color (str): The default background color of the channel.
         divider (QWidget): Divides the channel widget vertically between info and controls.
         feedback (QLabel): A label under the controls that gives info when a control is pressed.
         json (dict): Holds the default attribtues of a ChannelWidget. Taken from an outside file.
         script_label (QLabel): A gui label that indicates if there is a selected script.
         settings (list): A list of gui elements to be added to the window, set in the set_settings function.
+        state (str): The step in the protocol performed on a cell.
+        state_changed (bool): Indicates whether the channel state has changed.
         status (QLabel): A gui label that indicates a cell's status.
         threadpool (dict):  Holds the Threadpool object from resource for threads to be pulled from.
     """
@@ -147,7 +151,9 @@ class ChannelWidget(QWidget):
             "script_content": None
         }
         self.config = config
-
+        self.state = None
+        self.state_changed = False
+        self.default_color = None
         self.threadpool = resource["threadpool"]
         # self.scripts = resource["scripts"]
 
@@ -281,6 +287,35 @@ class ChannelWidget(QWidget):
 
         return elements
 
+    def set_state(self, state=None):
+        """Changes the state of the channel and marks if the state has been changed or not.
+
+        Args:
+            state (str, optional): The step the channel protocol is on. Defaults to None.
+        """
+        if self.state != state:
+            self.state = state
+            self.state_changed = True
+        else:
+            self.state_changed = False
+
+    def set_bg_color(self):
+        """Checks whether the background needs to be changed and acts accordingly
+        """
+        if self.state_changed:
+            if self.state == "charge":
+                self.setStyleSheet(
+                    f"background-color: {gui.green}")
+            elif self.state == "discharge":
+                self.setStyleSheet(
+                    f"background-color: {gui.red}")
+            elif self.state == "sleep":
+                self.setStyleSheet(
+                    f"background-color: {gui.yellow}")
+            else:
+                self.setStyleSheet(
+                    f"background-color: {self.default_color}")
+
     def unlock_settings(self):
         """Sets the status of each QObject in settings to be interactable"""
         for setting in self.settings:
@@ -383,4 +418,5 @@ class ChannelWidget(QWidget):
         option = QStyleOption()
         option.initFrom(self)
         painter = QPainter(self)
+        self.set_bg_color()
         self.style().drawPrimitive(QStyle.PE_Widget, option, painter, self)

@@ -124,15 +124,13 @@ class UpdateStatus(QRunnable):
                 # This section handles enabling client gui when cell is done running
                 if info["status"] == "available" or info["status"] == "completed":
                     channel.unlock_settings()
-                 if info["state"] == "charge":
-                    channel.divider.setStyleSheet(
-                        f"background-color: {gui.green}")
-                 elif info["state"] == "discharge":
-                    channel.divider.setStyleSheet(
-                        f"background-color: {gui.red}")
-                 elif info["state"] == "sleep":
-                    channel.divider.setStyleSheet(
-                       f"background-color: {gui.yellow}")
+                # This section parses the state for the client to change 
+                # channel background colors
+                full_state = func.not_none(info["state"])
+                if(full_state is not None):
+                    channel.set_state(full_state.split("_")[0])
+                else:
+                    channel.set_state(None)
 
             except (TypeError, KeyError) as error:
                 logger.error(f"Could not get status from server: {error}")
@@ -140,8 +138,6 @@ class UpdateStatus(QRunnable):
                     f"Contents of info_all for diagnosis: {info_all}")
                 status = "Could not get status!"
 
-            #    channel.divider.setStyleSheet(
-            #        "background-color: {}".format(gui.gray))
             logger.debug("Updating channel {} with status {}".format(
                          channel.attributes["channel"], status))
             try:
