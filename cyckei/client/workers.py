@@ -124,12 +124,15 @@ class UpdateStatus(QRunnable):
                 # This section handles enabling client gui when cell is done running
                 if info["status"] == "available" or info["status"] == "completed":
                     channel.unlock_settings()
-                # if info["status"] == "started":
-                #    channel.divider.setStyleSheet(
-                #        "background-color: {}".format(gui.orange))
-                # else:
-                #    channel.divider.setStyleSheet(
-                #        "background-color: {}".format(gui.gray))
+                 if info["state"] == "charge":
+                    channel.divider.setStyleSheet(
+                        f"background-color: {gui.green}")
+                 elif info["state"] == "discharge":
+                    channel.divider.setStyleSheet(
+                        f"background-color: {gui.red}")
+                 elif info["state"] == "sleep":
+                    channel.divider.setStyleSheet(
+                       f"background-color: {gui.yellow}")
 
             except (TypeError, KeyError) as error:
                 logger.error(f"Could not get status from server: {error}")

@@ -15,6 +15,9 @@ Information = QMessageBox.Information
 Warning = QMessageBox.Warning
 Critical = QMessageBox.Critical
 
+green = "#8be87d"
+yellow = "#e8dd7d"
+red = "#e87d7d"
 orange = "#f05f40"
 teal = "#3eb58a"
 blue = "#33658a"
