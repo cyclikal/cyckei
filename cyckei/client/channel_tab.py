@@ -151,6 +151,10 @@ class ChannelWidget(QWidget):
             "script_content": None
         }
         self.config = config
+        # State and state_changed currently only used for changing the color 
+        # of the channel background. If state_changed wants to be used for anything
+        # else you should add a new bool like "change_color", since state_changed is
+        # changed to false after changing color to mitigate startup lag.
         self.state = None
         self.state_changed = False
         self.default_color = None
