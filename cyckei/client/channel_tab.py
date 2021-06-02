@@ -254,7 +254,8 @@ class ChannelWidget(QWidget):
             ["ID", "Cell identification", "cellid"],
             ["Comment", "Unparsed Comment", "comment"],
         ]
-        file_rgx = QRegExp("^[\w\-. ]+$")
+        # Look up regex rules for clarification
+        file_rgx = QRegExp("^[^:\"*?/<>|\\\\]+$")
         validator = QRegExpValidator(file_rgx)
         for line in editables:
             self.settings.append(gui.line_edit(*line, self.set))
