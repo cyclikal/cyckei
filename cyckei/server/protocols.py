@@ -304,23 +304,32 @@ class CellRunner(object):
         self.write_cycle_header()
 
     def write_header(self):
-        with open(self.fpath, 'w') as fo:
-            header = json.dumps(self.meta, indent=4, sort_keys=True)
-            header = "\n".join(
-                ["#{}".format(line) for line in header.split("\n")]
-            )
-            fo.write(header + "\n")
+        try:
+            with open(self.fpath, 'w') as fo:
+                header = json.dumps(self.meta, indent=4, sort_keys=True)
+                header = "\n".join(
+                    ["#{}".format(line) for line in header.split("\n")]
+                )
+                fo.write(header + "\n")
+        except IOError as error:
+            logger.error(f"Error opening file in write_header(): {error}")
 
     def write_cycle_header(self):
-        with open(self.fpath, 'a') as fo:
-            cycle_header = json.dumps({"cycle": self.cycle}) + "\n"
-            fo.write(cycle_header)
+        try:
+            with open(self.fpath, 'a') as fo:
+                cycle_header = json.dumps({"cycle": self.cycle}) + "\n"
+                fo.write(cycle_header)
+        except IOError as error:
+            logger.error(f"Error opening file in write_cycle_header(): {error}")
 
     def write_step_header(self):
         header = self.step.header()
         if header:
-            with open(self.fpath, 'a') as fo:
-                fo.write("  " + header + "\n")
+            try:
+                with open(self.fpath, 'a') as fo:
+                    fo.write("  " + header + "\n")
+            except IOError as error:
+                logger.error(f"Error opening file in write_step_header(): {error}")
 
     def read_and_write(self, force_report=False):
         data = self.step.run(force_report=force_report)
@@ -346,6 +355,8 @@ class CellRunner(object):
                 logger.debug("Wrote data point to file.")
         except PermissionError as e:
             logger.critical("Permission Error, could not write data: %s", e)
+        except IOError as error:
+            logger.error(f"Error opening file in write_data(): {error}")
 
     def pause(self):
         """
