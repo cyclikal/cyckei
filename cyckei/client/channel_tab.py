@@ -9,8 +9,8 @@ from pathlib import Path
 
 from PySide2.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, \
      QScrollArea, QStyleOption, QStyle, QFileDialog
-from PySide2.QtCore import QTimer, Qt
-from PySide2.QtGui import QPainter, QPalette
+from PySide2.QtCore import QTimer, Qt, QRegExp
+from PySide2.QtGui import QPainter, QPalette, QRegExpValidator
 
 from . import workers
 from cyckei.functions import func, gui
@@ -254,9 +254,13 @@ class ChannelWidget(QWidget):
             ["ID", "Cell identification", "cellid"],
             ["Comment", "Unparsed Comment", "comment"],
         ]
+        file_rgx = QRegExp("^[\w\-. ]+$")
+        validator = QRegExpValidator(file_rgx)
         for line in editables:
             self.settings.append(gui.line_edit(*line, self.set))
-
+            # Allowing only filename safe characters in editables
+            if line[0] == 'Filename':
+                self.settings[-1].setValidator(validator)
         # Check each spot and update if the client was closed while the
         # server was still running protocols
         if cur_channel_info['path'] != None:
