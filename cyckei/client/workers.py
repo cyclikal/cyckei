@@ -124,6 +124,8 @@ class UpdateStatus(QRunnable):
                 # This section handles enabling client gui when cell is done running
                 if info["status"] == "available" or info["status"] == "completed":
                     channel.unlock_settings()
+                else:
+                    channel.lock_settings()
                 # This section parses the state for the client to change 
                 # channel background colors
                 full_state = func.not_none(info["state"])
