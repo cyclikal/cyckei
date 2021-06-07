@@ -264,13 +264,22 @@ class ChannelWidget(QWidget):
                 self.settings[-1].setValidator(validator)
         # Check each spot and update if the client was closed while the
         # server was still running protocols
+        
+        # Parses the filepath for a script, removes the extension,
+        # and sets the filename slot
         if cur_channel_info['path'] != None:
             split_path = cur_channel_info['path'].split('\\')
-            self.settings[2].setText(split_path[-1])
+            split_path = split_path[-1].split('.')[:-1]
+            filename = ""
+            for i in split_path:
+                filename = filename + i + "."
+            self.settings[2].setText(filename[:-1])
 
+        # Fills in cellid slot
         if cur_channel_info['cellid'] != None:
              self.settings[3].setText(cur_channel_info['cellid'])
 
+        # Fills in comment slot
         if cur_channel_info['comment'] != None:
              self.settings[4].setText(cur_channel_info['comment'])
 
