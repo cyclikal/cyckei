@@ -19,10 +19,13 @@ def main(config, plugins, plugin_names):
     """
     Begins execution of Cyckei Server.
 
+    Sets up the socket for communication with a client and starts the event_loop to 
+    process commands.
+
     Args:
-        record_dir: Optional path to recording directory.
-    Returns:
-        Result of app.exec_(), Qt's main event loop.
+        config (dict):
+        plugins (dict):
+        plugin_names (list):
     """
 
     logger.info(
@@ -55,7 +58,19 @@ def main(config, plugins, plugin_names):
 
 
 def event_loop(config, socket, plugins, plugin_names, device_module):
-    """Main start method and loop for server application"""
+    """Main start method and loop for server application.
+
+    Connects cycling channels, sets up CellRunners for controlling channels,
+    waits for runners then processes and discards them as necessary. Also records
+    the channel statuses.
+        
+    Args:
+        config (dict):
+        device_module ():
+        plugins ():
+        plugin_names ():
+        socket ():
+    """
     try:
         logger.debug("Starting server event loop")
 
@@ -170,7 +185,16 @@ def event_loop(config, socket, plugins, plugin_names, device_module):
         logger.exception(e)
 
 def record_data(data_path, data):
-    """Saves server status to a file"""
+    """Saves server status to a file.
+
+    Uses the data_path to open an existing or new file, converts the data to a json,
+    then writes the data to the file. If there is already existing data in channels
+    it is not overwritten by the same channels now being empty.
+        
+    Args:
+        data (dict):
+        data_path (str):
+    """
     data_path = data_path + "\\server_data.txt"
     #loads server_file into a dict
     try:
@@ -194,16 +218,15 @@ def process_socket(config, socket, runners, sources, server_time,
                    plugins, plugin_names):
     """
 
-    Parameters
-    ----------
-    socket: zmq.REP socket
-        Receives messages in a non-blocking way
-        If a message is received it processes it and sends a response
-
-    Returns
-    -------
-        None
-
+    Args:
+        config (dict):
+        plugins (dict):
+        plugin_names (list):
+        runners (list):
+        server_time (float):
+        socket (zmq.REP socket): Receives messages in a non-blocking way.
+            If a message is received it processes it and sends a response
+        sources ():
     """
 
     # Check to see if there are new events on the socket
@@ -288,7 +311,14 @@ def process_socket(config, socket, runners, sources, server_time,
                 socket.send_json(response)
 
 def info_server_file(config):
-    """Return the dict of channels in the server file"""
+    """Return the dict of channels in the server file
+        
+    Args:
+        config (dict):
+
+    Returns:
+        dict: The json data of channels recorded in a file, converted to a dict.
+    """
     data_path = config["arguments"]["record_dir"] + "\\server_data.txt"
     #loads server_file into a dict
     try:
@@ -303,7 +333,15 @@ def info_server_file(config):
     
 
 def info_all_channels(runners, sources):
-    """Return info on all channels"""
+    """Return info on all channels
+        
+    Args:
+        runners ():
+        sources ():
+
+    Returns:
+        dict:
+    """
     info = {}
     for source in sources:
         info[str(source.channel)] \
@@ -313,7 +351,16 @@ def info_all_channels(runners, sources):
 
 
 def info_channel(channel, runners, sources):
-    """Return info on specified channels"""
+    """Return info on specified channels
+        
+    Args:
+        channel ():
+        runners ():
+        sources ():
+
+    Returns:
+        dict: 
+    """
     info = OrderedDict(channel=channel, path=None, cellid=None, comment=None, protocol_name=None, protocol=None, status=None, state=None,
                        current=None, voltage=None)
     runner = get_runner_by_channel(channel, runners)
@@ -349,7 +396,19 @@ def info_channel(channel, runners, sources):
 
 
 def start(channel, meta, protocol, runners, sources, plugin_objects):
-    """Start channel with given protocol"""
+    """Start channel with given protocol
+        
+    Args:
+        channel ():
+        meta ():
+        plugin_objects ():
+        protocol ():
+        runners ():
+        sources ():
+
+    Returns:
+        str: The result message of trying to start a channel.
+    """
     # check to see if there is a already a runner on that channel
     meta["channel"] = channel
     if get_runner_by_channel(channel, runners):
@@ -376,7 +435,15 @@ def start(channel, meta, protocol, runners, sources, plugin_objects):
 
 
 def pause(channel, runners):
-    """Pause channel"""
+    """Pauses the specified channel.
+        
+    Args:
+        channel ():
+        runners ():
+
+    Returns:
+        str: The result message of trying to pause a channel.
+    """
     success = False
     runner = get_runner_by_channel(channel, runners, status=STATUS.started)
     if runner is not None:
@@ -388,7 +455,15 @@ def pause(channel, runners):
 
 
 def stop(channel, runners):
-    """Stop channel"""
+    """Stop the specified channel.
+
+    Args:
+        channel ():
+        runners ():
+
+    Returns:
+        str: The result message of trying to strop a channel.
+    """
     success = False
     runner = get_runner_by_channel(channel, runners)
     if runner is not None:
@@ -400,7 +475,15 @@ def stop(channel, runners):
 
 
 def resume(channel, runners):
-    """Resume channel from pause"""
+    """Attempts to resume the specified channel from pause.
+
+    Args:
+        channel ():
+        runners ():
+
+    Returns:
+        str: The result message of trying to resume a channel.
+    """
     success = False
     runner = get_runner_by_channel(channel, runners, status=STATUS.paused)
     if runner is not None:
@@ -412,7 +495,14 @@ def resume(channel, runners):
 
 
 def test(protocol):
-    """Test script load on server"""
+    """Test the specified protocol for compliance.
+    
+    Args:
+        protocol ():
+
+    Returns:
+        str: The result message of testing the protocol.
+    """
     try:
         runner = CellRunner()
         runner.load_protocol(protocol, isTest=True)
@@ -422,7 +512,16 @@ def test(protocol):
 
 
 def get_runner_by_channel(channel, runners, status=None):
-    """Get runner currently on given channel"""
+    """Get runner currently on given channel.
+
+    Args:
+        channel ([type]): [description]
+        runners ([type]): [description]
+        status ([type], optional): [description]. Defaults to None.
+
+    Returns:
+        CellRunnner: Returns the runner serving the given channel, returns None otherwise.
+    """
     if status is None:
         for runner in runners:
             if runner.channel == channel or int(runner.channel) == channel:

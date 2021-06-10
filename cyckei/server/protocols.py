@@ -62,6 +62,34 @@ STATUS.string_map = {
 
 
 class CellRunner(object):
+    """[summary]
+
+    Args:
+        object ([type]): [description]
+
+    Attributes:
+        channel ():
+        current_step ():
+        fpath ():
+        i_current_step ():
+        isTest ():
+        last_data ():
+        meta ():
+        _next_time ():
+        plugin_objects ():
+        prev_cycle ():
+        safety_reset_seconds ():
+        source ():
+        start_time ():
+        status ():
+        steps ():
+        total_pause_time ():
+
+    Raises:
+        ValueError: [description]
+        ValueError: [description]
+    """
+
     META = {
         "channel": None,
         "path": None,
@@ -79,6 +107,11 @@ class CellRunner(object):
     }
 
     def __init__(self, plugin_objects=None, **meta):
+        """[summary]
+
+        Args:
+            plugin_objects ([type], optional): [description]. Defaults to None.
+        """
         self.meta = self.META.copy()
         for k in self.meta.keys():
             self.meta[k] = meta.get(k, None)
@@ -116,10 +149,20 @@ class CellRunner(object):
 
     @property
     def next_time(self):
+        """[summary]
+
+        Returns:
+            [type]: [description]
+        """
         return self._next_time
 
     @next_time.setter
     def next_time(self, value):
+        """[summary]
+
+        Args:
+            value ([type]): [description]
+        """
         # Enforce at least minimum wait time
         value = max(MIN_WAIT_TIME, value)
 
@@ -130,6 +173,14 @@ class CellRunner(object):
             self._next_time = value
 
     def set_source(self, source):
+        """[summary]
+
+        Args:
+            source ([type]): [description]
+
+        Raises:
+            ValueError: [description]
+        """
         self.source = source
         if self.channel != source.channel:
             raise ValueError(
@@ -140,23 +191,16 @@ class CellRunner(object):
         self.safety_reset_seconds = source.safety_reset_seconds * 0.5
 
     def set_cap_signs(self, direction=None):
-        """
-        Go through the steps and set their .cap_sign attribute
-        based on the "direction" of the cell.
+        """Decides whether charging/discharging yields positive or negative capacities.
+
+        Go through the steps and set their .cap_sign attribute based on the "direction" of the cell.
         This decides whether charging yields positive or negative capacities
         and vice versa for discharge.
 
-        Parameters
-        ----------
-        direction: str or None
-            direction for the cell can be "pos", "neg", or None
-            if it is None, the "celltype" in the meta data is used,
-            if this is not set it defaults to "pos"
-
-
-        Returns
-        -------
-        None
+        Args:
+            direction (str or None): Direction for the cell can be "pos", "neg", or None
+                if it is None, the "celltype" in the meta data is used, if this is not 
+                set it defaults to "pos".
         """
         valid_directions = ["pos", "neg", None]
         if direction not in valid_directions:
@@ -189,17 +233,10 @@ class CellRunner(object):
                     step.cap_sign = 1.0
 
     def load_protocol(self, protocol: str, isTest=False):
-        """
-        Executes a string of python code to add a step to the steps list
+        """Executes a string of python code to add a step to the steps list.
 
-        Parameters
-        ----------
-        protocol: str
-            string of python code generating the protocol steps in the runner
-
-        Returns
-        -------
-
+        Args:
+            protocol (str): string of python code generating the protocol steps in the runner.
         """
         # The protocol is a python string that is executed as code.
         # The CellRunner instance must be present as "parent" in the globals
@@ -210,9 +247,19 @@ class CellRunner(object):
         self.set_cap_signs()
 
     def add_step(self, step):
+        """[summary]
+
+        Args:
+            step ([type]): [description]
+        """
         self.steps.append(step)
 
     def next_step(self):
+        """[summary]
+
+        Returns:
+            [type]: [description]
+        """
         self.i_current_step += 1
         if self.i_current_step >= len(self.steps):
             # reached end of the steps
@@ -228,13 +275,10 @@ class CellRunner(object):
         return True
 
     def _start(self):
-        """
-        Initializes the protocol, would not normally be called directly,
-        but instead is called by the .run() function
-
-        Returns
-        -------
-        None
+        """Initializes the protocol. 
+        
+        Would not normally be called directly, but instead is called by the
+            .run() function.
         """
         logger.info("Starting cellrunner instance \
                     (channel: {})".format(self.channel))
@@ -251,22 +295,25 @@ class CellRunner(object):
 
     @property
     def step(self):
+        """[summary]
+
+        Returns:
+            [type]: [description]
+        """
         try:
             return self.steps[self.i_current_step]
         except IndexError:
             return None
 
     def run(self, force_report=False):
-        """
+        """Starts and advances protocols.
+
         Method called by the main loop to start and advance a protocol
         This method triggers the various steps that are loaded in the protocol
         as well as the header writing and the data writing in the data file
 
-        Returns
-        -------
-        success: bool
-            True if is running as expected
-            False if it is complete
+        Returns:
+            bool: True if is running as expected, False if it is complete.
 
         """
         logger.debug("Entering method for channel {}".format(self.channel))
@@ -300,10 +347,14 @@ class CellRunner(object):
         return True
 
     def advance_cycle(self):
+        """Advances the cycle by 1
+        """
         self.cycle += 1
         self.write_cycle_header()
 
     def write_header(self):
+        """[summary]
+        """
         try:
             with open(self.fpath, 'w') as fo:
                 header = json.dumps(self.meta, indent=4, sort_keys=True)
@@ -315,6 +366,8 @@ class CellRunner(object):
             logger.error(f"Error opening file in write_header(): {error}")
 
     def write_cycle_header(self):
+        """[summary]
+        """
         try:
             with open(self.fpath, 'a') as fo:
                 cycle_header = json.dumps({"cycle": self.cycle}) + "\n"
@@ -323,6 +376,8 @@ class CellRunner(object):
             logger.error(f"Error opening file in write_cycle_header(): {error}")
 
     def write_step_header(self):
+        """[summary]
+        """
         header = self.step.header()
         if header:
             try:
@@ -332,6 +387,11 @@ class CellRunner(object):
                 logger.error(f"Error opening file in write_step_header(): {error}")
 
     def read_and_write(self, force_report=False):
+        """[summary]
+
+        Args:
+            force_report (bool, optional): [description]. Defaults to False.
+        """
         data = self.step.run(force_report=force_report)
         self.next_time = self.step.next_time
         if data:
@@ -339,6 +399,15 @@ class CellRunner(object):
             self.last_data = data
 
     def write_data(self, timestamp, current, voltage, capacity, plugin):
+        """[summary]
+
+        Args:
+            capacity ([type]): [description]
+            current ([type]): [description]
+            plugin ([type]): [description]
+            timestamp ([type]): [description]
+            voltage ([type]): [description]
+        """
         try:
             with open(self.fpath, 'a') as file:
                 try:
@@ -360,11 +429,10 @@ class CellRunner(object):
 
     def pause(self):
         """
-        User must be able to pause a cell arbitrarily
-        
-        Returns
-        -------
+        Attempts to pause the active step.
 
+        Returns:
+            bool: True if the pause was successful, otherwise False.
         """
         success = False
         self.read_and_write(force_report=True)
@@ -375,31 +443,31 @@ class CellRunner(object):
         return success
 
     def resume(self):
+        """Calls resume on the current step. Then calls the run() function.
+
+        Returns:
+            bool: The result of calling the run() function.
+        """
         self.status = STATUS.started
         self.step.resume()
         return self.run()
 
     def close(self):
-        """
-        This is to close
-        
-        Returns
-        -------
-
+        """Calls the off() function for the stored source.
         """
         self.source.off()
 
     def off(self):
-        """
-        This is just to turn off the current
-        
-        Returns
-        -------
-
+        """Calls the off() function for the stored source.
         """
         self.source.off()
 
     def stop(self):
+        """Calls the close() function.
+
+        Returns:
+            bool: Always returns True.
+        """
         self.status = STATUS.completed
         self.close()
         return True
@@ -407,30 +475,42 @@ class CellRunner(object):
 
 class ProtocolStep(object):
     """
-    Base class for a protocol step, needs to be subclassed with
-    implementation of a start function
+    Base class for a protocol step, needs to be subclassed with implementation of a start function.
 
     A protocol step stores its own data and the reported points
-    Keeps track of time, current, voltage, capacity
+    Keeps track of time, current, voltage, capacity. Because the protocol files are simply pure 
+    python the parent, which is a CellRunner instance, needs to be present in the global 
+    variables as "parent".
 
-    Because the protocol files are simply pure python the parent, which is a
-    CellRunner instance, needs to be present in the global variables as "parent"
-
+    Attributes:
+        cap_sign ():
+        data ():
+        data_max_len ():
+        end_conditions ():
+        in_control ():
+        last_time ():
+        next_time ():
+        parent (CellRunner):
+        pause_start ():
+        pause_time ():
+        report ():
+        report_conditions ():
+        starting_capacity ():
+        state_str ():
+        status ():
+        wait_time ():
     """
 
     def __init__(self, wait_time: float = 10.0,
                  cellrunner_parent: CellRunner = None):
         """
-        Base class for protocols
-        the variable "parent" must be a CellRunner
-        instance and be present in the globals during instantiation
+        Base class for protocols the variable "parent" must be a CellRunner
+        instance and be present in the globals during instantiation.
 
-        Parameters
-        ----------
-        wait_time: float
-            Default waiting time in seconds.
-            If no other conditions are met,
-                the step will check V & I at this interval
+        Args:
+            cellrunner_parent (CellRunner): The CellRunner this protocol is attached to.
+            wait_time (float): Default waiting time in seconds.
+                If no other conditions are met, the step will check V & I at this interval.
         """
         # the parent is the CellRunner
         if cellrunner_parent is None:
@@ -489,28 +569,36 @@ class ProtocolStep(object):
         self.parent.add_step(self)
 
     def _start(self):
+        """[summary]
+
+        Raises:
+            NotImplementedError: [description]
+        """
         raise NotImplementedError
 
     def header(self):
+        """Unimplemented function. Meant for being overridden. 
+
+        Returns:
+            bool: Always returns False.
+        """
         return False
 
     def run(self, force_report=False):
-        """
+        """Decides if a data point should be reported.
 
-        Parameters
-        ----------
-        force_report: bool
-            defaults to False. The run function evaluates the
-            report_conditions to decide if a data point should be
-            reported, setting force_report to True will report the
-            latest data point regardless of conditions.
+         The run function evaluates the report_conditions to decide if a data point
+         should be reported, setting force_report to True will report the latest data
+         point regardless of conditions.
+
+        Args:
+        
+            force_report (bool): Defaults to False. Forces a report if True.
 
 
-        Returns
-        -------
-        data_to_report: tuple of 4
-            (time, current, voltage, capacity) tuple to report (write to file)
-            returns non if no data to report
+        Returns:
+            tuple: (time, current, voltage, capacity) tuple to report (write to file).
+                Returns none if no data to report.
 
         """
         logger.debug("Running {} protocol on channel {}".format(
@@ -543,11 +631,10 @@ class ProtocolStep(object):
             return None
 
     def check_end_conditions(self):
-        """
+        """Checks if it's time for step to be ended.
 
-        Returns
-        -------
-        bool: whether one of the end conditions was satisfied
+        Returns:        
+            bool: True if the end condition was satisfied, otherwise False
         """
         for condition in self.end_conditions:
             if condition.check(self):
@@ -556,11 +643,10 @@ class ProtocolStep(object):
         return False
 
     def check_report_conditions(self):
-        """
+        """Check if it's time for step info to be reported.
 
-        Returns
-        -------
-        bool: whether one of the report conditions was satisfied
+        Returns:        
+            bool: True if the end condition was satisfied, otherwise False
         """
         for condition in self.report_conditions:
             if condition.check(self):
@@ -568,25 +654,29 @@ class ProtocolStep(object):
         return False
 
     def check_in_control(self, last_time, current, voltage):
-        '''
-        Method for checking if the desired condition is actually met
+        """Abstract Method for checking if the desired condition is actually met.
+        
         For example
             - constant current : check current is correct
             - constant voltage: check voltage is correct
 
-        Parameters
-        ----------
-        last_time: float
-            timestamp of last measurement
-        current: float
-            current in amps. NOTE THAT THIS IS NOT ABSOLUTE CURRENT
-            IT IS THE CURRENT DIRECTLY REPORTED FROM THE INSTRUMENT
-        voltage: float
-            Voltage in volts
-        '''
+        Args:
+            current (float): Current in amps. NOTE THAT THIS IS NOT ABSOLUTE CURRENT
+                IT IS THE CURRENT DIRECTLY REPORTED FROM THE INSTRUMENT.
+            last_time (float): Timestamp of last measurement.
+            voltage (float): Voltage in volts.
+
+        Raises:
+            NotImplementedError: Raises immediately as this is an Abstract Method.
+        """
         raise NotImplementedError("Please Implement this method")
 
     def read_data(self, force_report=False):
+        """[summary]
+
+        Args:
+            force_report (bool, optional): [description]. Defaults to False.
+        """
         self.last_time = time.time()
         current, voltage = self.parent.source.read_iv()
 
@@ -642,6 +732,11 @@ class ProtocolStep(object):
             self.report.append(self.data[-1])
 
     def pause(self):
+        """If step is started turns the source off and sets the status to paused.
+
+        Returns:
+            bool: Returns False if the step hasn't been started. Otherwise True.
+        """
         if self.status != STATUS.started:
             return False
 
@@ -652,6 +747,11 @@ class ProtocolStep(object):
         return True
 
     def resume(self):
+        """Resumes the step by calling _start(), also calculates pause time.
+
+        Returns:
+            bool: Returns True if the step hasn't been paused.
+        """
         if self.status != STATUS.paused:
             return False
         self.pause_time = time.time() - self.pause_start
@@ -663,16 +763,12 @@ class ProtocolStep(object):
 def process_reports(reports):
     """
 
-    Parameters
-    ----------
-    reports:
-        desired reports as a tuple of pairs such as
-        (("voltage",0.01), ("time",300))
+    Args:
+        reports (): Desired reports as a tuple of pairs such as
+            (("voltage",0.01), ("time",300))
 
-    Returns
-    -------
-    report_conditions: list
-        List of condition objects for reporting a data point
+    Returns:
+        list: List of condition objects for reporting a data point
 
     """
     report_conditions = []
@@ -691,16 +787,12 @@ def process_reports(reports):
 def process_ends(ends):
     """
 
-    Parameters
-    ----------
-    ends:
-        desired ends conditions as a tuple of triples such as
-        (("voltage",">", 4.2), ("time",">","24::"))
+    Args:
+        ends (): Desired ends conditions as a tuple of triples such as
+            (("voltage",">", 4.2), ("time",">","24::")).
 
-    Returns
-    -------
-    end_conditions: list
-        List of condition objects for ending a protocol step
+    Returns:
+        list: List of condition objects for ending a protocol step.
 
     """
     end_conditions = []
@@ -714,12 +806,29 @@ def process_ends(ends):
 
 
 class CurrentStep(ProtocolStep):
+    """Extends ProtocolStep. A step for controlling the current output by the source (i.e Keithley). 
+
+    Attributes:
+        current ():
+        v_limit ():
+
+    """
     def __init__(self, current,
                  reports=(("voltage", 0.01), ("time", ":5:")),
                  ends=(("voltage", ">", 4.2), ("time", ">", "24::")),
                  wait_time=10.0):
-        super().__init__(wait_time=wait_time)
+        """[summary]
 
+        Args:
+            current ([type]): [description]
+            ends (tuple, optional): [description]. Defaults to (("voltage", ">", 4.2), ("time", ">", "24::")).
+            reports (tuple, optional): [description]. Defaults to (("voltage", 0.01), ("time", ":5:")).
+            wait_time (float, optional): [description]. Defaults to 10.0.
+
+        Raises:
+            ValueError: [description]
+        """
+        super().__init__(wait_time=wait_time)
         if current > 0:
             self.state_str = "charge_constant_current"
             sign = 1
@@ -742,29 +851,36 @@ class CurrentStep(ProtocolStep):
         self.end_conditions = process_ends(ends)
 
     def _start(self):
+        """[summary]
+        """
         self.status = STATUS.started
         self.parent.source.set_current(current=self.current,
                                        v_limit=self.v_limit)
 
     def header(self):
+        """[summary]
+
+        Returns:
+            [type]: [description]
+        """
         return json.dumps({"state": self.state_str,
                            "date_start_timestr": datetime.now().strftime(
                                DATETIME_FORMAT)}
                           )
 
     def check_in_control(self, last_time, current, voltage):
-        '''
-        Method for checking if the desired condition is actually met
-        Returning False will completely kill the cell
+        """Method for checking if the desired condition is actually met.
 
-        Returns
-        -------
-        bool: True of cell is in control, False otherwise
+        Returning False will completely kill the cell.
 
-        Modifies
-        --------
-        self.in_control
-        '''
+        Args:
+            current ():
+            last_time ():
+            voltage ():
+
+        Returns:       
+            bool: True if cell is in control, False otherwise
+        """
         if self.data:
             self.in_control = abs((current-self.current)/self.current) < 0.95
 
@@ -775,10 +891,20 @@ class CurrentStep(ProtocolStep):
 
 
 class CCCharge(CurrentStep):
+    """Extends CurrentStep. A step for enforcing a positive current.
+    """
     def __init__(self, current,
                  reports=(("voltage", 0.01), ("time", ":5:")),
                  ends=(("voltage", ">", 4.2), ("time", ">", "24::")),
                  wait_time=10.0):
+        """[summary]
+
+        Args:
+            current ([type]): [description]
+            ends (tuple, optional): [description]. Defaults to (("voltage", ">", 4.2), ("time", ">", "24::")).
+            reports (tuple, optional): [description]. Defaults to (("voltage", 0.01), ("time", ":5:")).
+            wait_time (float, optional): [description]. Defaults to 10.0.
+        """
         # Enforce positive current
         current = abs(current)
         super().__init__(current,
@@ -788,10 +914,20 @@ class CCCharge(CurrentStep):
 
 
 class CCDischarge(CurrentStep):
+    """Extends CurrentStep. A step for enforcing a negative current.
+    """
     def __init__(self, current,
                  reports=(("voltage", 0.01), ("time", ":5:")),
                  ends=(("voltage", "<", 3), ("time", ">", "24::")),
                  wait_time=10.0):
+        """[summary]
+
+        Args:
+            current ([type]): [description]
+            ends (tuple, optional): [description]. Defaults to (("voltage", "<", 3), ("time", ">", "24::")).
+            reports (tuple, optional): [description]. Defaults to (("voltage", 0.01), ("time", ":5:")).
+            wait_time (float, optional): [description]. Defaults to 10.0.
+        """
         # Enforce negative current
         current = -abs(current)
         super().__init__(current,
@@ -801,18 +937,33 @@ class CCDischarge(CurrentStep):
 
 
 class VoltageStep(ProtocolStep):
+    """Extends ProtocolStep. A step for controlling the voltage of a cell.
+
+    Attributes:
+        i_limit ([type]): [description]
+        voltage ([type]): [description]
+    """
     def __init__(self, voltage,
                  reports=(("current", 0.01), ("time", ":5:")),
                  ends=(("current", "<", 0.001), ("time", ">", "24::")),
                  wait_time=10.0):
-        super().__init__(wait_time=wait_time)
+        """[summary]
 
+        Args:
+            ends (tuple, optional): [description]. Defaults to (("current", "<", 0.001), ("time", ">", "24::")).
+            reports (tuple, optional): [description]. Defaults to (("current", 0.01), ("time", ":5:")).
+            voltage ([type]): [description]
+            wait_time (float, optional): [description]. Defaults to 10.0.
+        """
+        super().__init__(wait_time=wait_time)
         self.i_limit = None
         self.voltage = voltage
         self.report_conditions = process_reports(reports)
         self.end_conditions = process_ends(ends)
 
     def guess_i_limit(self):
+        """[summary]
+        """
         self.i_limit = 1.0
         if self.state_str.startswith("charge"):
             print(self.parent.source.current_ranges[-1])
@@ -821,6 +972,11 @@ class VoltageStep(ProtocolStep):
             self.i_limit = -self.parent.source.current_ranges[-1]
 
     def _start(self):
+        """[summary]
+
+        Raises:
+            ValueError: [description]
+        """
         self.status = STATUS.started
         if self.i_limit is None:
             raise ValueError(
@@ -831,24 +987,29 @@ class VoltageStep(ProtocolStep):
                                        i_limit=self.i_limit)
 
     def header(self):
+        """[summary]
+
+        Returns:
+            [type]: [description]
+        """
         return json.dumps({"state": self.state_str,
                            "date_start_timestr": datetime.now().strftime(
                                DATETIME_FORMAT)}
                           )
 
     def check_in_control(self, last_time, current, voltage):
-        '''
-        Method for checking if the desired condition is actually met
-        Returning False will completely kill the cell
+        """Method for checking if the desired condition is actually met.
+        
+        Returning False will completely kill the cell.
 
-        Returns
-        -------
-        bool: True if cell is in control, False otherwise
+        Args:
+            current ():
+            last_time ():
+            voltage ():
 
-        Modifies
-        --------
-        self.in_control
-        '''
+        Returns:
+            bool: True if cell is in control, False otherwise
+        """
         if self.data:
             # Give some leeway if the protocol has just been started
             tolerance = 0.1
@@ -866,10 +1027,20 @@ class VoltageStep(ProtocolStep):
 
 
 class CVCharge(VoltageStep):
+    """Extends VoltageStep. A step for charging at a constant voltage.
+    """
     def __init__(self, voltage,
                  reports=(("current", 0.01), ("time", ":5:")),
                  ends=(("current", "<", 0.001), ("time", ">", "24::")),
                  wait_time=10.0):
+        """[summary]
+
+        Args:
+            ends (tuple, optional): [description]. Defaults to (("current", "<", 0.001), ("time", ">", "24::")).
+            reports (tuple, optional): [description]. Defaults to (("current", 0.01), ("time", ":5:")).
+            voltage ([type]): [description]
+            wait_time (float, optional): [description]. Defaults to 10.0.
+        """
         super().__init__(voltage,
                          reports=reports, ends=ends,
                          wait_time=wait_time)
@@ -881,10 +1052,20 @@ class CVCharge(VoltageStep):
 
 
 class CVDischarge(VoltageStep):
+    """Extends VoltageStep. A step for discharging at a constant voltage.
+    """
     def __init__(self, voltage,
                  reports=(("current", 0.01), ("time", ":5:")),
                  ends=(("current", "<", 0.001), ("time", ">", "24::")),
                  wait_time=10.0):
+        """[summary]
+
+        Args:
+            ends (tuple, optional): [description]. Defaults to (("current", "<", 0.001), ("time", ">", "24::")). 
+            reports (tuple, optional): [description]. Defaults to (("current", 0.01), ("time", ":5:")).
+            voltage ([type]): [description]
+            wait_time (float, optional): [description]. Defaults to 10.0.
+        """
         super().__init__(voltage,
                          reports=reports, ends=ends,
                          wait_time=wait_time)
@@ -896,22 +1077,48 @@ class CVDischarge(VoltageStep):
 
 
 class AdvanceCycle(ProtocolStep):
+    """Extends ProtocolStep. A step for advancing the cycle number in the parent CellRunner.
+    """
     def _start(self):
+        """Sets own status to started.
+        """
         self.status = STATUS.started
 
     def run(self, force_report=False):
+        """Calls the parent CellRunner's advance_cycle() function.
+
+        Args:
+            force_report (bool, optional): Forces a printed report if True.
+                Unused in this case. Defaults to False.
+        """
         self._start()
         self.parent.advance_cycle()
         self.status = STATUS.completed
 
     def check_in_control(self, *args):
+        """Normally checks that battery is in control.
+
+        Since AdvanceCycle doesn't affect the connected cell True is always returned.
+
+        Returns:
+            bool: Always returns True.
+        """
         return True
 
 
 class Rest(ProtocolStep):
+    """Extends ProtocolStep. A step for putting a cell to sleep.
+    """
     def __init__(self,
                  reports=(("time", ":5:"),), ends=(("time", ">", "24::"),),
                  wait_time=10.0):
+        """[summary]
+
+        Args:
+            ends (tuple, optional): [description]. Defaults to (("time", ">", "24::"),).
+            reports (tuple, optional): [description]. Defaults to (("time", ":5:"),).
+            wait_time (float, optional): [description]. Defaults to 10.0.
+        """
         super().__init__(wait_time=wait_time)
 
         self.state_str = "rest"
@@ -919,28 +1126,35 @@ class Rest(ProtocolStep):
         self.end_conditions = process_ends(ends)
 
     def _start(self):
+        """[summary]
+        """
         self.status = STATUS.started
         self.parent.source.rest()
 
     def header(self):
+        """[summary]
+
+        Returns:
+            [type]: [description]
+        """
         return json.dumps({"state": self.state_str,
                            "date_start_timestr": datetime.now().strftime(
                                DATETIME_FORMAT)}
                           )
 
     def check_in_control(self, last_time, current, voltage):
-        '''
-        Method for checking if the desired condition is actually met
+        """Method for checking if the desired condition is actually met.
+        
         Returning False will completely kill the cell
 
-        Returns
-        -------
-        bool: True of cell is in control, False otherwise
+        Args:
+            current ([type]): [description]
+            last_time ([type]): [description]
+            voltage ([type]): [description]
 
-        Modifies
-        --------
-        self.in_control
-        '''
+        Returns:
+            bool: True if cell is in control, False otherwise
+        """
         self.in_control = abs(current) < 0.00001
 
         if not self.in_control:
@@ -950,14 +1164,10 @@ class Rest(ProtocolStep):
 
 
 class Pause(ProtocolStep):
+    """[summary]
+    """
     def __init__(self):
-        """
-
-        Parameters
-        ----------
-        parent: Protocol
-            Protocol to which this protocol step belongs
-
+        """[summary]
         """
         # This is the time between measurements on the channel,
         # putting this arbitrarily large
@@ -965,25 +1175,48 @@ class Pause(ProtocolStep):
         self.state_str = "pause"
 
     def _start(self):
+        """[summary]
+        """
         self.state = STATUS.started
         self.next_time = time.time() + self.wait_time
         self.parent.source.pause()
 
     def run(self):
+        """[summary]
+
+        Returns:
+            [type]: [description]
+        """
         self._start()
         return None
 
     def resume(self):
+        """[summary]
+        """
         self.status = STATUS.completed
 
     def check_in_control(self, *args):
+        """[summary]
+
+        Returns:
+            [type]: [description]
+        """
         return True
 
 
 class Sleep(ProtocolStep):
+    """[summary]
+    """
     def __init__(self,
                  reports=(("time", ":5:"),), ends=(("time", ">", "24::"),),
                  wait_time=10.0):
+        """[summary]
+
+        Args:
+            ends (tuple, optional): [description]. Defaults to (("time", ">", "24::"),).
+            reports (tuple, optional): [description]. Defaults to (("time", ":5:"),).
+            wait_time (float, optional): [description]. Defaults to 10.0.
+        """
         super().__init__(wait_time=wait_time)
 
         self.state_str = "sleep"
@@ -991,16 +1224,25 @@ class Sleep(ProtocolStep):
         self.end_conditions = process_ends(ends)
 
     def _start(self):
+        """[summary]
+        """
         self.status = STATUS.started
         self.parent.source.off()
 
     def header(self):
+        """[summary]
+
+        Returns:
+            [type]: [description]
+        """
         return json.dumps({"state": self.state_str,
                            "date_start_timestr": datetime.now().strftime(
                                DATETIME_FORMAT)}
                           )
 
     def read_data(self):
+        """[summary]
+        """
         self.parent.source.rest()
         super().read_data()
         self.parent.source.off()
@@ -1012,20 +1254,16 @@ class Sleep(ProtocolStep):
         only desired if a report condition is met as opposed to
         the other steps which measure and then decide whether to report
 
-        Parameters
-        ----------
-        force_report: bool
-            defaults to False. The run function evaluates the
-            report_conditions to decide if a data point should be
-            reported, setting force_report to True will report the
-            latest data point regardless of conditions.
+        Args:
+            force_report (bool): Defaults to False. The run function evaluates the
+                report_conditions to decide if a data point should be
+                reported, setting force_report to True will report the
+                latest data point regardless of conditions.
 
 
-        Returns
-        -------
-        data_to_report: tuple of 4
-            (time, current, voltage, capacity) tuple to report (write to file)
-            returns none if no data to report
+        Returns:
+            tuple: (time, current, voltage, capacity) tuple to report (write to file).
+                Returns none if no data to report.
 
         """
 
@@ -1054,18 +1292,18 @@ class Sleep(ProtocolStep):
             return None
 
     def check_in_control(self, last_time, current, voltage):
-        '''
-        Method for checking if the desired condition is actually met
+        """Method for checking if the desired condition is actually met.
+        
         Returning False will completely kill the cell
 
-        Returns
-        -------
-        bool: True of cell is in control, False otherwise
+        Args:
+            current ():
+            last_time ():
+            voltage ():
 
-        Modifies
-        --------
-        self.in_control
-        '''
+        Returns:    
+            bool: True if cell is in control, False otherwise
+        """
         self.in_control = abs(current) < 0.00001
 
         if not self.in_control:
@@ -1075,10 +1313,8 @@ class Sleep(ProtocolStep):
 
 
 class Condition(object):
-    """
-    A Condition is an object which given a ProtocolStep
-    object to its "check" method will return a boolean
-    indicating whether that condition has been met
+    """A Condition takes a ProtocolStep into its check() method, and returns a boolean
+    indicating whether that condition has been met.
 
     A condition object may modify the .next_time attribute of
     the ProtocolStep object to suggest time the
@@ -1086,16 +1322,31 @@ class Condition(object):
     """
 
     def check(self, protocol_step: ProtocolStep):
+        """Abstract Function that checks whether certain conditions are met and 
+        returns a bool.
+
+        Args:
+            protocol_step (ProtocolStep): The step being checked on whether it has met
+                 the condition.
+
+        Raises:
+            NotImplementedError: Raises this by default since check is an Abstract Method.
+        """
         raise NotImplementedError
 
 
 class ConditionDelta(Condition):
+    """[summary]
+
+    Args:
+        Condition ([type]): [description]
+    """
     def __init__(self, value_str: str, delta: float):
         """
         Change between latest reported value and latest measured value
 
-        Parameters
-        ----------
+        Args:
+        
         value_str: str
             value string such as "voltage", "time", "current" etc...
             See DATA_INDEX_MAP module variable
@@ -1110,6 +1361,14 @@ class ConditionDelta(Condition):
         self.is_time = value_str == "time"
 
     def check(self, step):
+        """[summary]
+
+        Args:
+            step ([type]): [description]
+
+        Returns:        
+            bool: True if the end condition was satisfied, otherwise False
+        """
         try:
             if len(step.report) == 0:
                 step.next_time = time.time()
@@ -1150,12 +1409,16 @@ class ConditionDelta(Condition):
 
 
 class ConditionTotalDelta(Condition):
-    def __init__(self, value_str: str, delta: float):
-        """
-        Change between first reported value and latest measured value
+    """[summary]
 
-        Parameters
-        ----------
+    Args:
+        Condition ([type]): [description]
+    """
+    def __init__(self, value_str: str, delta: float):
+        """Change between first reported value and latest measured value
+
+        Args:
+        
         value_str: str
             value string such as "voltage", "time", "current" etc...
             See DATA_INDEX_MAP module variable
@@ -1171,6 +1434,14 @@ class ConditionTotalDelta(Condition):
         self.next_time = NEVER
 
     def check(self, step):
+        """[summary]
+
+        Args:
+            step ([type]): [description]
+
+        Returns:        
+            bool: True if the end condition was satisfied, otherwise False
+        """
         try:
             delta = abs(step.data[-1][self.index] - step.report[0][self.index])
             return self.comparison(delta, self.delta)
@@ -1179,19 +1450,31 @@ class ConditionTotalDelta(Condition):
 
 
 class ConditionTotalTime(ConditionTotalDelta):
+    """[summary]
+
+    Args:
+        ConditionTotalDelta ([type]): [description]
+    """
     def __init__(self, delta):
         """
         Change between first reported time and latest reported time
 
-        Parameters
-        ----------
-        delta: float
-            Total elapsed time in seconds
+        Args:
+        
+        delta (float): Total elapsed time in seconds
         """
 
         super().__init__("time", delta)
 
     def check(self, step):
+        """[summary]
+
+        Args:
+            step ([type]): [description]
+
+        Returns:        
+            bool: True if the end condition was satisfied, otherwise False
+        """
         try:
             # Previously was using the last step.data to do the check, however,
             # in the case where no measurements are
@@ -1215,12 +1498,17 @@ class ConditionTotalTime(ConditionTotalDelta):
 
 
 class ConditionAbsolute(Condition):
+    """[summary]
+
+    Args:
+        Condition ([type]): [description]
+    """
     def __init__(self, value_str: str, operator_str: str,
                  value: float, min_time: float = 1.0):
         """
 
-        Parameters
-        ----------
+        Args:
+        
         value_str: str
             value string such as "voltage", "time", "current" etc...
             See DATA_INDEX_MAP module variable
@@ -1242,6 +1530,14 @@ class ConditionAbsolute(Condition):
         self.min_time = min_time
 
     def check(self, step):
+        """[summary]
+
+        Args:
+            step ([type]): [description]
+
+        Returns:        
+            bool: True if the end condition was satisfied, otherwise False
+        """
         try:
             execute_check = True
             if self.min_time is not None:
@@ -1268,46 +1564,140 @@ class ConditionAbsolute(Condition):
 
 
 def condition_end_voltage(voltage, operator_str):
+    """Function for creating a ConditionAbsolute object using a voltage endpoint.
+
+    Loads a ConditionAbsolute object with a comparison voltage and the mathematical 
+    comparison operator to use.
+
+    Args:
+        voltage (float): The voltage to initialize ConditionAbsolute with.
+        operator_str (str): A string representing a mathematical operator i.e. ><= . 
+
+    Returns:
+        ConditionAbsolute: Initialized with the given voltage and operator_str.
+    """
     return ConditionAbsolute("voltage", operator_str, voltage)
 
 
 def condition_ucv(voltage):
+    """Function for creating a ConditionAbsolute object using an upper cutoff voltage.
+
+    Args:
+        voltage (float): The voltage to initialize ConditionAbsolute with.
+
+    Returns:
+        ConditionAbsolute: Initialized with the given voltage and >= as the operator.
+    """
     return ConditionAbsolute("voltage", ">=", voltage)
 
 
 def condition_lcv(voltage):
+    """Function for creating a ConditionAbsolute object using a lower cutoff voltage.
+
+    Args:
+        voltage (float): The voltage to initialize ConditionAbsolute with.
+
+    Returns:
+        ConditionAbsolute: Initialized with the given voltage and <= as the operator.
+    """
     return ConditionAbsolute("voltage", "<=", voltage)
 
 
 def condition_min_current(current):
+    """Function for creating a ConditionAbsolute object using a min current.
+
+    Args:
+        current (float): The current to initialize ConditionAbsolute with.
+
+    Returns:
+        ConditionAbsolute: Initialized with the given current and <= as the operator.
+    """
     return ConditionAbsolute("current", "<=", current)
 
 
 def condition_max_current(current):
+    """Function for creating a ConditionAbsolute object using a max current.
+
+    Args:
+        current (float): The current to initialize ConditionAbsolute with.
+
+    Returns:
+        ConditionAbsolute: Initialized with the given current and >= as the operator.
+    """
     return ConditionAbsolute("current", ">=", current)
 
 
 def condition_total_time(total_time):
+    """Function for creating a ConditionTotalTime object for a total time condition.
+
+    Args:
+        total_time (float): The total_time to be used in the ConditionTotalTime.
+
+    Returns:
+        ConditionTotalTime: Initialized with the given total_time.
+    """
     return ConditionTotalTime(total_time)
 
 
 def condition_dt(dt):
+    """Function for creating a ConditionDelta object using time.
+
+    Args:
+        dt ([type]): [description]
+
+    Returns:
+        ConditionDelta: [description]
+    """
     return ConditionDelta("time", dt)
 
 
 def condition_di(di):
+    """Function for creating a ConditionDelta object using current.
+
+    Args:
+        di ([type]): [description]
+
+    Returns:
+        ConditionDelta: [description]
+    """
     return ConditionDelta("current", di)
 
 
 def condition_dv(dv):
+    """Function for creating a ConditionDelta object using voltage.
+
+    Args:
+        dv ([type]): [description]
+
+    Returns:
+        ConditionDelta: [description]
+    """
     return ConditionDelta("voltage", dv)
 
 
 def condition_dc(dc):
+    """Function for creating a ConditionDelta object using capacity.
+
+    Args:
+        dc ([type]): [description]
+
+    Returns:
+        ConditionDelta: [description]
+    """
     return ConditionDelta("capacity", dc)
 
 
 def extrapolate_time(data, target, index):
+    """Estimates the time until a voltage cutoff is reached.
+
+    Args:
+        data (list): [description]
+        target ([type]): [description]
+        index ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
     try:
         # Project when it will be hit
         d1 = data[-1]
@@ -1335,17 +1725,14 @@ def extrapolate_time(data, target, index):
 
 def time_conversion(t):
     """
+    Converts time in the "hh:mm:ss" format to seconds as a float.
 
-    Parameters
-    ----------
-    t: str or float
-        time in the "hh:mm:ss" format, where values can be ommitted
-        e.g. "::5" would be five seconds or
-        time in seconds
+    Args:
+        t (str or float): time in the "hh:mm:ss" format, where values can be ommitted
+            e.g. "::5" would be five seconds or time in seconds.
 
-    Returns
-    -------
-    time (float) in seconds
+    Returns:
+        float: Calculated time in Seconds.
     """
     t_float = None
     try:
