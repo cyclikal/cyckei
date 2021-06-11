@@ -340,7 +340,8 @@ def info_all_channels(runners, sources):
         sources ():
 
     Returns:
-        dict:
+        dict: A dictionary of dictionaries that each hold info from their respective
+        CellRunner's meta, e.g. path, status, current, voltage, etc.
     """
     info = {}
     for source in sources:
@@ -359,7 +360,8 @@ def info_channel(channel, runners, sources):
         sources ():
 
     Returns:
-        dict: 
+        dict: Information about the requested channel from the CellRunner's
+        meta, e.g. path, status, current, voltage, etc.
     """
     info = OrderedDict(channel=channel, path=None, cellid=None, comment=None, protocol_name=None, protocol=None, status=None, state=None,
                        current=None, voltage=None)
