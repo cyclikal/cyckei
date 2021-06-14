@@ -18,7 +18,8 @@ server_logger = logging.getLogger('cyckei_server')
 client_logger = logging.getLogger('cyckei_client')
 
 def main(args=None):
-    """
+    """The entry point for the application that controls the execution of different program branches.
+
     Parses command-line arguments for component and directory.
     Checks for and, if necessary, creates file structure at given directory.
     Compiles configuration from config and variable files.
@@ -60,8 +61,7 @@ def main(args=None):
 
 
 def parse_args():
-    """
-    Creates and parses command line arguments
+    """Creates and parses command line arguments
 
     Returns:
         ArgumentParser with filled arguments.
@@ -87,8 +87,7 @@ def parse_args():
 
 
 def file_structure(path, overwrite):
-    """
-    Checks for existing folder structure and sets up if missing
+    """Checks for existing folder structure and sets up if missing
 
     Args:
         config: Primary configuration dictionary
@@ -110,15 +109,14 @@ def file_structure(path, overwrite):
 
 
 def make_config(args, logger):
-    """
-    Loads configuration and variables from respective files.
-    Merges them and adds command line arguments for universal access.
+    """Loads configuration and variables from respective files. Merges them and adds command line arguments for universal access.
 
     Args:
         args: All processed command line arguments.
+        logger (Logger): The logger to log config creation to.
 
     Returns:
-        Completed 'config' dictionary.
+        dict: Completed 'config' dictionary.
     """
     # Get packaged variables
     config = configparser.ConfigParser()
@@ -159,6 +157,15 @@ def make_config(args, logger):
 
 
 def load_plugins(config):
+    """Takes the plugins listed in the config dict and attempts to import and instantiate them.
+
+    Args:
+        config (dict): Primary configuration dictionary.
+
+    Returns:
+        (list, dict): The first value is a list of PluginControllers extending the BaseController object. The second value is a dict with a key of the plugin name and
+            a value of the of the specific plugin instance's name.
+    """
     # create individual plugin configurations, if necessary
     server_logger.info("Loading plugins...")
 
@@ -173,6 +180,8 @@ def load_plugins(config):
                     f"{plugin['module']}.{plugin['module']}")
                 plugins.append(module.PluginController(plugin["sources"]))
                 plugin_names[plugins[-1].name] = (plugins[-1].names)
+                print(plugins[-1].name)
+                print(plugins[-1].names)
                 server_logger.info(f"Loaded {plugin['module']} plugin for {plugin['name']}")
             except ModuleNotFoundError as error:
                 server_logger.warning(
@@ -182,12 +191,13 @@ def load_plugins(config):
 
 
 def start_logging(config, logger):
-    """
-    Creates handlers and starts logging.
+    """Creates handlers and starts logging.
+
     Logs to both file (f_handler) and console (c_console).
 
     Args:
-        config: Primary configuration dictionary
+        config (dict): Primary configuration dictionary.
+        logger (Logger): The logger to initialize.
     """
     print("Starting logging: ", end="")
 
@@ -229,7 +239,7 @@ def handle_exception(exc_type, exc_value, exc_traceback):
 
 
 class ColorFormatter(logging.Formatter):
-    """Logging Formatter to add colors and count warning / errors"""
+    """Extends logging.Formatter. Formatter to add colors and count warning / errors. Set as the formatter for loggers when they are initalized in start_logging()."""
     gray = "\x1b[38;21m"
     blue = "\x1b[34;21m"
     yellow = "\x1b[33;21m"
@@ -248,6 +258,14 @@ class ColorFormatter(logging.Formatter):
     }
 
     def format(self, record):
+        """Called by the logger this object is attached to to format records.
+
+        Args:
+            record (logging.LogRecord): The record to be formatted.
+
+        Returns:
+            str: The Formatter to be used by loggers.
+        """
         log_fmt = self.FORMATS.get(record.levelno)
         formatter = logging.Formatter(log_fmt)
         return formatter.format(record)

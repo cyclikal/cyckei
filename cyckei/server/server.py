@@ -16,14 +16,13 @@ logger = logging.getLogger('cyckei_server')
 
 
 def main(config, plugins, plugin_names):
-    """
-    Begins execution of Cyckei Server.
+    """Begins execution of Cyckei Server.
 
     Sets up the socket for communication with a client and starts the event_loop to 
     process commands.
 
     Args:
-        config (dict):
+        config (dict): Holds Cyckei launch settings.
         plugins (dict):
         plugin_names (list):
     """
@@ -65,7 +64,7 @@ def event_loop(config, socket, plugins, plugin_names, device_module):
     the channel statuses.
         
     Args:
-        config (dict):
+        config (dict): Holds Cyckei launch settings.
         device_module ():
         plugins ():
         plugin_names ():
@@ -219,7 +218,7 @@ def process_socket(config, socket, runners, sources, server_time,
     """
 
     Args:
-        config (dict):
+        config (dict): Holds Cyckei launch settings.
         plugins (dict):
         plugin_names (list):
         runners (list):
@@ -314,7 +313,7 @@ def info_server_file(config):
     """Return the dict of channels in the server file
         
     Args:
-        config (dict):
+        config (dict): Holds Cyckei launch settings.
 
     Returns:
         dict: The json data of channels recorded in a file, converted to a dict.

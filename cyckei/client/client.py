@@ -15,8 +15,7 @@ logger = logging.getLogger('cyckei_client')
 
 
 def main(config):
-    """
-    Begins execution of Cyckei.
+    """Begins execution of Cyckei.
 
     Args:
         config (dict): Holds Cyckei launch settings.
@@ -41,8 +40,7 @@ def main(config):
 
 
 class MainWindow(QMainWindow):
-    """
-    An object for generating the main client window and holding information about it.
+    """An object for generating the main client window and holding information about it.
 
     Attributes:
         config (dict): Holds Cyckei launch settings.
