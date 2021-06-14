@@ -3,14 +3,23 @@ import os.path
 
 
 class BaseController(object):
-    """
-    Parent class of plugin controller objects.
+    """Parent class of plugin controller objects.
 
     Creates default methods for interacting with plugin and handling sources.
+
+    Attributes:
+        description ():
+        logger ():
+        name ():
     """
 
     def __init__(self, name, description):
-        """Setup logging and sources for plugin."""
+        """Setup logging and sources for plugin.
+        
+        Args:
+            name ():
+            description ():
+        """
         # Check if "cyckei" logger found, and setup seperate handler if not.
 
         if type(name) is not str or type(description) is not str:
@@ -27,12 +36,21 @@ class BaseController(object):
         self.logger = self.get_logger(self.name, cyckei_plugin_path)
 
     def get_logger(self, name, cyckei_plugin_path):
-        """
-        Connects the pluging to main Cyckei loggers.
+        """Connects the plugin to main Cyckei loggers.
 
         Plugin initially tries to connect to to Cyckei's main logging handlers.
         If this fails, this method establishes a new console handler.
         Usually this should be as a result of running the plugin independantly.
+
+        Args:
+            name ([type]): [description]
+            cyckei_plugin_path ([type]): [description]
+
+        Raises:
+            FileNotFoundError: [description]
+
+        Returns:
+            [type]: [description]
         """
         cyckei_plugin_path = os.path.join(os.path.expanduser("~"),
                                           "Cyckei", "Plugins")
@@ -60,16 +78,22 @@ class BaseController(object):
         return logger
 
     def load_sources(self):
-        """
-        Searches for available sources, and establishes source objects.
+        """Searches for available sources, and establishes source objects.
 
-        Returns
-        -------
-        Dictionary of sources in format "name": SourceObject.
+        Raises:
+            NotImplementedError: [description]
         """
         raise NotImplementedError
 
     def read(self, source):
+        """[summary]
+
+        Args:
+            source ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
         try:
             return self.sources[source].read()
         except (TypeError, KeyError) as error:
@@ -79,13 +103,16 @@ class BaseController(object):
             self.logger.error("Exception occured while reading plugin:", error)
 
     def cleanup(self):
+        """[summary]
+
+        Raises:
+            NotImplementedError: [description]
+        """
         raise NotImplementedError
 
 
 class BaseSource(object):
-    """
-    Parent class of plugin source object.
-    Controls communication with individual devices or channels.
+    """Parent class of plugin source object. Controls communication with individual devices or channels.
     """
 
     def __init__(self):
@@ -96,6 +123,14 @@ class BaseSource(object):
 
 
 def read_all(controller):
+    """[summary]
+
+    Args:
+        controller ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
     values = {}
     for name in controller.sources:
         values[name] = controller.read(name)
