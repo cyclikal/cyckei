@@ -23,8 +23,8 @@ def main(config, plugins, plugin_names):
 
     Args:
         config (dict): Holds Cyckei launch settings.
-        plugins (dict):
-        plugin_names (list):
+        plugins (list): A list of PluginControllers extending the BaseController object.
+        plugin_names (dict):  A dict with a key of the plugin name and a value of the of the specific plugin instance's name.
     """
 
     logger.info(
@@ -65,10 +65,10 @@ def event_loop(config, socket, plugins, plugin_names, device_module):
         
     Args:
         config (dict): Holds Cyckei launch settings.
-        device_module ():
-        plugins ():
-        plugin_names ():
-        socket ():
+        device_module (module): A module (in this case keithley.py) that includes a definition for DeviceController(gpib_addr (int) ). 
+        plugins (list): A list of PluginControllers extending the BaseController object.
+        plugin_names (dict):  A dict with a key of the plugin name and a value of the of the specific plugin instance's name.
+        socket (zmq.Socket): An object that acts as a socket that can send and receive messages.
     """
     try:
         logger.debug("Starting server event loop")
@@ -191,8 +191,8 @@ def record_data(data_path, data):
     it is not overwritten by the same channels now being empty.
         
     Args:
-        data (dict):
-        data_path (str):
+        data (dict): The data to be stored in a file.
+        data_path (str): The path to the area where the user wants the server_data file stored.
     """
     data_path = data_path + "\\server_data.txt"
     #loads server_file into a dict
@@ -215,17 +215,17 @@ def record_data(data_path, data):
 
 def process_socket(config, socket, runners, sources, server_time,
                    plugins, plugin_names):
-    """
+    """Checks the running socket for messages and then parses them into actions to take.
 
     Args:
         config (dict): Holds Cyckei launch settings.
-        plugins (dict):
-        plugin_names (list):
-        runners (list):
-        server_time (float):
+        plugins (list): A list of PluginControllers extending the BaseController object.
+        plugin_names (dict):  A dict with a key of the plugin name and a value of the of the specific plugin instance's name.
+        runners (list): A sorted list of active CellRunner objects.
+        server_time (float): The time on the server (unused in the function)
         socket (zmq.REP socket): Receives messages in a non-blocking way.
             If a message is received it processes it and sends a response
-        sources ():
+        sources (list): A list of all of the Keithley channels connected to the server.
     """
 
     # Check to see if there are new events on the socket
@@ -335,8 +335,8 @@ def info_all_channels(runners, sources):
     """Return info on all channels
         
     Args:
-        runners ():
-        sources ():
+        runners (list): A sorted list of active CellRunner objects.
+        sources (list): A list of all of the Keithley channels connected to the server.
 
     Returns:
         dict: A dictionary of dictionaries that each hold info from their respective
@@ -351,12 +351,12 @@ def info_all_channels(runners, sources):
 
 
 def info_channel(channel, runners, sources):
-    """Return info on specified channels
+    """Return info about the specified channel.
         
     Args:
-        channel ():
-        runners ():
-        sources ():
+        channel (int): The channel number associated with the desired Keithley.
+        runners (list): A sorted list of active CellRunner objects.
+        sources (list): A list of all of the Keithley channels connected to the server.
 
     Returns:
         dict: Information about the requested channel from the CellRunner's
@@ -397,15 +397,15 @@ def info_channel(channel, runners, sources):
 
 
 def start(channel, meta, protocol, runners, sources, plugin_objects):
-    """Start channel with given protocol
+    """Start channel with given protocol.
         
     Args:
-        channel ():
-        meta ():
-        plugin_objects ():
-        protocol ():
-        runners ():
-        sources ():
+        channel (int): The channel number associated with the desired Keithley.
+        meta (dict): The metadata about a channel, which is provided to the CellRunner.
+        plugin_objects (list): A list of PluginControllers extending the BaseController object. (The same as 'plugins' in other functions of server.py)
+        protocol (str): The protocol to be loaded onto a CellRunner.
+        runners (list): A sorted list of active CellRunner objects.
+        sources (list): A list of all of the Keithley channels connected to the server.
 
     Returns:
         str: The result message of trying to start a channel.
@@ -439,8 +439,8 @@ def pause(channel, runners):
     """Pauses the specified channel.
         
     Args:
-        channel ():
-        runners ():
+        channel (int): The channel number associated with the desired Keithley.
+        runners (list): A sorted list of active CellRunner objects.
 
     Returns:
         str: The result message of trying to pause a channel.
@@ -459,8 +459,8 @@ def stop(channel, runners):
     """Stop the specified channel.
 
     Args:
-        channel ():
-        runners ():
+        channel (int): The channel number associated with the desired Keithley.
+        runners (list): A sorted list of active CellRunner objects.
 
     Returns:
         str: The result message of trying to strop a channel.
@@ -479,8 +479,8 @@ def resume(channel, runners):
     """Attempts to resume the specified channel from pause.
 
     Args:
-        channel ():
-        runners ():
+        channel (int): The channel number associated with the desired Keithley.
+        runners (list): A sorted list of active CellRunner objects.
 
     Returns:
         str: The result message of trying to resume a channel.
@@ -516,9 +516,9 @@ def get_runner_by_channel(channel, runners, status=None):
     """Get runner currently on given channel.
 
     Args:
-        channel ([type]): [description]
-        runners ([type]): [description]
-        status ([type], optional): [description]. Defaults to None.
+        channel (int or str): The channel number associated with the desired Keithley.
+        runners (list): A sorted list of active CellRunner objects.
+        status (int, optional): The status number associated with different runner statuses. -1 to 5. Defaults to None.
 
     Returns:
         CellRunnner: Returns the runner serving the given channel, returns None otherwise.
