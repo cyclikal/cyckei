@@ -145,7 +145,7 @@ def label(text, status=None, tag=None):
 
     Args:
         text (str): Sets the text of the QLabel
-        status (str, optional): he text of the status tip that appears when the cursor hovers over the label. Defaults to None.
+        status (str, optional): The text of the status tip that appears when the cursor hovers over the label. Defaults to None.
         tag (str, optional): Sets the QObject name for this label. Defaults to None.
 
     Returns:
@@ -162,13 +162,13 @@ def line_edit(label, status, key, connect):
     """Creates an editable text edit field with given information
 
     Args:
-        label (str): [description]
-        status (str): [description]
-        key ([type]): [description]
-        connect ([type]): [description]
+        label (str): The label in the box when nothing is written there.
+        status (str): The text of the status tip that appears when the cursor hovers over the label.
+        key: The parameter that will be needed by the connected function (connect).
+        connect (func): The function to connect to selecting an item in the dropdown window.
 
     Returns:
-        [type]: [description]
+        QLineEdit: An editable text box object
     """
     
     text = QLineEdit()
@@ -182,16 +182,16 @@ def line_edit(label, status, key, connect):
 
 def text_edit(status=None, connect=None, readonly=False,
               wrap=QPlainTextEdit.NoWrap):
-    """[summary]
+    """Creates a text box for editing plain text.
 
     Args:
-        status ([type], optional): [description]. Defaults to None.
-        connect ([type], optional): [description]. Defaults to None.
-        readonly (bool, optional): [description]. Defaults to False.
-        wrap ([type], optional): [description]. Defaults to QPlainTextEdit.NoWrap.
+        status (str, optional): The text of the status tip that appears when the cursor hovers over the box. Defaults to None.
+        connect (func, optional): When text is changed this function will be executed. Defaults to None.
+        readonly (bool, optional): True makes the text box only readable, not editable. Defaults to False.
+        wrap (Const, optional): Can be NoWrap or WidgetWidth, depending on if the user wants word wrapping in their text box. Defaults to QPlainTextEdit.NoWrap.
 
     Returns:
-        [type]: [description]
+        QPlainTextEdit: The QPlainTextEdit object.
     """
     editor = QPlainTextEdit()
     editor.setLineWrapMode(wrap)
@@ -206,18 +206,20 @@ def text_edit(status=None, connect=None, readonly=False,
 
 def action(text=None, connect=None, tip=None, parent=None,
            disabled=False, separator=False):
-    """[summary]
+    """Creates an "action" that can be linked to the other ui elements in order to perform functions.
+
+    Uses the QAction object to implement this functionality.
 
     Args:
-        text ([type], optional): [description]. Defaults to None.
-        connect ([type], optional): [description]. Defaults to None.
-        tip ([type], optional): [description]. Defaults to None.
-        parent ([type], optional): [description]. Defaults to None.
-        disabled (bool, optional): [description]. Defaults to False.
-        separator (bool, optional): [description]. Defaults to False.
+        text (str, optional): The descriptive text displayed by the action. Defaults to None.
+        connect (func, optional): The function that is called when the action is triggered. Defaults to None.
+        tip (str, optional): The status tip is displayed on all status bars provided by the action’s top-level parent. Defaults to None.
+        parent (QObject, optional): If parent is an action group the action will be automatically inserted into the group. Defaults to None.
+        disabled (bool, optional): Whether the action is disabled or not, True means the action is inactive (disabled). Defaults to False.
+        separator (bool, optional): True makes this action a separator, an action that physically separates other actions in the GUI. Defaults to False.
 
     Returns:
-        [type]: [description]
+        QAction: The action object that can be connected to the other gui elements.
     """
     action = QAction(text, parent)
     action.setStatusTip(tip)
@@ -228,10 +230,10 @@ def action(text=None, connect=None, tip=None, parent=None,
 
 
 def feedback(status, channel):
-    """[summary]
+    """Changes the text in the feedback label object in the provided channel.
 
     Args:
-        status ([type]): [description]
-        channel ([type]): [description]
+        status (str): The string to be diplayed as the status of the channel.
+        channel (ChannelWidget): The channel to have its feedback label edited.
     """
     channel.feedback.setText(status)
