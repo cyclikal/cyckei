@@ -483,27 +483,29 @@ class ProtocolStep(object):
     variables as "parent".
 
     Attributes:
-        cap_sign ():
-        data ():
-        data_max_len ():
-        end_conditions ():
-        in_control ():
-        last_time ():
-        next_time ():
+        cap_sign (float):
+        data (list):
+        data_max_len (int):
+        end_conditions (list):
+        in_control (bool):
+        last_time (float):
+        next_time (float):
         parent (CellRunner):
-        pause_start ():
-        pause_time ():
-        report ():
-        report_conditions ():
-        starting_capacity ():
-        state_str ():
-        status ():
-        wait_time ():
+        pause_start (float):
+        pause_time (float):
+        report (list):
+        report_conditions (list):
+        starting_capacity (float):
+        state_str (str):
+        status (int):
+        wait_time (float):
     """
 
     def __init__(self, wait_time: float = 10.0,
                  cellrunner_parent: CellRunner = None):
-        """
+        """Inits ProtocolStep with parent, data_max_len, status, state_str, last_time, pause_start, pause_time, cap_sign, next_time,  starting_capacity, 
+        wait_time, end_conditions, report_conditions, in_control.
+
         Base class for protocols the variable "parent" must be a CellRunner
         instance and be present in the globals during instantiation.
 
@@ -1336,23 +1338,21 @@ class Condition(object):
 
 
 class ConditionDelta(Condition):
-    """[summary]
+    """Condition that checks change between latest reported value and latest measured value.
 
-    Args:
-        Condition ([type]): [description]
+    Attributes:
+        comparison (func): An operator function that performs comparisons, in this case it is greater than or equal to, since the comparison is change in value.
+        delta (float): Delta to compare step data against.
+        index (int): The integer that maps to a constant data map referencing data type being compared.
+        is_time (bool): True means that this condition compares time values. False means it does not.
+        value_str (str): Value string such as "voltage", "time", "current" etc... See DATA_INDEX_MAP module variable for valid values.
     """
     def __init__(self, value_str: str, delta: float):
-        """
-        Change between latest reported value and latest measured value
-
-        Args:
+        """Inits with comparison, delta, index, and is_time, and value_str.
         
-        value_str: str
-            value string such as "voltage", "time", "current" etc...
-            See DATA_INDEX_MAP module variable
-            for valid values
-        delta: float
-            Delta to compare against
+        Args:
+            value_str (str): Value string such as "voltage", "time", "current" etc... See DATA_INDEX_MAP module variable for valid values.
+            delta (float): Delta to compare step data against.
         """
         self.value_str = value_str
         self.index = DATA_INDEX_MAP[value_str]
@@ -1361,10 +1361,12 @@ class ConditionDelta(Condition):
         self.is_time = value_str == "time"
 
     def check(self, step):
-        """[summary]
+        """Checks the provided step's value against the delta value.
+
+        Takes the most recent list of readings from the data list in step and indexes into the matching value to compare against delta.
 
         Args:
-            step ([type]): [description]
+            step (ProtocolStep): The step to have data pulled from its data list.
 
         Returns:        
             bool: True if the end condition was satisfied, otherwise False
@@ -1409,22 +1411,21 @@ class ConditionDelta(Condition):
 
 
 class ConditionTotalDelta(Condition):
-    """[summary]
+    """Object for checking the change between the first reported value and latest measured value of a step.
 
-    Args:
-        Condition ([type]): [description]
+    Attributes:
+        comparison (func): An operator function that performs comparisons, in this case it is greater than or equal to, since the comparison is change in value.
+        delta (float): Delta to compare step data against.
+        index (int): The integer that maps to a constant data map referencing data type being compared.
+        next_time (float): At what timestamp do we expect the condition to be met. Defaults as infinite.
+        value_str (str): Value string such as "voltage", "time", "current" etc... See DATA_INDEX_MAP module variable for valid values.
     """
     def __init__(self, value_str: str, delta: float):
-        """Change between first reported value and latest measured value
+        """Inits with comparison, delta, index, next_time, and value_str.
 
         Args:
-        
-        value_str: str
-            value string such as "voltage", "time", "current" etc...
-            See DATA_INDEX_MAP module variable
-            for valid values
-        delta: float
-            Delta to compare against
+            value_str (str): Value string such as "voltage", "time", "current" etc... See DATA_INDEX_MAP module variable for valid values.
+            delta (float): Delta to compare step data against.
         """
         self.delta = delta
         self.value_str = value_str
@@ -1434,13 +1435,15 @@ class ConditionTotalDelta(Condition):
         self.next_time = NEVER
 
     def check(self, step):
-        """[summary]
+        """Checks the provided step's value against the delta value.
+
+        Takes the first list of readings from the data list in step and indexes into the matching value to compare against delta.
 
         Args:
-            step ([type]): [description]
+            step (ProtocolStep): The step to have data pulled from its data list.
 
         Returns:        
-            bool: True if the end condition was satisfied, otherwise False
+            bool: True if the end condition was satisfied, otherwise False.
         """
         try:
             delta = abs(step.data[-1][self.index] - step.report[0][self.index])
@@ -1450,30 +1453,29 @@ class ConditionTotalDelta(Condition):
 
 
 class ConditionTotalTime(ConditionTotalDelta):
-    """[summary]
+    """Object for checking the change between the first reported time and latest measured time of a step.
 
-    Args:
-        ConditionTotalDelta ([type]): [description]
+    Extends ConditionTotalDelta and simply calls its parent class' constructor with time as the value_str.
     """
     def __init__(self, delta):
-        """
-        Change between first reported time and latest reported time
+        """Calls the parent class' constructor to make a ConditionTotalDelta with time.
 
         Args:
-        
-        delta (float): Total elapsed time in seconds
+            delta (float): Total elapsed time in seconds.
         """
 
         super().__init__("time", delta)
 
     def check(self, step):
-        """[summary]
+        """Checks the provided step's value against the delta value.
+
+        Takes the first list of readings from the data list in step and indexes into the matching value to compare against delta.
 
         Args:
-            step ([type]): [description]
+            step (ProtocolStep): The step to have data pulled from its data list.
 
         Returns:        
-            bool: True if the end condition was satisfied, otherwise False
+            bool: True if the end condition was satisfied, otherwise False.
         """
         try:
             # Previously was using the last step.data to do the check, however,
@@ -1500,26 +1502,23 @@ class ConditionTotalTime(ConditionTotalDelta):
 class ConditionAbsolute(Condition):
     """[summary]
 
-    Args:
-        Condition ([type]): [description]
+    Attributes:
+        comparison (func): The comparison func to use when comparing values i.e. greater than, less than, etc.
+        index (int): The index that relates to the value string in the data lists from Steps.
+        min_time (float): Minimum time that must have elapsed before evaluating the condition.
+        next_time (float): The next expected time for data to be checked. NEVER USED. Defaults to infinity.
+        value (float): Actual value to compare against step data.
+        value_str (str): Value string such as "voltage", "time", "current" etc... See DATA_INDEX_MAP module variable for valid values.
     """
     def __init__(self, value_str: str, operator_str: str,
                  value: float, min_time: float = 1.0):
-        """
+        """Inits with comparison, index, min_time, next_time, value, and value_str.
 
         Args:
-        
-        value_str: str
-            value string such as "voltage", "time", "current" etc...
-            See DATA_INDEX_MAP module variable
-            for valid values
-        operator_str: str
-            String indicating the comparison operator.
-            See OPERATOR_MAP module variable for valid values
-        value: float
-            Actual value to compare against
-        min_time: float
-            minimum time that must have elapsed before evaluating the condition
+            value_str (str): Value string such as "voltage", "time", "current" etc... See DATA_INDEX_MAP module variable for valid values.
+            operator_str (str): String indicating the comparison operator. See OPERATOR_MAP module variable for valid values.
+            value (float): Actual value to compare against step data.
+            min_time (float): Minimum time that must have elapsed before evaluating the condition.
         """
         self.value = value
         self.value_str = value_str
@@ -1530,10 +1529,13 @@ class ConditionAbsolute(Condition):
         self.min_time = min_time
 
     def check(self, step):
-        """[summary]
+        """Compares absolute set value to step data.
+
+        First checks to see if enough time has passed between the most recent report and the newest data. If enough
+        time has passed then the newest data value is compared against the set value.
 
         Args:
-            step ([type]): [description]
+            step (ProtocolStep): The step to have data pulled from its data list.
 
         Returns:        
             bool: True if the end condition was satisfied, otherwise False
@@ -1643,10 +1645,10 @@ def condition_dt(dt):
     """Function for creating a ConditionDelta object using time.
 
     Args:
-        dt ([type]): [description]
+        dt (float): The change in time in seconds.
 
     Returns:
-        ConditionDelta: [description]
+        ConditionDelta: A Condition that can be used on steps to compare changes in time.
     """
     return ConditionDelta("time", dt)
 
@@ -1655,10 +1657,10 @@ def condition_di(di):
     """Function for creating a ConditionDelta object using current.
 
     Args:
-        di ([type]): [description]
+        di (float): The change in current.
 
     Returns:
-        ConditionDelta: [description]
+        ConditionDelta: A Condition that can be used on steps to compare changes in current.
     """
     return ConditionDelta("current", di)
 
@@ -1667,10 +1669,10 @@ def condition_dv(dv):
     """Function for creating a ConditionDelta object using voltage.
 
     Args:
-        dv ([type]): [description]
+        dv (float): The change in voltage.
 
     Returns:
-        ConditionDelta: [description]
+        ConditionDelta: A Condition that can be used on steps to compare changes in voltage.
     """
     return ConditionDelta("voltage", dv)
 
@@ -1679,10 +1681,10 @@ def condition_dc(dc):
     """Function for creating a ConditionDelta object using capacity.
 
     Args:
-        dc ([type]): [description]
+        dc (float): The change in capacity.
 
     Returns:
-        ConditionDelta: [description]
+        ConditionDelta: A Condition that can be used on steps to compare changes in capacity.
     """
     return ConditionDelta("capacity", dc)
 
@@ -1691,12 +1693,13 @@ def extrapolate_time(data, target, index):
     """Estimates the time until a voltage cutoff is reached.
 
     Args:
-        data (list): [description]
-        target ([type]): [description]
-        index ([type]): [description]
+        data (list): A list of lists of measurements taken (voltages, currents, times) at each time.
+        target (float): The target voltage being extrapolated to.
+        index (int): Which of the values being tested against i.e. [0:self.last_time, 1:current,
+                2:voltage, 3:capacity, 4:plugin_values]
 
     Returns:
-        [type]: [description]
+        float: The time at which the target will be hit.
     """
     try:
         # Project when it will be hit
