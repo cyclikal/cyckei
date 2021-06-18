@@ -498,7 +498,7 @@ class ProtocolStep(object):
         starting_capacity (float):
         state_str (str):
         status (int):
-        wait_time (float):
+        wait_time (float): Time between data measurements in seconds.
     """
 
     def __init__(self, wait_time: float = 10.0,
@@ -925,7 +925,7 @@ class CCDischarge(CurrentStep):
         """[summary]
 
         Args:
-            current ([type]): [description]
+            current (float): [description]
             ends (tuple, optional): [description]. Defaults to (("voltage", "<", 3), ("time", ">", "24::")).
             reports (tuple, optional): [description]. Defaults to (("voltage", 0.01), ("time", ":5:")).
             wait_time (float, optional): [description]. Defaults to 10.0.
@@ -942,20 +942,22 @@ class VoltageStep(ProtocolStep):
     """Extends ProtocolStep. A step for controlling the voltage of a cell.
 
     Attributes:
-        i_limit ([type]): [description]
-        voltage ([type]): [description]
+        i_limit (float): The maximum allowed current when charging or discharing.
+        voltage (float): The desired voltage for the cell to reach.
     """
     def __init__(self, voltage,
                  reports=(("current", 0.01), ("time", ":5:")),
                  ends=(("current", "<", 0.001), ("time", ">", "24::")),
                  wait_time=10.0):
-        """[summary]
+        """Inits i_limit, end_conditions, report_conditions, and voltage.
 
         Args:
-            ends (tuple, optional): [description]. Defaults to (("current", "<", 0.001), ("time", ">", "24::")).
-            reports (tuple, optional): [description]. Defaults to (("current", 0.01), ("time", ":5:")).
-            voltage ([type]): [description]
-            wait_time (float, optional): [description]. Defaults to 10.0.
+            ends (tuple, optional): A tuple of tuples, holds the current cutoff and the total time the protocol should run for in hours:minutes:seconds format. 
+                Defaults to (("current", "<", 0.001), ("time", ">", "24::")).
+            reports (tuple, optional): A tuple of tuples, holds the change in current or time for a report to occur, time in in hours:minutes:seconds format.
+                Defaults to (("current", 0.01), ("time", ":5:")).
+            voltage (float): The desired voltage for the cell to reach.
+            wait_time (float, optional): Time between data measurements in seconds. Defaults to 10.0.
         """
         super().__init__(wait_time=wait_time)
         self.i_limit = None
@@ -964,7 +966,8 @@ class VoltageStep(ProtocolStep):
         self.end_conditions = process_ends(ends)
 
     def guess_i_limit(self):
-        """[summary]
+        """Takes the last value in the CellRunner Parent's Keithley's current_ranges and sets it positive
+        or negative depending on charge or discharge.
         """
         self.i_limit = 1.0
         if self.state_str.startswith("charge"):
@@ -974,10 +977,10 @@ class VoltageStep(ProtocolStep):
             self.i_limit = -self.parent.source.current_ranges[-1]
 
     def _start(self):
-        """[summary]
+        """Sets the step's status to started, if an i_limit has been set the Parent CellRunner's Keithley voltage is set.
 
         Raises:
-            ValueError: [description]
+            ValueError: If no i_limit has been set the cell should not be charged or discharged, hence an error being raised.
         """
         self.status = STATUS.started
         if self.i_limit is None:
@@ -989,10 +992,10 @@ class VoltageStep(ProtocolStep):
                                        i_limit=self.i_limit)
 
     def header(self):
-        """[summary]
+        """Returns the current state and time in json form.
 
         Returns:
-            [type]: [description]
+            JSON: A JSON string of the current protocol state and time.
         """
         return json.dumps({"state": self.state_str,
                            "date_start_timestr": datetime.now().strftime(
@@ -1002,12 +1005,14 @@ class VoltageStep(ProtocolStep):
     def check_in_control(self, last_time, current, voltage):
         """Method for checking if the desired condition is actually met.
         
-        Returning False will completely kill the cell.
+        Voltage can take a moment to stabalize when a cell is first started, so the tolerance is adjusted accordingly. Otherwise,
+        The currently measured voltage is compared against the voltage set in this step and if it is too different the in_control value
+        is set to False. in_control is then returned. Returning False will completely kill the cell.
 
         Args:
-            current ():
-            last_time ():
-            voltage ():
+            current (float): The measured current. UNUSED.
+            last_time (float): The measured time in seconds.
+            voltage (float): The measured voltage to be compared against this step's set voltage.
 
         Returns:
             bool: True if cell is in control, False otherwise
@@ -1038,10 +1043,12 @@ class CVCharge(VoltageStep):
         """[summary]
 
         Args:
-            ends (tuple, optional): [description]. Defaults to (("current", "<", 0.001), ("time", ">", "24::")).
-            reports (tuple, optional): [description]. Defaults to (("current", 0.01), ("time", ":5:")).
-            voltage ([type]): [description]
-            wait_time (float, optional): [description]. Defaults to 10.0.
+            ends (tuple, optional): A tuple of tuples, holds the current cutoff and the total time the protocol should run for in hours:minutes:seconds format. 
+                Defaults to (("current", "<", 0.001), ("time", ">", "24::")).
+            reports (tuple, optional): A tuple of tuples, holds the change in current or time for a report to occur, time in in hours:minutes:seconds format.
+                Defaults to (("current", 0.01), ("time", ":5:")).
+            voltage (float): The desired voltage for the cell to reach.
+            wait_time (float, optional): Time between data measurements in seconds. Defaults to 10.0.
         """
         super().__init__(voltage,
                          reports=reports, ends=ends,
@@ -1060,13 +1067,15 @@ class CVDischarge(VoltageStep):
                  reports=(("current", 0.01), ("time", ":5:")),
                  ends=(("current", "<", 0.001), ("time", ">", "24::")),
                  wait_time=10.0):
-        """[summary]
+        """Inits state_str, calls Parent Class' constructor with voltage, reports, ends, and wait_time.
 
         Args:
-            ends (tuple, optional): [description]. Defaults to (("current", "<", 0.001), ("time", ">", "24::")). 
-            reports (tuple, optional): [description]. Defaults to (("current", 0.01), ("time", ":5:")).
-            voltage ([type]): [description]
-            wait_time (float, optional): [description]. Defaults to 10.0.
+            ends (tuple, optional): A tuple of tuples, holds the current cutoff and the total time the protocol should run for in hours:minutes:seconds format. 
+                Defaults to (("current", "<", 0.001), ("time", ">", "24::")).
+            reports (tuple, optional): A tuple of tuples, holds the change in current or time for a report to occur, time in in hours:minutes:seconds format.
+                Defaults to (("current", 0.01), ("time", ":5:")).
+            voltage (float): The desired voltage for the cell to reach.
+            wait_time (float, optional): Time between data measurements in seconds. Defaults to 10.0.
         """
         super().__init__(voltage,
                          reports=reports, ends=ends,
@@ -1109,17 +1118,17 @@ class AdvanceCycle(ProtocolStep):
 
 
 class Rest(ProtocolStep):
-    """Extends ProtocolStep. A step for putting a cell to sleep.
+    """Extends ProtocolStep. A step for putting a the CellRunner and Keithley to rest.
     """
     def __init__(self,
                  reports=(("time", ":5:"),), ends=(("time", ">", "24::"),),
                  wait_time=10.0):
-        """[summary]
+        """Inits end_conditions, report_conditions, and state_str.
 
         Args:
-            ends (tuple, optional): [description]. Defaults to (("time", ">", "24::"),).
-            reports (tuple, optional): [description]. Defaults to (("time", ":5:"),).
-            wait_time (float, optional): [description]. Defaults to 10.0.
+            ends (tuple, optional): The total time the protocol should run for in hours:minutes:seconds format. Defaults to (("time", ">", "24::"),).
+            reports (tuple, optional): The time betweem reports in hours:minutes:seconds format. Defaults to (("time", ":5:"),).
+            wait_time (float, optional): Time between data measurements in seconds. Defaults to 10.0.
         """
         super().__init__(wait_time=wait_time)
 
@@ -1128,16 +1137,16 @@ class Rest(ProtocolStep):
         self.end_conditions = process_ends(ends)
 
     def _start(self):
-        """[summary]
+        """Sets the step status to started and calls the CellRunner Parent's Keithley to rest.
         """
         self.status = STATUS.started
         self.parent.source.rest()
 
     def header(self):
-        """[summary]
+        """Returns the current state and time in json form.
 
         Returns:
-            [type]: [description]
+            JSON: A JSON string of the current protocol state and time.
         """
         return json.dumps({"state": self.state_str,
                            "date_start_timestr": datetime.now().strftime(
@@ -1147,15 +1156,16 @@ class Rest(ProtocolStep):
     def check_in_control(self, last_time, current, voltage):
         """Method for checking if the desired condition is actually met.
         
-        Returning False will completely kill the cell
+        Compares the given current to 0.00001 to check if it is essentially 0. Sets in_control, the return value,
+        to True if the current is essentially 0. Returning False will completely kill the cell.
 
         Args:
-            current ([type]): [description]
-            last_time ([type]): [description]
-            voltage ([type]): [description]
+            current (float): The measured current to compare to 0.00001.
+            last_time (float): The last measurement time, UNUSED.
+            voltage (float): The measured voltage of the cell, UNUSED.
 
         Returns:
-            bool: True if cell is in control, False otherwise
+            bool: True if cell is in control, False otherwise.
         """
         self.in_control = abs(current) < 0.00001
 
@@ -1166,10 +1176,10 @@ class Rest(ProtocolStep):
 
 
 class Pause(ProtocolStep):
-    """[summary]
+    """Extends ProtocolStep. Pauses the CellRunner and its Keithley source.
     """
     def __init__(self):
-        """[summary]
+        """Inits state_str and invokes the parent's constructor with infinite wait time.
         """
         # This is the time between measurements on the channel,
         # putting this arbitrarily large
@@ -1177,47 +1187,47 @@ class Pause(ProtocolStep):
         self.state_str = "pause"
 
     def _start(self):
-        """[summary]
+        """Sets the Pause step's state to started, the next time to infinite seconds away, and calls pause on the CellRunner Parent's Keithley.
         """
         self.state = STATUS.started
         self.next_time = time.time() + self.wait_time
         self.parent.source.pause()
 
     def run(self):
-        """[summary]
+        """Calls the Pause start() function.
 
         Returns:
-            [type]: [description]
+            None: None returned.
         """
         self._start()
         return None
 
     def resume(self):
-        """[summary]
+        """Sets the Pause step's status to completed in order to move on from being paused.
         """
         self.status = STATUS.completed
 
     def check_in_control(self, *args):
-        """[summary]
+        """When a everything is paused in_control means nothing, hence this function does nothing but return True.
 
         Returns:
-            [type]: [description]
+            bool: Always returns True
         """
         return True
 
 
 class Sleep(ProtocolStep):
-    """[summary]
+    """Extends ProtocolStep. A protocol used for putting the CellRunner and Keithley to sleep.
     """
     def __init__(self,
                  reports=(("time", ":5:"),), ends=(("time", ">", "24::"),),
                  wait_time=10.0):
-        """[summary]
+        """Inits end_conditions, report_conditions, and state_str.
 
         Args:
-            ends (tuple, optional): [description]. Defaults to (("time", ">", "24::"),).
-            reports (tuple, optional): [description]. Defaults to (("time", ":5:"),).
-            wait_time (float, optional): [description]. Defaults to 10.0.
+            ends (tuple, optional): The total time the protocol should run for in hours:minutes:seconds format. Defaults to (("time", ">", "24::"),).
+            reports (tuple, optional): The time betweem reports in hours:minutes:seconds format. Defaults to (("time", ":5:"),).
+            wait_time (float, optional): Time between data measurements in seconds. Defaults to 10.0.
         """
         super().__init__(wait_time=wait_time)
 
@@ -1226,16 +1236,16 @@ class Sleep(ProtocolStep):
         self.end_conditions = process_ends(ends)
 
     def _start(self):
-        """[summary]
+        """Sets the protocol status to started and then sets the CellRunner Parent's source to off.
         """
         self.status = STATUS.started
         self.parent.source.off()
 
     def header(self):
-        """[summary]
+        """Returns the current state and time in json form.
 
         Returns:
-            [type]: [description]
+            JSON: A JSON string of the current protocol state and time.
         """
         return json.dumps({"state": self.state_str,
                            "date_start_timestr": datetime.now().strftime(
@@ -1243,17 +1253,17 @@ class Sleep(ProtocolStep):
                           )
 
     def read_data(self):
-        """[summary]
+        """Reads the data from the Keithley source by calling the parent class' read_data().
         """
         self.parent.source.rest()
         super().read_data()
         self.parent.source.off()
 
     def run(self, force_report=False):
-        """
+        """Calls the start function of the sleep protocol, checks end conditions, and reports data.
+
         The run method needs to be redefined because the logic of the Sleep
-        protocol is unique in that a measurement is
-        only desired if a report condition is met as opposed to
+        protocol is unique in that a measurement is only desired if a report condition is met as opposed to
         the other steps which measure and then decide whether to report
 
         Args:
@@ -1500,7 +1510,7 @@ class ConditionTotalTime(ConditionTotalDelta):
 
 
 class ConditionAbsolute(Condition):
-    """[summary]
+    """An object for comparing the most recent measurement of a ProtocolStep to a user designated value.
 
     Attributes:
         comparison (func): The comparison func to use when comparing values i.e. greater than, less than, etc.
