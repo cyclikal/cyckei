@@ -1,3 +1,5 @@
+    """Classes that handle controlling Keithley Source objects and enacting protocols on them.
+    """
 import json
 import time
 from datetime import datetime
@@ -62,32 +64,28 @@ STATUS.string_map = {
 
 
 class CellRunner(object):
-    """[summary]
-
-    Args:
-        object ([type]): [description]
+    """Turns a protocol into a list of held ProtocolSteps that are executed to complete the protocol. Also 
+    holds meta information about the protocol being run.
 
     Attributes:
-        channel ():
-        current_step ():
-        fpath ():
-        i_current_step ():
-        isTest ():
-        last_data ():
-        meta ():
-        _next_time ():
-        plugin_objects ():
-        prev_cycle ():
-        safety_reset_seconds ():
-        source ():
-        start_time ():
-        status ():
-        steps ():
-        total_pause_time ():
-
-    Raises:
-        ValueError: [description]
-        ValueError: [description]
+        channel (str): The Keithley channel this protocol should be run on. 
+        current_step (ProtocolStep): The active ProtocolStep. UNUSED.
+        fpath (str): The file path to the file that will have data written to it.
+        i_current_step (int): The index of the ProtocolStep being run from the steps list.
+        isTest (bool): Controls whether this is a real protocol run or a test protocol being run.
+        last_data (list): A list of values from the previous measurement recorded in a ProtocolStep.
+        meta (dict): Meta data for: channel, path, cellid, comment, package, celltype, requester, plugins,
+            protocol, protocol_name, cycler, start_cycle, and format.
+        _next_time (float): The next time at which a ProtocolStep should read data from the Keithley.
+        plugin_objects (list): A list of PluginControllers extending the BaseController object. 
+            (The same as 'plugins' and 'plugin_objects' in functions of server.py)
+        prev_cycle (int): The previous cycle number. UNUSED.
+        safety_reset_seconds (float): The number of seconds before the Keithley's safety reset.
+        source (keithley2602.Source): The Keithley being controlled by this CellRunner.
+        start_time (float): The epoch time in seconds at which the CellRunenr started running the protocol (ProtocolSteps).
+        status (int): The status that maps to the STATUS string map. Values -1 to 5.
+        steps (list): A list of the ProtocolSteps to be run in order to complete a protocol.
+        total_pause_time (float): The time in seconds that a ProtoclStep has been paused for.
     """
 
     META = {
@@ -107,10 +105,12 @@ class CellRunner(object):
     }
 
     def __init__(self, plugin_objects=None, **meta):
-        """[summary]
+        """Inits channel, current_step, fpath, i_current_step, last_data, meta, _next_time, plugin_objects,
+        prev_cycle, safety_reset_seconds, source, start_time, status, steps, and total_pause_time.
 
         Args:
-            plugin_objects ([type], optional): [description]. Defaults to None.
+           plugin_objects (list, optional): A list of PluginControllers extending the BaseController object. 
+                (The same as 'plugins' and 'plugin_objects' in functions of server.py) Defaults to None.
         """
         self.meta = self.META.copy()
         for k in self.meta.keys():
@@ -149,19 +149,21 @@ class CellRunner(object):
 
     @property
     def next_time(self):
-        """[summary]
+        """Returns the next time to read data.
 
         Returns:
-            [type]: [description]
+            float: The next time in seconds at which to read data.
         """
         return self._next_time
 
     @next_time.setter
     def next_time(self, value):
-        """[summary]
+        """Sets the next time to read data.
+
+        The next time to read data is enforced to be at least MIN_WAIT_TIME, but no greater than NEVER (inf).
 
         Args:
-            value ([type]): [description]
+            value (float): The next time in seconds at which to read data.
         """
         # Enforce at least minimum wait time
         value = max(MIN_WAIT_TIME, value)
@@ -173,13 +175,13 @@ class CellRunner(object):
             self._next_time = value
 
     def set_source(self, source):
-        """[summary]
+        """Tries to set the CellRunner's source (the Keithley it controlls) to the passed in source.
 
         Args:
-            source ([type]): [description]
+            source (keithley2602.Source): The Source object used for controlling a specific Keithley.
 
         Raises:
-            ValueError: [description]
+            ValueError: Error raised when the CellRunner does not have the same channel as the Keithley it is controlling.
         """
         self.source = source
         if self.channel != source.channel:
@@ -194,8 +196,8 @@ class CellRunner(object):
         """Decides whether charging/discharging yields positive or negative capacities.
 
         Go through the steps and set their .cap_sign attribute based on the "direction" of the cell.
-        This decides whether charging yields positive or negative capacities
-        and vice versa for discharge.
+        Charging yields positive capacities because cap_sign is 1 and discharge yields negative capacities
+        because cap_sign is -1.
 
         Args:
             direction (str or None): Direction for the cell can be "pos", "neg", or None
@@ -247,18 +249,22 @@ class CellRunner(object):
         self.set_cap_signs()
 
     def add_step(self, step):
-        """[summary]
+        """Adds a ProtocolStep to the steps list.
 
         Args:
-            step ([type]): [description]
+            step (ProtocolStep): ProtocolStep to be added to the steps list.
         """
         self.steps.append(step)
 
     def next_step(self):
-        """[summary]
+        """Attempts to move to the next step of the protocol.
+
+        Attempts to increment the i_current_step by 1 to move to the next step in the steps list. If the length of steps is
+        passed then False is returned and status is set to completed to indicate that the prtocol is over. Otherwise, capacity is adjusted
+        to the last recorded capactiy and true is returned.
 
         Returns:
-            [type]: [description]
+            bool: True indicates that the next step is ready, False is returned if there are no more steps.
         """
         self.i_current_step += 1
         if self.i_current_step >= len(self.steps):
@@ -278,7 +284,8 @@ class CellRunner(object):
         """Initializes the protocol. 
         
         Would not normally be called directly, but instead is called by the
-            .run() function.
+            .run() function. Sets current step to 0, sets the start_time, and writes the initial headers
+            with write_header() and write_cycle_header().
         """
         logger.info("Starting cellrunner instance \
                     (channel: {})".format(self.channel))
@@ -295,10 +302,10 @@ class CellRunner(object):
 
     @property
     def step(self):
-        """[summary]
+        """Uses the index of the current step to pull the current step from the steps list.
 
         Returns:
-            [type]: [description]
+            ProtocolStep: The current step that the CellRunner is on.
         """
         try:
             return self.steps[self.i_current_step]
@@ -347,13 +354,13 @@ class CellRunner(object):
         return True
 
     def advance_cycle(self):
-        """Advances the cycle by 1
+        """Advances the cycle stored in CellRunner by 1.
         """
         self.cycle += 1
         self.write_cycle_header()
 
     def write_header(self):
-        """[summary]
+        """Creates a JSON string using the CellRunner meta and writes it to the file stored in fpath.
         """
         try:
             with open(self.fpath, 'w') as fo:
@@ -366,7 +373,7 @@ class CellRunner(object):
             logger.error(f"Error opening file in write_header(): {error}")
 
     def write_cycle_header(self):
-        """[summary]
+        """Writes the cycle that the CellRunner is on to the file stored in fpath.
         """
         try:
             with open(self.fpath, 'a') as fo:
@@ -376,7 +383,7 @@ class CellRunner(object):
             logger.error(f"Error opening file in write_cycle_header(): {error}")
 
     def write_step_header(self):
-        """[summary]
+        """Collects the header from the current ProtocolStep and writes it to the file stored in fpath.
         """
         header = self.step.header()
         if header:
@@ -387,10 +394,13 @@ class CellRunner(object):
                 logger.error(f"Error opening file in write_step_header(): {error}")
 
     def read_and_write(self, force_report=False):
-        """[summary]
+        """Reads data from the current ProtocolStep and records it.
+
+        Calls the current ProtocolStep to collect data and tries to write that data to the data file using write_data().
+        Also sets the last_data value to this most recently read data.
 
         Args:
-            force_report (bool, optional): [description]. Defaults to False.
+            force_report (bool, optional): Passed to the ProtocolStep run() function to control reporting. Defaults to False.
         """
         data = self.step.run(force_report=force_report)
         self.next_time = self.step.next_time
@@ -399,14 +409,14 @@ class CellRunner(object):
             self.last_data = data
 
     def write_data(self, timestamp, current, voltage, capacity, plugin):
-        """[summary]
+        """Attempts to write the passed in data to the fpath file.
 
         Args:
-            capacity ([type]): [description]
-            current ([type]): [description]
-            plugin ([type]): [description]
-            timestamp ([type]): [description]
-            voltage ([type]): [description]
+            capacity (float): The calculated capacity of the cell being controlled in mAh.
+            current (float): The recorded current data of the controlled cell.
+            plugin (list): A list of values recorded from plugins, either ints or floats.
+            timestamp (float): The recorded time data of the controlled cell.
+            voltage (float): The recorded voltage data of the controlled cell.
         """
         try:
             with open(self.fpath, 'a') as file:
@@ -428,8 +438,7 @@ class CellRunner(object):
             logger.error(f"Error opening file in write_data(): {error}")
 
     def pause(self):
-        """
-        Attempts to pause the active step.
+        """Attempts to pause the active step. Also calls the read_and_write function.
 
         Returns:
             bool: True if the pause was successful, otherwise False.
@@ -483,21 +492,26 @@ class ProtocolStep(object):
     variables as "parent".
 
     Attributes:
-        cap_sign (float):
-        data (list):
-        data_max_len (int):
-        end_conditions (list):
-        in_control (bool):
-        last_time (float):
-        next_time (float):
-        parent (CellRunner):
-        pause_start (float):
-        pause_time (float):
-        report (list):
-        report_conditions (list):
-        starting_capacity (float):
-        state_str (str):
-        status (int):
+        cap_sign (float): The cap sign determines whether the capacitiy increases or decreases during
+            charge and discharge. Either 1 or -1. 
+        data (list): A list of lists. Each list is a set of measurements, [[time,current,voltage,capacity],
+            [time,current,voltage,capacity], ...] current is stored in absolute value. Contains every measurement taken.
+        data_max_len (int): The max number ofitems in the data list.
+        end_conditions (list): A list of conditions that determine when the ProtocolStep should be ended.
+        in_control (bool): Indicates if the protocol step is operating within it's designed parameters.
+        last_time (float): The previous measured time in seconds.
+        next_time (float): This is the time in seconds since epoch at which this protocol step is expecting to do another read
+            operation on the channel. -1 means it has never been set.
+        parent (CellRunner): The CellRunner holding this protocol step.
+        pause_start (float): The time in seconds at which the protocol was paused.
+        pause_time (float): The total time in seconds for which the protocol was paused.
+        report (list): A list of lists. Each list is a set of measurements, [[time,current,voltage,capacity],
+            [time,current,voltage,capacity], ...]. This list only contains measurements taken that are 
+            specified to be reported.
+        report_conditions (list): A list of Condition objects used to determine when a data measurement is reported.
+        starting_capacity (float): The initital capacity of the cell. This gets set at the protocol level (parent).
+        state_str (str): A string representation of the state of the cell i.e charging, discharging, etc.
+        status (int): An int representation of the status of the step, i.e started, paused, etc.
         wait_time (float): Time between data measurements in seconds.
     """
 
@@ -571,10 +585,10 @@ class ProtocolStep(object):
         self.parent.add_step(self)
 
     def _start(self):
-        """[summary]
+        """Unimplemented function. Meant for being overridden. 
 
         Raises:
-            NotImplementedError: [description]
+            NotImplementedError: Always raised as this function is meant for being overridden by a child.
         """
         raise NotImplementedError
 
@@ -587,21 +601,18 @@ class ProtocolStep(object):
         return False
 
     def run(self, force_report=False):
-        """Decides if a data point should be reported.
+        """Calls the read_data() function, also decides if the read data should be reported.
 
-         The run function evaluates the report_conditions to decide if a data point
-         should be reported, setting force_report to True will report the latest data
-         point regardless of conditions.
+         Calls the read_data() function and checks the end_conditions for if the ProtocolStep should end.
+         The run function evaluates the report_conditions to decide if a data point should be reported, 
+         setting force_report to True will report the latest data point regardless of conditions.
 
         Args:
-        
             force_report (bool): Defaults to False. Forces a report if True.
-
 
         Returns:
             tuple: (time, current, voltage, capacity) tuple to report (write to file).
                 Returns none if no data to report.
-
         """
         logger.debug("Running {} protocol on channel {}".format(
             self.state_str, self.parent.channel))
@@ -674,10 +685,17 @@ class ProtocolStep(object):
         raise NotImplementedError("Please Implement this method")
 
     def read_data(self, force_report=False):
-        """[summary]
+        """Reads and reports data from the Keithley source.
+
+        Reads data from the Keithley source. Next scans the list of plugins checking for active ones. If there are active
+        plugins their read() function is called and the output is checked. int and float are acceptable return values from the plugins.
+        A 0 will replace non int or non float values. If data has been previously reported that data is used to calculate current capacity,
+        otherwise capacity is the starting capacity. The read values of last_time, current, voltage, capacity, plugin_values are then compiled 
+        into a list and appended to the data list. If the data list is oversized its second to last oldest value is popped from the list
+        (removing the first value would mess up calculating total changes). Finally the data is added to the end of the report if force_report is true.
 
         Args:
-            force_report (bool, optional): [description]. Defaults to False.
+            force_report (bool, optional): If True then the collected data is added to the report list. Defaults to False.
         """
         self.last_time = time.time()
         current, voltage = self.parent.source.read_iv()
@@ -763,10 +781,10 @@ class ProtocolStep(object):
 
 
 def process_reports(reports):
-    """
+    """Takes reports in the form of a tuple of pairs and creates a list of Condition objects for when to report.
 
     Args:
-        reports (): Desired reports as a tuple of pairs such as
+        reports (((str, float), (str, int))): Desired reports as a tuple of pairs such as
             (("voltage",0.01), ("time",300))
 
     Returns:
@@ -787,14 +805,14 @@ def process_reports(reports):
 
 
 def process_ends(ends):
-    """
+    """Takes end_conditions in tuple form and converts them into Condition objects.
 
     Args:
-        ends (): Desired ends conditions as a tuple of triples such as
+        ends (((str, str, float), (str, str, str))): Desired ends conditions as a tuple of triples such as
             (("voltage",">", 4.2), ("time",">","24::")).
 
     Returns:
-        list: List of condition objects for ending a protocol step.
+        list: List of Condition objects for ending a protocol step.
 
     """
     end_conditions = []
@@ -811,24 +829,30 @@ class CurrentStep(ProtocolStep):
     """Extends ProtocolStep. A step for controlling the current output by the source (i.e Keithley). 
 
     Attributes:
-        current ():
-        v_limit ():
+        current (float): The current rate being enforced.
+        v_limit (float): Voltage limit for source. This is not a voltage cutoff condition.
+                It is the maximum voltage allowed by the Keithley under any
+                condition. The Keithley enforces +/- v_limit.
+                Having a battery with a voltage outside of +/- v_limit could
+                damage the Keithley. Defaults to 5.0.
 
     """
     def __init__(self, current,
                  reports=(("voltage", 0.01), ("time", ":5:")),
                  ends=(("voltage", ">", 4.2), ("time", ">", "24::")),
                  wait_time=10.0):
-        """[summary]
+        """Inits current, end_conditions, report_conditions, state_str, and v_limit. Calls parent ProtocolStep constructor with wait_time.
 
         Args:
-            current ([type]): [description]
-            ends (tuple, optional): [description]. Defaults to (("voltage", ">", 4.2), ("time", ">", "24::")).
-            reports (tuple, optional): [description]. Defaults to (("voltage", 0.01), ("time", ":5:")).
-            wait_time (float, optional): [description]. Defaults to 10.0.
+            current (float): The current rate being enforced.
+            ends (tuple, optional): A tuple of tuples, holds the voltage cutoff and the total time the protocol should run for in hours:minutes:seconds format. 
+                Defaults to (("voltage", ">", 4.2), ("time", ">", "24::")).
+            reports (tuple, optional): A tuple of tuples, holds the change in voltage or time for a report to occur, time in in hours:minutes:seconds format.
+                Defaults to (("voltage", 0.01), ("time", ":5:")).
+            wait_time (float, optional): Time between data measurements in seconds. Defaults to 10.0.
 
         Raises:
-            ValueError: [description]
+            ValueError: Current should not be 0 during a CurrentStep, this is raised if current is 0.
         """
         super().__init__(wait_time=wait_time)
         if current > 0:
@@ -853,17 +877,17 @@ class CurrentStep(ProtocolStep):
         self.end_conditions = process_ends(ends)
 
     def _start(self):
-        """[summary]
+        """Starts the protocol by setting the current rate on the CellRunner-parent's Keithley source.
         """
         self.status = STATUS.started
         self.parent.source.set_current(current=self.current,
                                        v_limit=self.v_limit)
 
     def header(self):
-        """[summary]
+        """Returns the current state and time in json form.
 
         Returns:
-            [type]: [description]
+            JSON: A JSON string of the current protocol state and time.
         """
         return json.dumps({"state": self.state_str,
                            "date_start_timestr": datetime.now().strftime(
@@ -876,9 +900,9 @@ class CurrentStep(ProtocolStep):
         Returning False will completely kill the cell.
 
         Args:
-            current ():
-            last_time ():
-            voltage ():
+            current (float): The current rate being enforced.
+            last_time (float): The measured time in seconds. UNUSED
+            voltage (float): The measured voltage to be compared against this step's set voltage. UNUSED
 
         Returns:       
             bool: True if cell is in control, False otherwise
@@ -899,13 +923,15 @@ class CCCharge(CurrentStep):
                  reports=(("voltage", 0.01), ("time", ":5:")),
                  ends=(("voltage", ">", 4.2), ("time", ">", "24::")),
                  wait_time=10.0):
-        """[summary]
+        """Inits state_str, calls the parent CurrentStep constructor with current, ends, reports, and wait_time.
 
         Args:
-            current ([type]): [description]
-            ends (tuple, optional): [description]. Defaults to (("voltage", ">", 4.2), ("time", ">", "24::")).
-            reports (tuple, optional): [description]. Defaults to (("voltage", 0.01), ("time", ":5:")).
-            wait_time (float, optional): [description]. Defaults to 10.0.
+            current (float): The current charge rate being enforced.
+            ends (tuple, optional): A tuple of tuples, holds the voltage cutoff and the total time the protocol should run for in hours:minutes:seconds format. 
+                Defaults to (("voltage", "<", 3), ("time", ">", "24::")).
+            reports (tuple, optional): A tuple of tuples, holds the change in voltage or time for a report to occur, time in in hours:minutes:seconds format.
+                Defaults to (("voltage", 0.01), ("time", ":5:")).
+            wait_time (float, optional): Time between data measurements in seconds. Defaults to 10.0.
         """
         # Enforce positive current
         current = abs(current)
@@ -922,13 +948,15 @@ class CCDischarge(CurrentStep):
                  reports=(("voltage", 0.01), ("time", ":5:")),
                  ends=(("voltage", "<", 3), ("time", ">", "24::")),
                  wait_time=10.0):
-        """[summary]
+        """Inits state_str, calls the parent CurrentStep constructor with current, ends, reports, and wait_time.
 
         Args:
-            current (float): [description]
-            ends (tuple, optional): [description]. Defaults to (("voltage", "<", 3), ("time", ">", "24::")).
-            reports (tuple, optional): [description]. Defaults to (("voltage", 0.01), ("time", ":5:")).
-            wait_time (float, optional): [description]. Defaults to 10.0.
+            current (float): The current discharge rate being enforced.
+            ends (tuple, optional): A tuple of tuples, holds the voltage cutoff and the total time the protocol should run for in hours:minutes:seconds format. 
+                Defaults to (("voltage", "<", 3), ("time", ">", "24::")).
+            reports (tuple, optional): A tuple of tuples, holds the change in voltage or time for a report to occur, time in in hours:minutes:seconds format.
+                Defaults to (("voltage", 0.01), ("time", ":5:")).
+            wait_time (float, optional): Time between data measurements in seconds. Defaults to 10.0.
         """
         # Enforce negative current
         current = -abs(current)
@@ -1737,8 +1765,7 @@ def extrapolate_time(data, target, index):
 
 
 def time_conversion(t):
-    """
-    Converts time in the "hh:mm:ss" format to seconds as a float.
+    """Converts time in the "hh:mm:ss" format to seconds as a float.
 
     Args:
         t (str or float): time in the "hh:mm:ss" format, where values can be ommitted

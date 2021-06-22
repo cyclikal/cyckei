@@ -222,8 +222,8 @@ class Source(object):
         """Set the current on the Source.
 
         Args:
-            current (float): desired current in Amps
-            v_limit (float): voltage limit for source. This is not a voltage cutoff condition.
+            current (float): Desired current in Amps.
+            v_limit (float): Voltage limit for source. This is not a voltage cutoff condition.
                 It is the maximum voltage allowed by the Keithley under any
                 condition. The Keithley enforces +/- v_limit.
                 Having a battery with a voltage outside of +/- v_limit could
