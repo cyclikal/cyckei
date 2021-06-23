@@ -1,5 +1,5 @@
-    """Classes that handle controlling Keithley Source objects and enacting protocols on them.
-    """
+"""Classes that handle controlling Keithley Source objects and enacting protocols on them.
+"""
 import json
 import time
 from datetime import datetime
@@ -1353,8 +1353,8 @@ class Sleep(ProtocolStep):
 
 
 class Condition(object):
-    """A Condition takes a ProtocolStep into its check() method, and returns a boolean
-    indicating whether that condition has been met.
+    """A Condition is an abstract class. A Condition takes a ProtocolStep into its check() method,
+    and returns a boolean indicating whether that condition has been met.
 
     A condition object may modify the .next_time attribute of
     the ProtocolStep object to suggest time the

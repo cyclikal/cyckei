@@ -1,24 +1,26 @@
+"""Abstract Classes for implementing plugins for Cyckei.
+"""
 import logging
 import os.path
 
 
 class BaseController(object):
-    """Parent class of plugin controller objects.
+    """Abstract Parent class of plugin controller objects.
 
     Creates default methods for interacting with plugin and handling sources.
 
     Attributes:
-        description ():
-        logger ():
-        name ():
+        description (str): The description given to the user in the info section.
+        logger (logging.Logger): The logger for the plugin object. Stored in the Plugins folder, named after the name variable.
+        name (str): The name of the plugin object.
     """
 
     def __init__(self, name, description):
-        """Setup logging and sources for plugin.
+        """Inits description, logger, and name. Sets up logging and sources for plugin.
         
         Args:
-            name ():
-            description ():
+            name (str): The name of the plugin object.
+            description (str): The description given to the user in the info section.
         """
         # Check if "cyckei" logger found, and setup seperate handler if not.
 
@@ -43,14 +45,14 @@ class BaseController(object):
         Usually this should be as a result of running the plugin independantly.
 
         Args:
-            name ([type]): [description]
-            cyckei_plugin_path ([type]): [description]
+            name (str): The name of the plugin object.
+            cyckei_plugin_path (str): The path to the Plugins folder in the Cyckei folder.
 
         Raises:
-            FileNotFoundError: [description]
+            FileNotFoundError: Raised when the path given by cyckei_plugin_path doesn't exist.
 
         Returns:
-            [type]: [description]
+            logging.Logger: The logger for the plugin object. File stored in the Plugins folder, named after the name variable.
         """
         cyckei_plugin_path = os.path.join(os.path.expanduser("~"),
                                           "Cyckei", "Plugins")
@@ -78,21 +80,24 @@ class BaseController(object):
         return logger
 
     def load_sources(self):
-        """Searches for available sources, and establishes source objects.
+        """Abstract method. Searches for available sources, and establishes source objects.
 
         Raises:
-            NotImplementedError: [description]
+            NotImplementedError: Error always raised as this is an abstract method.
         """
         raise NotImplementedError
 
     def read(self, source):
-        """[summary]
+        """Reads data from every source object connected to this plugin controller. 
+
+        Requires a collection of source objects to be stored in self.sources as a list or dictionary.
 
         Args:
-            source ([type]): [description]
+            source (int or str): The index or key of the source object to be read from. Depends on whether the source
+                objects are stored in a list or dict.
 
         Returns:
-            [type]: [description]
+            Any: Any type can be returned as this function calls the read function from a source and does no further processing.
         """
         try:
             return self.sources[source].read()
@@ -103,10 +108,10 @@ class BaseController(object):
             self.logger.error("Exception occured while reading plugin:", error)
 
     def cleanup(self):
-        """[summary]
+        """Abstract method.
 
         Raises:
-            NotImplementedError: [description]
+            NotImplementedError: Error always raised as this is an abstract method.
         """
         raise NotImplementedError
 
@@ -116,20 +121,28 @@ class BaseSource(object):
     """
 
     def __init__(self):
+        """Abstract constructor. No definition
+        """
         pass
 
     def read(self):
+        """Abstract method. Reads data from the source instrument.
+
+        Raises:
+            NotImplementedError: Error always raised as this is an abstract method.
+        """
         raise NotImplementedError
 
 
 def read_all(controller):
-    """[summary]
+    """Performs the read function on every plugin source stored in the the plugin controller.
 
     Args:
-        controller ([type]): [description]
+        controller (BaseController): A BaseController holding plugin sources to be read from.
 
     Returns:
-        [type]: [description]
+        dict: A dict with keys as the name of the plugin and values that could be any type.
+        Any type could be returned from reading a plugin source, as there is no type control before this point.
     """
     values = {}
     for name in controller.sources:

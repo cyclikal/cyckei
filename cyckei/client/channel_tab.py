@@ -1,5 +1,4 @@
-"""
-Widget that controls a single channnel.
+"""Widget that controls a single channnel.
 Listed in the channel tab of the main window.
 """
 
