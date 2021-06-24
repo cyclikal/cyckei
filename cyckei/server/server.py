@@ -25,6 +25,7 @@ def main(config, plugins, plugin_names):
         config (dict): Holds Cyckei launch settings.
         plugins (list): A list of PluginControllers extending the BaseController object.
         plugin_names (dict):  A dict with a key of the plugin name and a value of the of the specific plugin instance's name.
+    |
     """
 
     logger.info(
@@ -69,6 +70,7 @@ def event_loop(config, socket, plugins, plugin_names, device_module):
         plugins (list): A list of PluginControllers extending the BaseController object.
         plugin_names (dict):  A dict with a key of the plugin name and a value of the of the specific plugin instance's name.
         socket (zmq.Socket): An object that acts as a socket that can send and receive messages.
+    |
     """
     try:
         logger.debug("Starting server event loop")
@@ -193,6 +195,7 @@ def record_data(data_path, data):
     Args:
         data (dict): The data to be stored in a file.
         data_path (str): The path to the area where the user wants the server_data file stored.
+    |
     """
     data_path = data_path + "\\server_data.txt"
     #loads server_file into a dict
@@ -226,6 +229,7 @@ def process_socket(config, socket, runners, sources, server_time,
         socket (zmq.REP socket): Receives messages in a non-blocking way.
             If a message is received it processes it and sends a response
         sources (list): A list of all of the Keithley channels connected to the server.
+    |
     """
 
     # Check to see if there are new events on the socket
@@ -317,6 +321,7 @@ def info_server_file(config):
 
     Returns:
         dict: The json data of channels recorded in a file, converted to a dict.
+    |
     """
     data_path = config["arguments"]["record_dir"] + "\\server_data.txt"
     #loads server_file into a dict
@@ -341,6 +346,7 @@ def info_all_channels(runners, sources):
     Returns:
         dict: A dictionary of dictionaries that each hold info from their respective
         CellRunner's meta, e.g. path, status, current, voltage, etc.
+    |
     """
     info = {}
     for source in sources:
@@ -361,6 +367,7 @@ def info_channel(channel, runners, sources):
     Returns:
         dict: Information about the requested channel from the CellRunner's
         meta, e.g. path, status, current, voltage, etc.
+    |
     """
     info = OrderedDict(channel=channel, path=None, cellid=None, comment=None, protocol_name=None, protocol=None, status=None, state=None,
                        current=None, voltage=None)
@@ -409,6 +416,7 @@ def start(channel, meta, protocol, runners, sources, plugin_objects):
 
     Returns:
         str: The result message of trying to start a channel.
+    |
     """
     # check to see if there is a already a runner on that channel
     meta["channel"] = channel
@@ -444,6 +452,7 @@ def pause(channel, runners):
 
     Returns:
         str: The result message of trying to pause a channel.
+    |
     """
     success = False
     runner = get_runner_by_channel(channel, runners, status=STATUS.started)
@@ -464,6 +473,7 @@ def stop(channel, runners):
 
     Returns:
         str: The result message of trying to strop a channel.
+    |
     """
     success = False
     runner = get_runner_by_channel(channel, runners)
@@ -484,6 +494,7 @@ def resume(channel, runners):
 
     Returns:
         str: The result message of trying to resume a channel.
+    |
     """
     success = False
     runner = get_runner_by_channel(channel, runners, status=STATUS.paused)
@@ -503,6 +514,7 @@ def test(protocol):
 
     Returns:
         str: The result message of testing the protocol.
+    |
     """
     try:
         runner = CellRunner()
@@ -522,6 +534,7 @@ def get_runner_by_channel(channel, runners, status=None):
 
     Returns:
         CellRunnner: Returns the runner serving the given channel, returns None otherwise.
+    |
     """
     if status is None:
         for runner in runners:

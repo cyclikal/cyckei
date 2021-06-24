@@ -25,6 +25,8 @@ def main(args=None):
     Compiles configuration from config and variable files.
     Starts logging to both console and file based on argument input.
     Launches requested cyckei component (server, client, or explorer).
+    
+    |
     """
     try:
         if args is None:
@@ -65,6 +67,7 @@ def parse_args():
 
     Returns:
         ArgumentParser with filled arguments.
+    |
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('launch', metavar="{server | client | explorer}",
@@ -91,6 +94,7 @@ def file_structure(path, overwrite):
 
     Args:
         config: Primary configuration dictionary
+    |
     """
     print("Checking filestructure...", end="")
 
@@ -117,6 +121,7 @@ def make_config(args, logger):
 
     Returns:
         dict: Completed 'config' dictionary.
+    |
     """
     # Get packaged variables
     config = configparser.ConfigParser()
@@ -165,6 +170,7 @@ def load_plugins(config):
     Returns:
         (list, dict): The first value is a list of PluginControllers extending the BaseController object. The second value is a dict with a key of the plugin name and
             a value of the of the specific plugin instance's name.
+    |
     """
     # create individual plugin configurations, if necessary
     server_logger.info("Loading plugins...")
@@ -198,6 +204,7 @@ def start_logging(config, logger):
     Args:
         config (dict): Primary configuration dictionary.
         logger (Logger): The logger to initialize.
+    |
     """
     print("Starting logging: ", end="")
 
@@ -233,13 +240,21 @@ def start_logging(config, logger):
 
 
 def handle_exception(exc_type, exc_value, exc_traceback):
-    """Exception Handler (referenced in start_logging)"""
+    """Exception Handler (referenced in start_logging)
+    
+    |
+    """
     logger.error("Uncaught exception", exc_info=(exc_type, exc_value,
                  exc_traceback))
 
 
 class ColorFormatter(logging.Formatter):
-    """Extends logging.Formatter. Formatter to add colors and count warning / errors. Set as the formatter for loggers when they are initalized in start_logging()."""
+    """Extends logging.Formatter. Formatter to add colors and count warning / errors. 
+    
+    Set as the formatter for loggers when they are initalized in start_logging().
+    
+    |
+    """
     gray = "\x1b[38;21m"
     blue = "\x1b[34;21m"
     yellow = "\x1b[33;21m"
@@ -265,6 +280,7 @@ class ColorFormatter(logging.Formatter):
 
         Returns:
             str: The Formatter to be used by loggers.
+        |
         """
         log_fmt = self.FORMATS.get(record.levelno)
         formatter = logging.Formatter(log_fmt)

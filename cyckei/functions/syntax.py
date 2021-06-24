@@ -1,6 +1,7 @@
 """
 Instructions for highlighting Python code
 Modified from https://wiki.python.org/moin/PyQt/Python%20syntax%20highlighting
+|
 """
 
 from PySide2.QtCore import QRegExp
@@ -14,7 +15,10 @@ dark = "#303036"
 
 
 def format(color, style=''):
-    """Return a QTextCharFormat with the given attributes."""
+    """Return a QTextCharFormat with the given attributes.
+    
+    |
+    """
     _color = QColor(color)
 
     _format = QTextCharFormat()
@@ -42,7 +46,10 @@ STYLES = {
 
 
 class Highlighter(QSyntaxHighlighter):
-    """Syntax highlighter for the Python language."""
+    """Syntax highlighter for the Python language.
+    
+    |
+    """
 
     # Python keywords
     keywords = [
@@ -107,7 +114,10 @@ class Highlighter(QSyntaxHighlighter):
                       for (pat, index, fmt) in rules]
 
     def highlightBlock(self, text):
-        """Apply syntax highlighting to the given block of text."""
+        """Apply syntax highlighting to the given block of text.
+        
+        |
+        """
         # Do other syntax formatting
         for expression, nth, format in self.rules:
             index = expression.indexIn(text, 0)
@@ -134,6 +144,7 @@ class Highlighter(QSyntaxHighlighter):
         represent the corresponding state changes when inside those strings. 
         Returns True if we're still inside a multi-line string when this 
         function is finished.
+        |
         """
         # If inside triple-single quotes, start at 0
         if self.previousBlockState() == in_state:

@@ -1,4 +1,6 @@
 """Abstract Classes for implementing plugins for Cyckei.
+
+|
 """
 import logging
 import os.path
@@ -13,6 +15,7 @@ class BaseController(object):
         description (str): The description given to the user in the info section.
         logger (logging.Logger): The logger for the plugin object. Stored in the Plugins folder, named after the name variable.
         name (str): The name of the plugin object.
+    |
     """
 
     def __init__(self, name, description):
@@ -21,6 +24,7 @@ class BaseController(object):
         Args:
             name (str): The name of the plugin object.
             description (str): The description given to the user in the info section.
+        |
         """
         # Check if "cyckei" logger found, and setup seperate handler if not.
 
@@ -53,6 +57,7 @@ class BaseController(object):
 
         Returns:
             logging.Logger: The logger for the plugin object. File stored in the Plugins folder, named after the name variable.
+        |
         """
         cyckei_plugin_path = os.path.join(os.path.expanduser("~"),
                                           "Cyckei", "Plugins")
@@ -84,6 +89,7 @@ class BaseController(object):
 
         Raises:
             NotImplementedError: Error always raised as this is an abstract method.
+        |
         """
         raise NotImplementedError
 
@@ -98,6 +104,7 @@ class BaseController(object):
 
         Returns:
             Any: Any type can be returned as this function calls the read function from a source and does no further processing.
+        |
         """
         try:
             return self.sources[source].read()
@@ -112,16 +119,21 @@ class BaseController(object):
 
         Raises:
             NotImplementedError: Error always raised as this is an abstract method.
+        |
         """
         raise NotImplementedError
 
 
 class BaseSource(object):
     """Parent class of plugin source object. Controls communication with individual devices or channels.
+    
+    |
     """
 
     def __init__(self):
         """Abstract constructor. No definition
+        
+        |
         """
         pass
 
@@ -130,6 +142,7 @@ class BaseSource(object):
 
         Raises:
             NotImplementedError: Error always raised as this is an abstract method.
+        |
         """
         raise NotImplementedError
 
@@ -143,6 +156,7 @@ def read_all(controller):
     Returns:
         dict: A dict with keys as the name of the plugin and values that could be any type.
         Any type could be returned from reading a plugin source, as there is no type control before this point.
+    |
     """
     values = {}
     for name in controller.sources:

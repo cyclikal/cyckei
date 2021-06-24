@@ -21,6 +21,7 @@ def parse_gpib_address(gpib_address):
 
     Returns:
         str: The full GPIB address.
+    |
     """
     try:
         int(gpib_address)
@@ -41,6 +42,7 @@ def with_safety(fn):
 
     Returns:
         Any: The result of the function that is being called through here. Could return anything.
+    |
     """
     def decorated(self, *args, **kwargs):
         """Shuts the Keithely off after {safety_reset_seconds} if the Keithley is
@@ -48,6 +50,7 @@ def with_safety(fn):
 
         Returns:
             Any: The result of the function that is being called through here. Could return anything.
+        |
         """
         self.write('abort')
         self.write('errorqueue.clear()')
@@ -66,6 +69,7 @@ class DeviceController(object):
         safety_reset_seconds (int): How many seconds the Keithley can go without being
             checked before being shut off.
         source_meter (visa GPIBInstrument): The Keithley connected using pyvisa.
+    |
     """
 
     script_startup = open(func.asset_path("startup.lua")).read()
@@ -87,6 +91,7 @@ class DeviceController(object):
                 able to load scripts.
             safety_reset_seconds (int, optional): How many seconds the Keithley can go without being
                 checked before being shut off.
+        |
         """
         resource_manager = visa.ResourceManager()
         self.gpib_addr = gpib_addr
@@ -112,6 +117,7 @@ class DeviceController(object):
                     end
                 endscript
                 safety()
+                |
                 """
             self.source_meter.write(safety_shutoff_script)
             time.sleep(1)
@@ -127,6 +133,7 @@ class DeviceController(object):
         
         Returns:
             Source: Initialized with source_meter, kch, channl, and safety_reset_seconds.
+        |
         """
         return Source(self.source_meter, kch, channel=channel,
                       safety_reset_seconds=self.safety_reset_seconds)
@@ -151,6 +158,7 @@ class Source(object):
             checked before being shut off.
         source_meter (visa GPIBInstrument): The Keithley source, btained from an open_resource pyvisa call.
         snum (int): Either 1 or 2, corresponds with whether the kch is 'a' or 'b'.
+    |
     """
     
     current_ranges = [100 * 1e-9, 1e-6, 10e-6,
@@ -166,6 +174,7 @@ class Source(object):
                 however will be used to sort and display channels. Defaults to None.
             kch (str): Keithley channel ("a" or "b"). Stored lower case internally and accessible in the kch attribute.
             source_meter (visa GPIBInstrument): The Keithley source, btained from an open_resource pyvisa call.            
+        |
         """
         self.source_meter = source_meter
         # This is the Keithley channel on dual channel Keithleys
@@ -198,6 +207,8 @@ class Source(object):
 
     def off(self):
         """Stops the protocol on the Keithley and sets the Keithley to off-mode.
+        
+        |
         """
         self.write('abort')
         self.write(f"smu{self.kch}.source.offmode \
@@ -214,6 +225,7 @@ class Source(object):
         Returns:
             int: The smallest current in the current_range still larger than the
                 provided current.
+        |
         """
         return min([c for c in self.current_ranges if c > abs(current)])
 
@@ -228,6 +240,7 @@ class Source(object):
                 condition. The Keithley enforces +/- v_limit.
                 Having a battery with a voltage outside of +/- v_limit could
                 damage the Keithley.
+        |
         """
         ch = self.kch
         script = f"""display.screen = display.SMUA_SMUB
@@ -256,6 +269,7 @@ smu{ch}.source.output = smu{ch}.OUTPUT_ON"""
                 condition. The Keithley enforces +/- v_limit.
                 Having a battery with a voltage outside of +/- v_limit could
                 damage the Keithley. Defaults to 5.0.
+        |
         """
         self.set_current(0.0, v_limit)
 
@@ -268,6 +282,7 @@ smu{ch}.source.output = smu{ch}.OUTPUT_ON"""
 
         Returns:
             str: The Keithley's response string to having instructions written to it.
+        |
         """
         instruction = \
             f"""
@@ -281,6 +296,8 @@ smu{ch}.source.output = smu{ch}.OUTPUT_ON"""
     def pause(self):
         """Attempts to pause the Keithley script by writing abort to the Keithley
         and changing the output.
+        
+        |
         """
         self.write('abort')
         self.write(
@@ -298,6 +315,7 @@ smu{ch}.source.output = smu{ch}.OUTPUT_ON"""
         Args:
             text1 (str): top line of text, 10 max chars
             text2 (str): bottom line of text, 16 max chars
+        |
         """
         letters = "".join(map(chr, range(65, 91)))
         letters += letters.lower()
@@ -324,6 +342,7 @@ smu{ch}.source.output = smu{ch}.OUTPUT_ON"""
         Args:
             i_limit (float): The maximum allowed current.
             voltage (float): The voltage level to set the Keithley to.
+        |
         """
         script = \
             """display.screen = display.SMUA_SMUB
@@ -347,6 +366,7 @@ smu{ch}.source.output = smu{ch}.OUTPUT_ON"""
 
         Returns:
             (float, float): Returns the (current, voltage) as a tuple.
+        |
         """
         self.source_meter.write(
             "current, voltage = smu{}.measure.iv()".format(self.kch)
@@ -368,6 +388,8 @@ smu{ch}.source.output = smu{ch}.OUTPUT_ON"""
     @with_safety
     def read_data(self):
         """Reads the current and voltage from the source and adds it to the data list.
+        
+        |
         """
         t = time.time()
         self.source_meter.write(
@@ -391,6 +413,7 @@ smu{ch}.source.output = smu{ch}.OUTPUT_ON"""
             wait_time (int, optional): Time in seconds between checks. Defaults to 5.
             write_conditions (list): A list of Conditions from protocols.py to be checked
                 against determining whether to write data.
+        |
         """
         count = 0
         ctn = True
@@ -425,10 +448,14 @@ smu{ch}.source.output = smu{ch}.OUTPUT_ON"""
 
     def write(self, *args, **kwargs):
         """Makes a call to write the included arguments to the Keithley source.
+        
+        |
         """
         self.source_meter.write(*args, **kwargs)
 
     def query(self, *args, **kwargs):
         """Makes a call to query the Keithley source.
+        
+        |
         """
         self.source_meter.query(*args, **kwargs)

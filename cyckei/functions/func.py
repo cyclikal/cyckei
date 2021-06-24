@@ -13,6 +13,7 @@ def asset_path(path):
 
     Returns:
         str: the input path appended to the assests folder path.
+    |
     """
     asset = join(dirname(__file__), "..", "assets", path)
     if os.path.exists(asset):
@@ -29,5 +30,6 @@ def not_none(value):
     
     Returns:
         str: Returns "None" as a string or converts the given value to a string and returns it.
+    |
     """
     return "None" if value is None else str(value)

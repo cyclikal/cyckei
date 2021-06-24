@@ -1,4 +1,7 @@
-"""Main window for the cyckei client."""
+"""Main window for the cyckei client.
+
+|
+"""
 
 import logging
 import sys
@@ -19,11 +22,12 @@ def main(config):
 
     Args:
         config (dict): Holds Cyckei launch settings.
+    
     Returns:
         Result of app.exec_(), Qt's main event loop.
-
+    
+    |
     """
-
     logger.info(f"Starting Cyckei Client {config['versioning']['version']}")
 
     # Create QApplication
@@ -49,13 +53,15 @@ class MainWindow(QMainWindow):
         channelView (ChannelTab): Wrapper object that holds all of the ChannelWidgets.
         status_bar (QStatusBar): Default status bar for the QWindow.
         threadpool (QThreadPool): Threadpool of workers for communicating with the server
+    |
     """ 
     def __init__(self, config):
         """Inits Mainwindow with config, channel_info, channels, channelView, status_bar, and threadpool.
         
         Args:
         config (dict): Holds Cyckei launch settings. Is copied to MainWindow's version of config.
-        """
+        |
+        """ 
         super(MainWindow, self).__init__()
         # Set basic window properties
         self.setWindowTitle("Cyckei Client")
@@ -101,13 +107,17 @@ class MainWindow(QMainWindow):
 
         Args:
             event (QCloseEvent): An event carrying flags for closing the Q application.
+        |
         """
         close_time = time.strftime("%m-%d-%y %H:%M", time.localtime(time.time()))
         logger.info("Client window closed by user on {} ".format(close_time))
         event.accept() # let the window close
 
     def create_menu(self):
-        """Sets up the menu bar at the top of the Main Window."""
+        """Sets up the menu bar at the top of the Main Window.
+        
+        |
+        """
         entries = {
             "Info": [
                 ["&Server", self.ping_server, "Test Connection to Server"],
@@ -121,13 +131,19 @@ class MainWindow(QMainWindow):
                 menu.addAction(gui.action(*item, parent=self))
 
     def ping_server(self):
-        """Checks for an active server and returns a result message in a new window."""
+        """Checks for an active server and returns a result message in a new window.
+        
+        |
+        """
         worker = workers.Ping(self.config)
         worker.signals.alert.connect(gui.message)
         self.threadpool.start(worker)
 
     def plugin_dialog(self):
-        """Compiles and formats info for installed plugins on the server for display."""
+        """Compiles and formats info for installed plugins on the server for display.
+        
+        |
+        """
         if self.config["plugins"]:
             text = "<h2>Plugins:</h2>"
         else:

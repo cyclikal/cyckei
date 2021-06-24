@@ -1,5 +1,6 @@
-"""
-Universal GUI Functions
+"""Universal GUI Functions
+
+|
 """
 import functools
 
@@ -51,6 +52,7 @@ def style(app, icon="icon-client.png", highlight=orange):
         app (QApplication): Any object descended from QApplication.
         icon (str, optional): The filename, including extension, of an image to be the QIcon for the App. Defaults to "icon-client.png".
         highlight (str, optional): The highlight color for the QApp, in HEX color form. Defaults to orange.
+    |
     """
     app.setStyle("Fusion")
     app.setWindowIcon(QIcon(func.asset_path(icon)))
@@ -65,6 +67,7 @@ def not_none(value):
     
     Returns:
         str: Returns "None" as a string or converts the given value to a string and returns it.
+    |
     """
     return "None" if value is None else str(value)
 
@@ -85,6 +88,7 @@ def message(text=None, info=None, icon=QMessageBox.Information,
 
     Returns:
         bool: returns False if no was selected in the message box, else returns True.
+    |
     """
     msg = QMessageBox()
     msg.setText(text)
@@ -110,6 +114,7 @@ def button(text=None, status=None, connect=None, enabled=True):
 
     Returns:
         QPushButton: A button with the specified features.
+    |
     """
     button = QPushButton()
     button.setText(text)
@@ -132,6 +137,7 @@ def combo_box(items, status, key, connect):
 
     Returns:
         QComboBox: A combined button and popup list with the specified features.
+    |
     """
     box = QComboBox()
     box.addItems(items)
@@ -150,6 +156,7 @@ def label(text, status=None, tag=None):
 
     Returns:
         Qlabel: A label with the desired info.
+    |
     """
     label = QLabel()
     label.setText(text)
@@ -169,6 +176,7 @@ def line_edit(label, status, key, connect):
 
     Returns:
         QLineEdit: An editable text box object
+    |
     """
     
     text = QLineEdit()
@@ -192,6 +200,7 @@ def text_edit(status=None, connect=None, readonly=False,
 
     Returns:
         QPlainTextEdit: The QPlainTextEdit object.
+    |
     """
     editor = QPlainTextEdit()
     editor.setLineWrapMode(wrap)
@@ -220,6 +229,7 @@ def action(text=None, connect=None, tip=None, parent=None,
 
     Returns:
         QAction: The action object that can be connected to the other gui elements.
+    |
     """
     action = QAction(text, parent)
     action.setStatusTip(tip)
@@ -235,5 +245,6 @@ def feedback(status, channel):
     Args:
         status (str): The string to be diplayed as the status of the channel.
         channel (ChannelWidget): The channel to have its feedback label edited.
+    |
     """
     channel.feedback.setText(status)
