@@ -50,7 +50,7 @@ The configuration for the [randomizer] plugin is included for reference.
         "meta": [11, 20]
       }
     ]
-},
+  }
 
 The configuration includes a number of reference values such as a name, whether the plugin should be enabled.
 It also has a list of sources that can be assigned to different channels.
@@ -79,15 +79,17 @@ The following plugins are currently known to be available. Submit a pull request
 
 An example of using :red:`interpreted text`
 
-+----------------+--------------------------------------------+-----------------------------------------------------------+---------------------+
-| Name           | Purpose                                    | Source                                                    | Version             |
-+================+============================================+===========================================================+=====================+
-| Randomizer     | Example, produces random numbers.          | `GitHub <https://github.com/cyclikal/cyp-randomizer>`_    | :green:`0.1 Stable` |
-+----------------+--------------------------------------------+-----------------------------------------------------------+---------------------+
-| Mettler AG-204 | Weight from Mettler Toledo AG-104.         | `GitHub <https://github.com/cyclikal/cyp-mettler-ag204>`_ | :green:`0.1 Stable` |
-+----------------+--------------------------------------------+-----------------------------------------------------------+---------------------+
-| Pico TC-08     | Temperature from Pico TC-08 Thermocouples. | `GitHub <https://github.com/cyclikal/cyp-pico-tc08>`_     | :green:`0.1 Stable` |
-+----------------+--------------------------------------------+-----------------------------------------------------------+---------------------+
++-----------------+--------------------------------------------+------------------------------------------------------------+---------------------+
+| Name            | Purpose                                    | Source                                                     | Version             |
++=================+============================================+============================================================+=====================+
+| Randomizer      | Example, produces random numbers.          | `GitHub <https://github.com/cyclikal/cyp-randomizer>`__    | :green:`0.1 Stable` |
++-----------------+--------------------------------------------+------------------------------------------------------------+---------------------+
+| Mettler AG-204  | Weight from Mettler Toledo AG-104.         | `GitHub <https://github.com/cyclikal/cyp-mettler-ag204>`__ | :green:`0.1 Stable` |
++-----------------+--------------------------------------------+------------------------------------------------------------+---------------------+
+| Pico TC-08      | Temperature from Pico TC-08 Thermocouples. | `GitHub <https://github.com/cyclikal/cyp-pico-tc08>`__     | :green:`0.1 Stable` |
++-----------------+--------------------------------------------+------------------------------------------------------------+---------------------+
+| Novus-n1050 PID | Reads data from connected Novus-n1050 PID. | `GitHub <https://github.com/cyclikal/cyp-novus-n1050>`__   | :green:`0.1 Stable` |
++-----------------+--------------------------------------------+------------------------------------------------------------+---------------------+
 
 Custom Plugins
 --------------
