@@ -16,7 +16,7 @@ Plugin Overview
 ---------------
 Although the base version fo Cyckei is designed to control and capture data from Keithley SourceMeters, the functionality can be extended with plugins.
 Plugins aim to support simultaneous data collection with additional instruments that can interface with a computer.
-This requires that the data capturing eventually be queried and returned by python code, but the method that this is done is very flexible.
+This requires that the data capturing eventually be queried and returned by python code, but the method by which this is done is very flexible.
 
 Installation & Configuration
 ----------------------------
@@ -98,8 +98,8 @@ It is recommended that you follow the scheme of the [Randomizer Plugin](https://
 
 The main component of any plugin is the ``PluginController`` class.
 This class is a child of Cyckei's BaseController class which provides a number of helper functions including the very important ``read()`` method.
-The ``cyp-andomizer`` package includes in-line documentation to demonstrate the changes that need to be made to create a plugin for a new device.
-The process is fairly self-explanatory, but generally most setup should be put in the ``load_sources()`` method, and any steps to capture data should be put into the ``read()`` method.
+The ``cyp-randomizer`` package includes in-line documentation to demonstrate the changes that need to be made to create a plugin for a new device.
+Generally most setup should be put in the ``load_sources()`` method, and any steps to capture data should be put into the ``read()`` method.
 It is good practice to create some basic documentation to accompany a custom plugin, particularly if additional drivers need to be installed.
 
 Another good example is the ``mettlerscale`` plugin, which gathers data from a Mettler-Toledo balance.

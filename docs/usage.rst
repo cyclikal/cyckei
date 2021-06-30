@@ -37,8 +37,8 @@ protocol.
 Creating Scripts
 ----------------
 
-Scripts can be created in the separate explorer application. This editor
-will automatically load the default included scripts, but can be used to
+Scripts can be created in the user's preferred editor or in the separate explorer application. 
+This editor will automatically load the default included scripts, but can be used to
 open and edit any local files.
 
 .. figure:: _static/images/explorer-scripts.png
@@ -46,7 +46,7 @@ open and edit any local files.
 The explorer includes a protocol generator above the editor to streamline script creation.
 This can be used to specify attributes, and insert generated lines of code into the script.
 
-Scripts are written in regular python code, and can contain loops and
+Scripts are written in regular python code, and can contain for loops and
 other statements to control cycle flow. There are seven built in
 protocols to control the cycler. Most of these protocols take some or
 all of the following parameters:
@@ -128,23 +128,31 @@ Below is an example plugin for reference.
           return randint(1, 101)
 
 
-Viewing Logs
-------------
+Viewing Results
+---------------
 
-Logs are created to document measurements from each cell throughout it's
+Results are created to document measurements from each cell throughout it's
 cycle. They also have details about the cell and the cycle that was run
-on it. Log files are saved to the ``tests`` folder specified in the
-configuration under the specified name. To view a log from the client
-application, just open the explorer application . All logs are automatically
+on it. Result files are saved to the ``tests`` folder specified in the
+configuration under the specified name. To view a result file from the client
+application, just open the explorer application . All result files are automatically
 loaded on startup, and new or updated ones can be viewed after clicking
-reload. Although you can copy the contents of a log file to an excel
-spreadsheet, log files *should not* be opened with excel or another
+reload. Although you can copy the contents of a result file to an excel
+spreadsheet, result files *should not* be opened with excel or another
 application directly. Doing this can cause the file to become locked and
 prevent Cyckei from editing it.
 
 .. figure:: _static/images/explorer-results.png
 
 .. _Editing Configuration:
+
+Viewing Logs
+------------
+
+Log text files are stored in the ``logs`` folder in Cyckei. These logs capture
+information about the exectuion of their respective program. For example:
+server or client logs. In these files Errors, Warnings, and different steps 
+in the exectution of the programs are stored.
 
 Editing Configuration
 ---------------------
@@ -163,6 +171,8 @@ Each section is described in more detail below:
 
 -  **zmq** - A dictionary of properties that control how the client and
    server communicate.
+
+   ***zmq*** is now stored in variables.ini in the cyckei assets file
 
    -  *port (int)* - Port to communicate over.
    -  *client-address (string)* - Address for the client to connect to. Usually localhost.
@@ -191,17 +201,32 @@ Here is an example configuration file for a simple setup running on port
 .. code-block:: json
 
   {
+      "channel_readme": "List of keithley channels to connect.",
       "channels": [
-          {
-              "channel": "1",
-              "gpib_address": 5,
-              "keithley_channel": "a"
-          },
-          {
-              "channel": "2",
-              "gpib_address": 5,
-              "keithley_channel": "b"
-          }
+        {
+          "channel": 1,
+          "gpib_address": 9,
+          "keithley_channel": "a",
+          "model": "2602B"
+        },
+        {
+          "channel": 2,
+          "gpib_address": 9,
+          "keithley_channel": "b",
+          "model": "2602B"
+        },
+        {
+          "channel": 3,
+          "gpib_address": 5,
+          "keithley_channel": "a",
+          "model": "2602B"
+        },
+        {
+          "channel": 4,
+          "gpib_address": 5,
+          "keithley_channel": "b",
+          "model": "2602B"
+        }
       ],
       "zmq":{
           "port": 5556,
@@ -209,10 +234,24 @@ Here is an example configuration file for a simple setup running on port
           "server-address":"tcp://*",
           "timeout": 10
       },
-      "data-plugins": [
-        "temperature"
+      "plugins_readme": "List of plugins to connect, each declaring sources.",
+      "plugins": [
+        {
+          "name": "randomizer",
+          "module": "randomizer",
+          "enabled": false,
+          "sources": [
+            {
+              "port": null,
+              "meta": [1, 10]
+            },
+            {
+              "port": null,
+              "meta": [11, 20]
+            }
+          ]
+        }
       ],
-      "device": "keithley2602",
       "verbosity": 30
   }
 

@@ -132,6 +132,17 @@ Adds plugin scheme.
 - 0.4.rc1, 8/12/2020 -- Package-based Plugin System
 - 0.4.rc2 8/25/2020 -- Update documentation for Cyckei and Plugins
 
+0.5 Themis
+----------
+
+Stability Update
+
+Added testing schemes for the server and client of Cyckei. Bug fixes catching user input
+and preventing crashes. Logging is now done separately for separate aspects of Cyckei.
+Added usability to Cyckei client: saving entered info, channel locking when a script is run,
+visual indications of runnings scripts, and more. Fully documented server and client.
+
+
 Possible Features
 -----------------
 - Client Interface
@@ -146,4 +157,3 @@ Possible Features
    - Simplify VISA and driver installation for end user
 - Miscellaneous
    - Automated release delivery
-   - Add test suite
