@@ -1,5 +1,5 @@
 .. toctree::
-  :maxdepth: 2
+  :maxdepth: 3
   :caption: Contents:
   :hidden:
 
@@ -27,7 +27,7 @@ The application uses a Python-like scripting format in order to write cycles tha
 
 Cyckei is open source, and we encourage users to modify the code to fit a given setup. Details on contributing to the project are in our :doc:`contributing` section.
 
-Cyckei is currently developed and maintained by Gabriel Ewig and Vincent Chevrier at Cyclikal, LLC. For more information about Cyclikal, visit `cyclikal.com`_.
+Cyckei is currently developed and maintained by Vincent Chevrier, Clark Ohnesorge, and Gabriel Ewig at Cyclikal, LLC. For more information about Cyclikal, visit `cyclikal.com`_.
 
 .. figure:: _static/images/client.png
 

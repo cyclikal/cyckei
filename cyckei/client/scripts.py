@@ -1,4 +1,7 @@
-"""Methods and object to handle scripts"""
+"""Methods and object to handle scripts
+
+|
+"""
 
 from PySide2.QtWidgets import QListWidgetItem
 
@@ -30,6 +33,7 @@ class Script(QListWidgetItem):
         content (str): The text that acts as the script in the file of the script.
         path (str): The filepath of the file of the script.
         title (str): The filename of the script being held.
+    |
     """
 
     def __init__(self, title, path):
@@ -38,6 +42,7 @@ class Script(QListWidgetItem):
         Args:
         title (str): The filename of the script being held.
         path (str): The filepath of the file of the script.
+        |
         """
         super(Script, self).__init__()
         self.title = title
@@ -49,13 +54,19 @@ class Script(QListWidgetItem):
         self.setText(self.title)
 
     def save(self):
-        """Saves script content to file using the script's path and title."""
+        """Saves script content to file using the script's path and title.
+        
+        |
+        """
         with open(self.path + "/" + self.title, "w") as file:
             file.write(self.content)
         self.update_status()
 
     def update_status(self):
-        """Updates the script's title with '*' if the script's contents has been edited"""
+        """Updates the script's title with '*' if the script's contents has been edited
+        
+        |
+        """
         try:
             file_content = open(self.path + "/" + self.title, "r").read()
         except UnicodeDecodeError as error:

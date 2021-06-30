@@ -11,6 +11,7 @@ class Socket(object):
     Attributes:
         config (dict): Holds Cyckei launch settings.
         socket (zmq.socket): The underlying scoket that acts as the communication between client and server.
+    |
     """
 
     def __init__(self, config):
@@ -18,6 +19,7 @@ class Socket(object):
 
         Args:
             config (dict): Holds Cyckei launch settings.
+        |
         """
         self.config = config
         self.socket = zmq.Context().socket(zmq.REQ)
@@ -35,6 +37,7 @@ class Socket(object):
         Returns:
             response (dict): A JSON response from the server in the form of a python dict.
 
+        |
         """
         logger.debug("Sending: {}".format(to_send["function"]))
 
@@ -58,6 +61,7 @@ class Socket(object):
 
         Returns:
             dict:  A JSON response from the server in the form of a python dict.
+        |
         """
         script = json.load(open(file))
         return self.send(script)
@@ -67,6 +71,7 @@ class Socket(object):
 
         Returns:
             dict: A JSON response from the server with the port the server is on.
+        |
         """
         script = json.loads('{"function": "ping"}')
         response = self.send(script)["response"]
@@ -77,6 +82,7 @@ class Socket(object):
 
         Returns:
             list: A list from the server of the plugins that are installed.
+        |
         """
         script = json.loads('{"function": "info_plugins"}')
         response = self.send(script)["response"]
@@ -90,6 +96,7 @@ class Socket(object):
 
         Returns:
             dict: Information about the requested channel.
+        |
         """
         script = json.loads(
             """{"function": "info_channel", "kwargs": {"channel": """
@@ -102,6 +109,7 @@ class Socket(object):
         
         Returns:
             dict: A dict of nested dicts containing info about all connected channels.
+        |
         """
         script = json.loads("""{"function": "info_all_channels"}""")
         return self.send(script)["response"]
@@ -111,6 +119,7 @@ class Socket(object):
         
         Returns:
             dict: A dict of nested dicts containing info about all connected channels from the server file.
+        |
         """
         script = json.loads("""{"function": "info_server_file"}""")
         return self.send(script)["response"]

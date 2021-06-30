@@ -25,6 +25,7 @@ def prepare_json(channel, function, protocol, temp):
 
     Returns:
         dict: A package populated with the protocol and info about the specified channel.
+    |
     """
     with open(func.asset_path("default_packet.json")) as file:
         packet = json.load(file)
@@ -58,6 +59,8 @@ def prepare_json(channel, function, protocol, temp):
 
 class Signals(QObject):
     """Object used by other objects to alert the user to changes, statuses, etc.
+    
+    |
     """
 
     alert = Signal(object)
@@ -70,6 +73,7 @@ class Ping(QRunnable):
     Attributes:
         config (dict): Holds Cyckei launch settings.
         signals (Signals): Used for gui signals. Shows the server's response.
+    |
     """
 
     def __init__(self, config):
@@ -77,6 +81,7 @@ class Ping(QRunnable):
 
         Args:
             config (dict): Holds Cyckei launch settings.
+        |
         """
         super(Ping, self).__init__()
         self.signals = Signals()
@@ -84,7 +89,10 @@ class Ping(QRunnable):
 
     @Slot()
     def run(self):
-        """[summary]"""
+        """Sends a ping to the Socket to check status. Emits the response.
+        
+        |
+        """
         response = Socket(self.config).ping()
         self.signals.alert.emit(response)
 
@@ -94,6 +102,7 @@ class UpdateStatus(QRunnable):
     Attributes:
         channels (list): A list of all of the ChannelWidget objects to be updated.
         config (dict): Holds Cyckei launch settings.
+    |
     """
 
     def __init__(self, channels, config):
@@ -102,6 +111,7 @@ class UpdateStatus(QRunnable):
         Args:
             channels (list): A list of all of the ChannelWidget objects to be updated.
             config (dict): Holds Cyckei launch settings.
+        |
         """
         super(UpdateStatus, self).__init__()
         self.channels = channels
@@ -109,7 +119,10 @@ class UpdateStatus(QRunnable):
 
     @Slot()
     def run(self):
-        """Goes through the channels list and sets the gui status text depending on server response from info_all query."""
+        """Goes through the channels list and sets the gui status text depending on server response from info_all query.
+        
+        |
+        """
         info_all = Socket(self.config).info_all_channels()
         for channel in self.channels:
             if type(info_all) is not dict:
@@ -124,12 +137,15 @@ class UpdateStatus(QRunnable):
                 # This section handles enabling client gui when cell is done running
                 if info["status"] == "available" or info["status"] == "completed":
                     channel.unlock_settings()
-                # if info["status"] == "started":
-                #    channel.divider.setStyleSheet(
-                #        "background-color: {}".format(gui.orange))
-                # else:
-                #    channel.divider.setStyleSheet(
-                #        "background-color: {}".format(gui.gray))
+                else:
+                    channel.lock_settings()
+                # This section parses the state for the client to change 
+                # channel background colors
+                full_state = func.not_none(info["state"])
+                if(full_state is not None):
+                    channel.set_state(full_state.split("_")[0])
+                else:
+                    channel.set_state(None)
 
             except (TypeError, KeyError) as error:
                 logger.error(f"Could not get status from server: {error}")
@@ -137,8 +153,6 @@ class UpdateStatus(QRunnable):
                     f"Contents of info_all for diagnosis: {info_all}")
                 status = "Could not get status!"
 
-            #    channel.divider.setStyleSheet(
-            #        "background-color: {}".format(gui.gray))
             logger.debug("Updating channel {} with status {}".format(
                          channel.attributes["channel"], status))
             try:
@@ -158,6 +172,7 @@ class Read(QRunnable):
         channel (ChannelWidget): Channel object that stores info about itself.
         config (dict): Holds Cyckei launch settings.
         signals (Signals): Used for gui signals. Shows the server's response.
+    |
     """
 
     def __init__(self, config, channel):
@@ -166,6 +181,7 @@ class Read(QRunnable):
         Args:
             channel (ChannelWidget): Channel object that stores info about itself.
             config (dict): Holds Cyckei launch settings.
+        |
         """
         super(Read, self).__init__()
         self.channel = channel
@@ -174,7 +190,10 @@ class Read(QRunnable):
 
     @Slot()
     def run(self):
-        """Tell channel to Rest() long enough to get voltage reading on cell."""
+        """Tell channel to Rest() long enough to get voltage reading on cell.
+        
+        |
+        """
         # immediately lock settings so they can't be changed
         self.channel.lock_settings()
         status = Socket(self.config).info_channel(
@@ -206,6 +225,7 @@ class Control(QRunnable):
         script (str): The script for the server to execute. Passed in or taken from the channel.
         signals (Signals): Used for gui signals. Shows the server's response.
         temp (bool): Indicates whether recording should be done in temporary files (true) or not (false)
+    |
     """
 
     def __init__(self, config, channel, command, script=None, temp=False):
@@ -217,6 +237,7 @@ class Control(QRunnable):
             config (dict): Holds Cyckei launch settings.
             script (str, optional): The script for the server to execute. Defaults to None.
             temp (bool, optional): Indicates whether recording should be done in temporary files (true) or not (false). Defaults to False.
+        |
         """
         # TODO: Make sure read passes correct script
         super(Control, self).__init__()
@@ -232,7 +253,10 @@ class Control(QRunnable):
 
     @Slot()
     def run(self):
-        """Calls for a viability check on the loaded script and then sends it to the server."""
+        """Calls for a viability check on the loaded script and then sends it to the server.
+        
+        |
+        """
         # immediately lock settings so they can't be changed
         self.channel.lock_settings()
         try:
@@ -260,6 +284,7 @@ class Check(QRunnable):
         protocol (str): The protocol being checked for legality.
         config (dict): Holds Cyckei launch settings.
         signals (Signals): Used for gui signals. Shows the server's response.
+    |
     """
 
     def __init__(self, config, protocol):
@@ -268,6 +293,7 @@ class Check(QRunnable):
         Args:
             config (dict): Holds Cyckei launch settings.
             protocol (str): The protocol being checked for legality.
+        |
         """
         super(Check, self).__init__()
         self.protocol = protocol
@@ -281,6 +307,7 @@ class Check(QRunnable):
         Returns:
             bool: True if protocol is legal and loaded, False otherwise.
             str: The message that goes with the legality/load test results.
+        |
         """
         passed, msg = self.legal_test(self.protocol)
         if not passed:
@@ -299,6 +326,7 @@ class Check(QRunnable):
         Returns:
             bool: True if protocol is legal, False otherwise.
             str: The message that goes with the legality test results.
+        |
         """
         conditions = ["#",
                       "for",
@@ -335,6 +363,7 @@ class Check(QRunnable):
         Returns:
             bool: True if protocol is loaded, False otherwise.
             str: The message that goes with the load test results.
+        |
         """
         packet = self.prepare_json(protocol)
         response = Socket(self.config).send(packet)["response"]
@@ -351,6 +380,7 @@ class Check(QRunnable):
 
         Returns:
             dict: The protocol packaged with an indication that this is a test for the server.
+        |
         """
         packet = json.load(
             open(func.asset_path("default_packet.json")))

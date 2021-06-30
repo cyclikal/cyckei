@@ -1,5 +1,4 @@
-"""
-Widget that controls a single channnel.
+"""Widget that controls a single channnel.
 Listed in the channel tab of the main window.
 """
 
@@ -9,8 +8,8 @@ from pathlib import Path
 
 from PySide2.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, \
      QScrollArea, QStyleOption, QStyle, QFileDialog
-from PySide2.QtCore import QTimer, Qt
-from PySide2.QtGui import QPainter, QPalette
+from PySide2.QtCore import QTimer, Qt, QRegExp
+from PySide2.QtGui import QPainter, QPalette, QRegExpValidator
 
 from . import workers
 from cyckei.functions import func, gui
@@ -26,6 +25,7 @@ class ChannelTab(QWidget):
         resource (dict): A dict holding the Threadpool object for threads to be pulled from.
         channels (list): A list of ChannelWidget objects.
         timer (QTimer): A timer for the status of cells.
+    |
     """
 
     def __init__(self, config, resource, parent, plugin_info, channel_info):
@@ -37,6 +37,7 @@ class ChannelTab(QWidget):
             parent (MainWindow): The MainWindow object that created this ChannelTab.
             plugin_info (list): A list of dicts holding info about installed plugins.
             channel_info (dict): A dict of nested dicts holding info about each connected channel.
+            |
         """
         QWidget.__init__(self, parent)
         self.config = config
@@ -73,7 +74,10 @@ class ChannelTab(QWidget):
             int(self.config["behavior"]["update-interval"]) * 1000)
 
     def alternate_colors(self):
-        """Sets the channels to alternate between light and dark."""
+        """Sets the channels to alternate between light and dark.
+        
+        |
+        """
         # TODO: Make dark mode compatible with windows
         base = self.palette().color(QPalette.Window)
         text = self.palette().color(QPalette.WindowText)
@@ -82,6 +86,7 @@ class ChannelTab(QWidget):
                 color = base.lighter(110)
             else:
                 color = base.darker(110)
+            channel.default_color = color.name()
             channel.setStyleSheet(
                 "QComboBox {{"
                 "   color: {};"
@@ -92,12 +97,18 @@ class ChannelTab(QWidget):
             )
 
     def update_status(self):
-        """Updates the status section of a channel."""
+        """Updates the status section of a channel.
+
+        |
+        """
         updater = workers.UpdateStatus(self.channels, self.config)
         self.resource["threadpool"].start(updater)
 
     def paintEvent(self, event):
-        """Redraws the window with the current visual settings. Overrides the defaul QT paintEvent."""
+        """Redraws the window with the current visual settings. Overrides the defaul QT paintEvent.
+        
+        |
+        """
         option = QStyleOption()
         option.initFrom(self)
         painter = QPainter(self)
@@ -110,13 +121,18 @@ class ChannelWidget(QWidget):
     Attributes:
         attributes (dict): Holds info about the ChannelWidget: Channel info, cell info, script info, etc.
         config (dict): Holds Cyckei launch settings.
+        default_color (str): The default background color of the channel.
         divider (QWidget): Divides the channel widget vertically between info and controls.
         feedback (QLabel): A label under the controls that gives info when a control is pressed.
         json (dict): Holds the default attribtues of a ChannelWidget. Taken from an outside file.
         script_label (QLabel): A gui label that indicates if there is a selected script.
         settings (list): A list of gui elements to be added to the window, set in the set_settings function.
+        state (str): The step in the protocol performed on a cell.
+        state_changed (bool): Indicates whether the channel state has changed.
         status (QLabel): A gui label that indicates a cell's status.
         threadpool (dict):  Holds the Threadpool object from resource for threads to be pulled from.
+    
+    |
     """
 
     def __init__(self, channel, config, resource, plugin_info, cur_channel_info):
@@ -128,6 +144,7 @@ class ChannelWidget(QWidget):
             resource (dict): A dict holding the Threadpool object for threads to be pulled from.
             plugin_info (list): A list of dicts holding info about installed plugins.
             cur_channel_info (dict): A dict holding info about the corresponding channel for this Widget.
+        |
         """
         super(ChannelWidget, self).__init__()
         # Default Values
@@ -147,7 +164,13 @@ class ChannelWidget(QWidget):
             "script_content": None
         }
         self.config = config
-
+        # State and state_changed currently only used for changing the color 
+        # of the channel background. If state_changed wants to be used for anything
+        # else you should add a new bool like "change_color", since state_changed is
+        # changed to false after changing color to mitigate startup lag.
+        self.state = None
+        self.state_changed = False
+        self.default_color = None
         self.threadpool = resource["threadpool"]
         # self.scripts = resource["scripts"]
 
@@ -207,14 +230,15 @@ class ChannelWidget(QWidget):
             func.asset_path("default_packet.json")))
 
     def get_settings(self, cur_channel_info, plugin_info):
-        """Creates all UI settings and adds them to settings list
+        """Creates all UI settings and adds them to settings list.
 
         Args:
             cur_channel_info (dict): A dict holding info about the corresponding channel for this Widget.
             plugin_info (list): A list of dicts holding info about installed plugins.
 
         Returns:
-            list: a list of gui elements to be added to the window
+            list: a list of gui elements to be added to the window.
+        |
         """
         labels = []
         self.settings = []
@@ -244,18 +268,32 @@ class ChannelWidget(QWidget):
             ["ID", "Cell identification", "cellid"],
             ["Comment", "Unparsed Comment", "comment"],
         ]
+        # Look up regex rules for clarification
+        file_rgx = QRegExp("^[^:\"*?/<>|\\\\]+$")
+        validator = QRegExpValidator(file_rgx)
         for line in editables:
             self.settings.append(gui.line_edit(*line, self.set))
-
+            # Allowing only filename safe characters in editables
+            if line[0] == 'Filename':
+                self.settings[-1].setValidator(validator)
         # Check each spot and update if the client was closed while the
         # server was still running protocols
+        
+        # Parses the filepath for a script, removes the extension,
+        # and sets the filename slot
         if cur_channel_info['path'] != None:
             split_path = cur_channel_info['path'].split('\\')
-            self.settings[2].setText(split_path[-1])
+            split_path = split_path[-1].split('.')[:-1]
+            filename = ""
+            for i in split_path:
+                filename = filename + i + "."
+            self.settings[2].setText(filename[:-1])
 
+        # Fills in cellid slot
         if cur_channel_info['cellid'] != None:
              self.settings[3].setText(cur_channel_info['cellid'])
 
+        # Fills in comment slot
         if cur_channel_info['comment'] != None:
              self.settings[4].setText(cur_channel_info['comment'])
 
@@ -281,13 +319,55 @@ class ChannelWidget(QWidget):
 
         return elements
 
+    def set_state(self, state=None):
+        """Changes the state of the channel and marks if the state has been changed or not.
+        
+        Args:
+            state (str, optional): The step the channel protocol is on. Defaults to None.
+        |
+        """
+        if self.state != state:
+            self.state = state
+            self.state_changed = True
+        else:
+            self.state_changed = False
+
+    def set_bg_color(self):
+        """Checks whether the background needs to be changed and acts accordingly
+        
+        |
+        """
+        if self.state_changed:
+            if self.state == "charge":
+                self.setStyleSheet(
+                    f"background-color: {gui.green}")
+                self.state_changed = False
+            elif self.state == "discharge":
+                self.setStyleSheet(
+                    f"background-color: {gui.red}")
+                self.state_changed = False
+            elif self.state == "sleep":
+                self.setStyleSheet(
+                    f"background-color: {gui.yellow}")
+                self.state_changed = False
+            else:
+                self.setStyleSheet(
+                    f"background-color: {self.default_color}")
+                self.state_changed = False
+
     def unlock_settings(self):
-        """Sets the status of each QObject in settings to be interactable"""
+        """Sets the status of each QObject in settings to be interactable
+        
+        |
+        """
         for setting in self.settings:
             setting.setEnabled(True)
 
     def lock_settings(self):
-        """Sets the status of each QObject in settings to be uninteractable"""
+        """Sets the status of each QObject in settings to be uninteractable
+        
+        |
+        """
         for setting in self.settings:
             setting.setDisabled(True)
             
@@ -300,6 +380,7 @@ class ChannelWidget(QWidget):
         Args:
             button_text (str): The text of the button being pressed.
             filename (str, optional): The name of the script file at the end of the stored script path. Defaults to None.
+        |
         """
         if filename == None:
             filename = QFileDialog.getOpenFileName(
@@ -324,9 +405,10 @@ class ChannelWidget(QWidget):
 
     def get_controls(self):
         """Creates a set of buttons in an element that control the cycler.
-
+        
         Returns:
             list: A list of gui buttons that control the cycler.
+        |
         """
         buttons = [
             ["Start", "Start Cycle", self.button],
@@ -345,9 +427,10 @@ class ChannelWidget(QWidget):
         """Controls what happens when a button on the control panel is pressed.
 
         Creates workers and uses the threadpool to run cycler functions.
-
+        
         Args:
             text (str): Button text that determines which function to do.
+        |
         """
         gui.feedback("{} in progress...".format(text), self)
         if text == "Check":
@@ -362,10 +445,11 @@ class ChannelWidget(QWidget):
         """Sets the attributes dict using the corresponding key and text.
         
         Used to set ChannelWidget's script to the one selected in dropdown.
-
+        
         Args:
             key (str): The key in the attributes dict in the ChannelWidget to have its value changed.
             text (str): The new value for the corresponding key in the attributes dict.
+        |
         """
         self.attributes[key] = text
 
@@ -375,12 +459,17 @@ class ChannelWidget(QWidget):
         Args:
             key (str): The key in the "plugins" section of the attributes dict in the ChannelWidget to have its value changed.
             text (str): The new value for the corresponding key in the "plugins" section of the attributes dict.
+        |
         """
         self.attributes["plugins"][key] = text
 
     def paintEvent(self, event):
-        """Redraws the window with the current visual settings. Overrides the defaul QT paintEvent."""
+        """Redraws the window with the current visual settings. Overrides the defaul QT paintEvent.
+        
+        |
+        """
         option = QStyleOption()
         option.initFrom(self)
         painter = QPainter(self)
+        self.set_bg_color()
         self.style().drawPrimitive(QStyle.PE_Widget, option, painter, self)
