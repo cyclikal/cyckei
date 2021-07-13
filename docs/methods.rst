@@ -8,6 +8,9 @@ Main
     
 Client
 ------
+  .. automodule:: client
+    :members:
+
   .. automodule:: client.channel_tab
     :members:
 
@@ -25,6 +28,9 @@ Client
 
 Explorer
 --------
+  .. automodule:: explorer
+    :members:
+
   .. automodule:: explorer.script_editor
     :members:
 
@@ -39,6 +45,9 @@ Explorer
 
 Server
 ------
+  .. automodule:: server
+    :members:
+
   .. automodule:: server.protocols
     :members:
 
@@ -50,6 +59,9 @@ Server
 
 Functions
 ---------
+  .. automodule:: functions
+    :members:
+
   .. automodule:: functions.func
     :members:
 
@@ -58,5 +70,8 @@ Functions
 
 Plugins
 -------
+  .. automodule:: plugins
+    :members:
+
   .. automodule:: plugins.cyp_base
     :members:
