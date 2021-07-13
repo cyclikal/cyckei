@@ -3,75 +3,60 @@ Codebase
 
 Main
 ----
-  .. automodule:: cyckei
+  .. automodule:: cyckei.cyckei
     :members:
     
 Client
 ------
-  .. automodule:: client
+  .. automodule:: cyckei.client.channel_tab
     :members:
 
-  .. automodule:: client.channel_tab
+  .. automodule:: cyckei.client.client
     :members:
 
-  .. automodule:: client.client
+  .. automodule:: cyckei.client.socket
     :members:
 
-  .. automodule:: client.socket
+  .. automodule:: cyckei.client.scripts
     :members:
 
-  .. automodule:: client.scripts
-    :members:
-
-  .. automodule:: client.workers
+  .. automodule:: cyckei.client.workers
     :members:
 
 Explorer
 --------
-  .. automodule:: explorer
+  .. automodule:: cyckei.explorer.explorer
     :members:
 
-  .. automodule:: explorer.script_editor
+  .. automodule:: cyckei.explorer.log_viewer
     :members:
 
-  .. automodule:: explorer.workers
+  .. automodule:: cyckei.explorer.script_editor
     :members:
 
-  .. automodule:: explorer.explorer
-    :members:
-
-  .. automodule:: explorer.log_viewer
+  .. automodule:: cyckei.explorer.workers
     :members:
 
 Server
 ------
-  .. automodule:: server
+  .. automodule:: cyckei.server.protocols
     :members:
 
-  .. automodule:: server.protocols
+  .. automodule:: cyckei.server.server
     :members:
 
-  .. automodule:: server.server
-    :members:
-
-  .. automodule:: server.keithley2602
+  .. automodule:: cyckei.server.keithley2602
     :members:
 
 Functions
 ---------
-  .. automodule:: functions
+  .. automodule:: cyckei.functions.func
     :members:
 
-  .. automodule:: functions.func
-    :members:
-
-  .. automodule:: functions.gui
+  .. automodule:: cyckei.functions.gui
     :members:
 
 Plugins
 -------
-  .. automodule:: plugins
-    :members:
-
-  .. automodule:: plugins.cyp_base
+  .. automodule:: cyckei.plugins.cyp_base
     :members:
