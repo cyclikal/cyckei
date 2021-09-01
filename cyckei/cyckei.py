@@ -14,24 +14,31 @@ from datetime import datetime
 
 from cyckei.functions import func
 
-logger = logging.getLogger('cyckei')
-
+server_logger = logging.getLogger('cyckei_server')
+client_logger = logging.getLogger('cyckei_client')
 
 def main(args=None):
-    """
+    """The entry point for the application that controls the execution of different program branches.
+
     Parses command-line arguments for component and directory.
     Checks for and, if necessary, creates file structure at given directory.
     Compiles configuration from config and variable files.
     Starts logging to both console and file based on argument input.
     Launches requested cyckei component (server, client, or explorer).
+    
+    |
     """
     try:
         if args is None:
             args = parse_args()
             args.dir = os.path.join(os.path.expanduser("~"), "Cyckei")
+        if args.launch == "client":
+            logger = client_logger
+        else:
+            logger = server_logger
         file_structure(args.dir, args.x)
-        config = make_config(args)
-        start_logging(config)
+        config = make_config(args, logger)
+        start_logging(config, logger)
         print("Done!\n")
 
     except Exception as error:
@@ -56,13 +63,12 @@ def main(args=None):
 
 
 def parse_args():
-    """
-    Creates and parses command line arguments
+    """Creates and parses command line arguments
 
     Returns:
         ArgumentParser with filled arguments.
+    |
     """
-
     parser = argparse.ArgumentParser()
     parser.add_argument('launch', metavar="{server | client | explorer}",
                         choices=['server', 'client', 'explorer'],
@@ -77,18 +83,18 @@ def parse_args():
     #                         "Cyckei"),
     #                     type=str, help='Recording directory.')
     parser.add_argument('--log_level', metavar="[log_level]",
-                        default=30, type=int,
+                        default=20, type=int,
                         help='Set log file logging level.')
 
     return parser.parse_args()
 
 
 def file_structure(path, overwrite):
-    """
-    Checks for existing folder structure and sets up if missing
+    """Checks for existing folder structure and sets up if missing
 
     Args:
         config: Primary configuration dictionary
+    |
     """
     print("Checking filestructure...", end="")
 
@@ -106,16 +112,16 @@ def file_structure(path, overwrite):
         makedirs(os.path.join(path, "plugins"), exist_ok=True)
 
 
-def make_config(args):
-    """
-    Loads configuration and variables from respective files.
-    Merges them and adds command line arguments for universal access.
+def make_config(args, logger):
+    """Loads configuration and variables from respective files. Merges them and adds command line arguments for universal access.
 
     Args:
         args: All processed command line arguments.
+        logger (Logger): The logger to log config creation to.
 
     Returns:
-        Completed 'config' dictionary.
+        dict: Completed 'config' dictionary.
+    |
     """
     # Get packaged variables
     config = configparser.ConfigParser()
@@ -156,8 +162,18 @@ def make_config(args):
 
 
 def load_plugins(config):
+    """Takes the plugins listed in the config dict and attempts to import and instantiate them.
+
+    Args:
+        config (dict): Primary configuration dictionary.
+
+    Returns:
+        (list, dict): The first value is a list of PluginControllers extending the BaseController object. The second value is a dict with a key of the plugin name and
+            a value of the of the specific plugin instance's name.
+    |
+    """
     # create individual plugin configurations, if necessary
-    logger.info("Loading plugins...")
+    server_logger.info("Loading plugins...")
 
     plugins = []
     plugin_names = {}
@@ -165,26 +181,30 @@ def load_plugins(config):
     for plugin in config["plugins"]:
         if plugin["enabled"]:
             try:
-                logger.debug(f"Attempting to load {plugin['name']}")
+                server_logger.debug(f"Attempting to load {plugin['name']}")
                 module = importlib.import_module(
-                    f"{plugin['name']}.{plugin['name']}")
+                    f"{plugin['module']}.{plugin['module']}")
                 plugins.append(module.PluginController(plugin["sources"]))
                 plugin_names[plugins[-1].name] = (plugins[-1].names)
-                logger.info(f"Loaded {plugin['name']} plugin")
+                print(plugins[-1].name)
+                print(plugins[-1].names)
+                server_logger.info(f"Loaded {plugin['module']} plugin for {plugin['name']}")
             except ModuleNotFoundError as error:
-                logger.warning(
-                    f"Could not load plugin {plugin['name']}: {error}")
+                server_logger.warning(
+                    f"Could not load plugin {plugin['module']}: {error}")
 
     return plugins, plugin_names
 
 
-def start_logging(config):
-    """
-    Creates handlers and starts logging.
+def start_logging(config, logger):
+    """Creates handlers and starts logging.
+
     Logs to both file (f_handler) and console (c_console).
 
     Args:
-        config: Primary configuration dictionary
+        config (dict): Primary configuration dictionary.
+        logger (Logger): The logger to initialize.
+    |
     """
     print("Starting logging: ", end="")
 
@@ -198,8 +218,8 @@ def start_logging(config):
     f_handler = RotatingFileHandler(
         os.path.join(config["arguments"]["record_dir"], "logs",
                      f"{logger.name}-{date_format}.log"),
-        maxBytes=100000000,
-        backupCount=5)
+        maxBytes=10000000,
+        backupCount=10)
 
     if config["arguments"]["verbose"]:
         c_handler.setLevel(logging.DEBUG)
@@ -220,14 +240,21 @@ def start_logging(config):
 
 
 def handle_exception(exc_type, exc_value, exc_traceback):
-    """Exception Handler (referenced in start_logging)"""
+    """Exception Handler (referenced in start_logging)
+    
+    |
+    """
     logger.error("Uncaught exception", exc_info=(exc_type, exc_value,
                  exc_traceback))
 
 
 class ColorFormatter(logging.Formatter):
-    """Logging Formatter to add colors and count warning / errors"""
-
+    """Extends logging.Formatter. Formatter to add colors and count warning / errors. 
+    
+    Set as the formatter for loggers when they are initalized in start_logging().
+    
+    |
+    """
     gray = "\x1b[38;21m"
     blue = "\x1b[34;21m"
     yellow = "\x1b[33;21m"
@@ -246,6 +273,15 @@ class ColorFormatter(logging.Formatter):
     }
 
     def format(self, record):
+        """Called by the logger this object is attached to to format records.
+
+        Args:
+            record (logging.LogRecord): The record to be formatted.
+
+        Returns:
+            str: The Formatter to be used by loggers.
+        |
+        """
         log_fmt = self.FORMATS.get(record.levelno)
         formatter = logging.Formatter(log_fmt)
         return formatter.format(record)

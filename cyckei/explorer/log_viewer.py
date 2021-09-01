@@ -17,6 +17,7 @@ logger = logging.getLogger('cyckei')
 
 class LogViewer(QWidget):
     """Object of log tab"""
+
     def __init__(self, config, resource):
         QWidget.__init__(self)
         self.path = path.join(config["arguments"]["record_dir"], "tests")
@@ -203,6 +204,7 @@ class GraphCanvas(FigureCanvasQTAgg):
 
 class Log(QListWidgetItem):
     """Object of log, stores title and content of file for quick access"""
+
     def __init__(self, path, name):
         super(Log, self).__init__()
         self.path = path
@@ -217,6 +219,7 @@ class Log(QListWidgetItem):
 
 class Folder(QListWidgetItem):
     """Object of log, stores title and content of file for quick access"""
+    
     def __init__(self, path, name):
         super(Folder, self).__init__()
         self.path = path

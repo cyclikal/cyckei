@@ -6,11 +6,15 @@ import json
 from tests import mock_source, mock_device
 from cyckei.server import protocols, keithley2602
 
-# Test class created for testing in protocols.
-# Each individual condition will be tested to ensure they produce the 
-# expected result, but this provides a way of ensuring a certain return value
-# for testing with upper level functions
 class ConditionTest(protocols.Condition):
+    """
+    Object for use with server testing
+
+    Test class created for testing in protocols.
+    Each individual condition will be tested to ensure they produce the 
+    expected result, but this provides a way of ensuring a certain return value
+    for testing with upper level functions
+    """
     def __init__(self, return_value: bool):
         self.return_value = return_value
 
@@ -45,11 +49,14 @@ def basic_cellrunner():
 def basic_protocolstep(basic_cellrunner):
     return protocols.ProtocolStep(10.0, basic_cellrunner)
 
-# Testing the construction of CellRunner objects
-# Testing default construction, construction with plugin arguments,
-# and construction without plugins.
 def test_make_cellrunner():
+    """
+    Testing the construction of CellRunner objects
 
+    Testing default construction, construction with plugin arguments,
+    and construction without plugins.
+    
+    """
     # Testing the default cell runner
     default_cellrunner = protocols.CellRunner()
     assert default_cellrunner.meta["cycler"] == "Keithley2602"
@@ -309,7 +316,7 @@ def test_cellrunner_pause(basic_cellrunner, basic_protocolstep):
     basic_currentstep = protocols.CurrentStep(20)
     # Normally the parent is retrieved from globals()
     # here I just hardcode it for testing purposed
-    # I've also eliminated the plugi
+    # I've also eliminated the plugin
     basic_currentstep.parent = basic_cellrunner
     basic_cellrunner.meta["plugins"] = {}
     basic_cellrunner.add_step(basic_currentstep)

@@ -13,9 +13,12 @@
 import os
 import sys
 import configparser
-sys.path.insert(0, os.path.abspath(".."))
 
+current_dir = os.path.dirname(__file__)
+sys.path.insert(0, os.path.abspath(os.path.join(current_dir, "../cyckei")))
+sys.path.insert(0, os.path.abspath(os.path.join(current_dir, "..")))
 
+autodoc_mock_imports = ["PySide2"]
 # -- Project information -----------------------------------------------------
 
 var = configparser.ConfigParser()
@@ -36,8 +39,29 @@ release = var["versioning"]["version"]
 # ones.
 extensions = [
     "sphinx.ext.autodoc",
-    "sphinx.ext.napoleon"
+    'sphinx.ext.coverage',
+    "sphinx.ext.napoleon",
+    'sphinx.ext.autosummary'
 ]
+
+# uses the autosummary extension to generate .rst pages
+autosummary_generate = True
+
+# Napoleon settings
+napoleon_google_docstring = True
+napoleon_numpy_docstring = True
+napoleon_include_init_with_doc = True
+napoleon_include_private_with_doc = False
+napoleon_include_special_with_doc = True
+napoleon_use_admonition_for_examples = False
+napoleon_use_admonition_for_notes = False
+napoleon_use_admonition_for_references = False
+napoleon_use_ivar = False
+napoleon_use_param = True
+napoleon_use_rtype = True
+napoleon_preprocess_types = False
+napoleon_type_aliases = None
+napoleon_attr_annotations = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]

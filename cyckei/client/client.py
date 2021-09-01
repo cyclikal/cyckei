@@ -1,7 +1,11 @@
-"""Main window for the cyckei client."""
+"""Main window for the cyckei client.
+
+|
+"""
 
 import logging
 import sys
+import time
 
 from PySide2.QtWidgets import QApplication, QMainWindow
 from PySide2.QtCore import QThreadPool
@@ -10,20 +14,20 @@ from . import workers
 from cyckei.functions import gui
 from .socket import Socket
 
-logger = logging.getLogger('cyckei')
+logger = logging.getLogger('cyckei_client')
 
 
 def main(config):
-    """
-    Begins execution of Cyckei.
+    """Begins execution of Cyckei.
 
     Args:
-        record_dir: Optional path to recording directory.
+        config (dict): Holds Cyckei launch settings.
+    
     Returns:
         Result of app.exec_(), Qt's main event loop.
-
+    
+    |
     """
-
     logger.info(f"Starting Cyckei Client {config['versioning']['version']}")
 
     # Create QApplication
@@ -32,7 +36,7 @@ def main(config):
     gui.style(app, "icon-client.png", gui.orange)
 
     # Create Client
-    logger.debug("Creating initial xlient window")
+    logger.debug("Creating initial client window")
     main_window = MainWindow(config)
     main_window.show()
 
@@ -40,9 +44,24 @@ def main(config):
 
 
 class MainWindow(QMainWindow):
-    """Main Window class which is and sets up itself"""
-    # Setup main windows
+    """An object for generating the main client window and holding information about it.
+
+    Attributes:
+        config (dict): Holds Cyckei launch settings.
+        channel_info (dict): Holds info on channels available on the server.
+        channels (list): A list of all of the ChannelWidgets in channelView
+        channelView (ChannelTab): Wrapper object that holds all of the ChannelWidgets.
+        status_bar (QStatusBar): Default status bar for the QWindow.
+        threadpool (QThreadPool): Threadpool of workers for communicating with the server
+    |
+    """ 
     def __init__(self, config):
+        """Inits Mainwindow with config, channel_info, channels, channelView, status_bar, and threadpool.
+        
+        Args:
+        config (dict): Holds Cyckei launch settings. Is copied to MainWindow's version of config.
+        |
+        """ 
         super(MainWindow, self).__init__()
         # Set basic window properties
         self.setWindowTitle("Cyckei Client")
@@ -60,6 +79,13 @@ class MainWindow(QMainWindow):
         # # Load scripts
         # resource["scripts"] = ScriptList(config)
 
+        # Obtain channel information
+        logger.info("Connecting to server for channel information")
+        self.channel_info = Socket(config).info_server_file()
+        if type(self.channel_info) is not dict:
+            logger.error("Could not get any plugin info from server.")
+            raise Exception("Incorrect server response")
+
         # Obtain plugin information
         logger.info("Connecting to server for plugin information")
         self.plugin_info = Socket(config).info_plugins()
@@ -72,13 +98,26 @@ class MainWindow(QMainWindow):
         self.status_bar = self.statusBar()
 
         # Create ChannelTab
-        self.channelView = ChannelTab(config, resource, self, self.plugin_info)
+        self.channelView = ChannelTab(config, resource, self, self.plugin_info, self.channel_info)
         self.channels = self.channelView.channels
         self.setCentralWidget(self.channelView)
 
-    def create_menu(self):
-        """Setup menu bar"""
+    def closeEvent(self, event):
+        """Overridden method from QMainWindow for closing the application. 
 
+        Args:
+            event (QCloseEvent): An event carrying flags for closing the Q application.
+        |
+        """
+        close_time = time.strftime("%m-%d-%y %H:%M", time.localtime(time.time()))
+        logger.info("Client window closed by user on {} ".format(close_time))
+        event.accept() # let the window close
+
+    def create_menu(self):
+        """Sets up the menu bar at the top of the Main Window.
+        
+        |
+        """
         entries = {
             "Info": [
                 ["&Server", self.ping_server, "Test Connection to Server"],
@@ -92,11 +131,19 @@ class MainWindow(QMainWindow):
                 menu.addAction(gui.action(*item, parent=self))
 
     def ping_server(self):
+        """Checks for an active server and returns a result message in a new window.
+        
+        |
+        """
         worker = workers.Ping(self.config)
         worker.signals.alert.connect(gui.message)
         self.threadpool.start(worker)
 
     def plugin_dialog(self):
+        """Compiles and formats info for installed plugins on the server for display.
+        
+        |
+        """
         if self.config["plugins"]:
             text = "<h2>Plugins:</h2>"
         else:

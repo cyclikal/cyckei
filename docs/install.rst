@@ -7,12 +7,12 @@ Host System Setup
 -----------------
 Although Cyckei is developed on and for a variety of platforms, most internal usage and testing is done on Windows 10 running the latest release of Python 3. Other platforms may require more complex configuration and additional stability testing.
 
-Cyckei relies on the PyVISA wrapper to communicate with any devices, and generally requires an additional VISA library as well as a driver for the device or adaptor which PyVISA controls. If the PyVISA python library is installed, you can use the following code to list the devices which it detects. If nothing is found, proceed with the Host System Setup.
+Cyckei relies on the PyVISA wrapper to communicate with any devices, and generally requires an additional VISA library as well as a driver for the device or adaptor which PyVISA controls. If the PyVISA python library is installed, you can use the following code in a python interpreter to list the devices which it detects. If nothing is found, proceed with the Host System Setup.
 
 ::
 
-    import visa
-    rm = visa.ResourceManager()
+    import pyvisa
+    rm = pyvisa.ResourceManager()
     print(rm.list_resources())
 
 Installing the necessary drivers can be difficult depending on your system. The National Instruments GPIB-USB-HS adaptors that we use require both a VISA library as well as a GPIB driver to function with PyVISA, Cyckei's core library. Installing each piece of software for different configurations is summarized below.

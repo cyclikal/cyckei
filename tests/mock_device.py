@@ -2,6 +2,7 @@ from tests import mock_source
 
 class MockDevice(object):
     """Represents a mock keithley Interface"""
+    
     current_ranges = [100 * 1e-9, 1e-6, 10e-6,
                       100e-6, 1e-3, 0.01,
                       0.1, 1.0, 3.0]

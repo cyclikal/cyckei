@@ -55,6 +55,7 @@ class Check(QRunnable):
 
 class Control(QRunnable):
     """Update json and send "start" function to server"""
+    
     def __init__(self, config, channel, command, script=None, temp=False):
         # TODO: Make sure read passes correct script
         super(Control, self).__init__()
