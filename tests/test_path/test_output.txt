@@ -4,8 +4,8 @@
 #    "channel": "test channel",
 #    "comment": "Testing comments",
 #    "cycler": "Test cycler",
-#    "date_start_timestamp": 1602097887.0886328,
-#    "date_start_timestr": "2020-10-07_14:11:27.088633",
+#    "date_start_timestamp": 1632148961.7280908,
+#    "date_start_timestr": "2021-09-20_09:42:41.728091",
 #    "format": [
 #        "time",
 #        "current",
@@ -16,14 +16,13 @@
 #    ],
 #    "package": "Test package",
 #    "path": "tests/test_path/test_output.txt",
-#    "plugins": {
-#        "second": "test",
-#        "testing": "plugins"
-#    },
+#    "plugins": {},
 #    "protocol": "Test protocol",
 #    "protocol_name": "Test protocol name",
 #    "requester": "Test protocol name",
 #    "start_cycle": 0
 #}
 {"cycle": 0}
-{"cycle": 1}
+  {"state": "charge_constant_current", "date_start_timestr": "2021-09-20_09:42:41.728090"}
+    0,0.01,2.800956,0
+    0,0.01,2.800956,0
