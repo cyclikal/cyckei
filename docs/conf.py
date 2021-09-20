@@ -13,9 +13,12 @@
 import os
 import sys
 import configparser
-sys.path.insert(0, os.path.abspath(".."))
 
+current_dir = os.path.dirname(__file__)
+sys.path.insert(0, os.path.abspath(os.path.join(current_dir, "../cyckei")))
+sys.path.insert(0, os.path.abspath(os.path.join(current_dir, "..")))
 
+autodoc_mock_imports = ["PySide2"]
 # -- Project information -----------------------------------------------------
 
 var = configparser.ConfigParser()

@@ -246,8 +246,10 @@ def test_cellrunner_advance_cycle(basic_cellrunner):
 
 def test_cellrunner_write_header(basic_cellrunner):
     basic_cellrunner.write_header()
+    # This will fail depending on where pytest is run from
     test_file = open("tests/test_path/test_output.txt", "r")
     test_output = test_file.read()
+    # This will fail depending on where pytest is run from
     correct_test_file = open("tests/test_path/correct_write_header_output.txt", "r")
     correct_test_output = correct_test_file.read()
     assert test_output == correct_test_output
@@ -258,8 +260,10 @@ def test_cellrunner_write_cycle_header(basic_cellrunner):
     basic_cellrunner.advance_cycle()
     basic_cellrunner.advance_cycle()
     basic_cellrunner.advance_cycle()
+    # This will fail depending on where pytest is run from
     test_file = open("tests/test_path/test_output.txt", "r")
     test_output = test_file.read()
+    # This will fail depending on where pytest is run from
     correct_test_file = open("tests/test_path/correct_write_cycle_header_output.txt", "r")
     correct_test_output = correct_test_file.read()
     assert test_output == correct_test_output
@@ -270,8 +274,10 @@ def test_cellrunner_write_step_header(basic_cellrunner, basic_protocolstep):
     basic_cellrunner.add_step(basic_protocolstep)
     basic_cellrunner.i_current_step = 0
     basic_cellrunner.write_step_header()
+    # This will fail depending on where pytest is run from
     test_file = open("tests/test_path/test_output.txt", "r")
     test_output = test_file.read()
+    # This will fail depending on where pytest is run from
     correct_test_file = open("tests/test_path/correct_write_step_header_output.txt", "r")
     correct_test_output = correct_test_file.read()
     assert test_output == correct_test_output
@@ -286,6 +292,7 @@ def test_cellrunner_read_and_write(basic_cellrunner):
 def test_cellrunner_write_data(basic_cellrunner):
     basic_cellrunner._start()
     basic_cellrunner.write_data(basic_cellrunner.start_time, 1, 1, 100, [])
+    # This will fail depending on where pytest is run from
     test_file = open("tests/test_path/test_output.txt", "r")
     lines = test_file.read().splitlines()
     second_to_last_line = lines[-1]
@@ -1212,9 +1219,13 @@ def test_condition_dc():
     assert test_condition_delta.delta == 11
     assert test_condition_delta.is_time == False
 
-# Not really sure what this function does so not sure how to test it
 def test_extrapolate_time():
-    assert True
+    data = [[10, 0.02, 4], [11, 0.02, 4.05], [12, 0.02, 4.1]]
+    assert int(protocols.extrapolate_time(data, 4.2, 2)) == 14
+    data = [[10, 0.02, 4], [10, 0.02, 4], [10, 0.02, 4]]
+    assert protocols.extrapolate_time(data, 4.2, 2) == float('inf')
+    data = [[10, 0.02, 4], [11, 0.02, 4.05], []]
+    assert protocols.extrapolate_time(data, 4.2, 2) == float('inf')
 
 def test_time_conversion():
     test_convert = protocols.time_conversion(120)
