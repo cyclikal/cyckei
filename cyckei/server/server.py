@@ -209,7 +209,7 @@ def record_data(data_path, data):
             if old_data[i]["state"] != None and data[i]["state"] == None:
                 data[i] = old_data[i]
     # The server_data file does not exist yet
-    except IOError:
+    except:
         pass
     #writes the data to the server file
     data_file = open(data_path, "w")

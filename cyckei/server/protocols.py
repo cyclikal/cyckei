@@ -1055,7 +1055,6 @@ class VoltageStep(ProtocolStep):
         """
         self.i_limit = 1.0
         if self.state_str.startswith("charge"):
-            print(self.parent.source.current_ranges[-1])
             self.i_limit = self.parent.source.current_ranges[-1]
         elif self.state_str.startswith("discharge"):
             self.i_limit = -self.parent.source.current_ranges[-1]
