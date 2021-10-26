@@ -96,7 +96,9 @@ class DeviceController(object):
         resource_manager = visa.ResourceManager()
         self.gpib_addr = gpib_addr
         self.source_meter = resource_manager.open_resource(
-            parse_gpib_address(gpib_addr))
+            parse_gpib_address(gpib_addr), timeout = 5000)
+        if self.source_meter.timeout == 5000:
+            print(True)
         # TODO do not reset? Do something else, clear buffers I think
         self.source_meter.write("abort")
         self.source_meter.write("reset()")
