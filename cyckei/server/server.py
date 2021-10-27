@@ -6,6 +6,8 @@ import traceback
 from os.path import isfile, basename
 from collections import OrderedDict
 import json
+
+from pyvisa.constants import VI_ERROR_TMO
 import zmq
 from pyvisa import VisaIOError
 
@@ -203,14 +205,18 @@ def record_data(data_path, data):
         data_file = open(data_path, "r")
         old_data = json.load(data_file)
         data_file.close()
+        try:
         #This section is to avoid overwriting the previous protocol with the nulls
         #from when a cell runner finishes and is deleted from runners
-        for i in old_data:
-            if old_data[i]["state"] != None and data[i]["state"] == None:
-                data[i] = old_data[i]
+            for i in old_data:
+                if old_data[i]["state"] != None and data[i]["state"] == None:
+                    data[i] = old_data[i]
+        except KeyError:
+            pass
     # The server_data file does not exist yet
-    except:
+    except IOError:
         pass
+    
     #writes the data to the server file
     data_file = open(data_path, "w")
     data_file.write(json.dumps(data))
