@@ -368,11 +368,14 @@ smu{ch}.source.output = smu{ch}.OUTPUT_ON"""
             (float, float): Returns the (current, voltage) as a tuple.
         |
         """
-        self.source_meter.write(
-            "current, voltage = smu{}.measure.iv()".format(self.kch)
-        )
-        current = float(self.source_meter.query("print(current)"))
-        voltage = float(self.source_meter.query("print(voltage)"))
+        try:
+            self.source_meter.write(
+                "current, voltage = smu{}.measure.iv()".format(self.kch)
+            )
+            current = float(self.source_meter.query("print(current)"))
+            voltage = float(self.source_meter.query("print(voltage)"))
+        except:
+            return None, None
 
         logger.debug(f'Current: {current}, Voltage: {voltage}')
         # The Keithley will report totally out of range numbers like 9.91e+37

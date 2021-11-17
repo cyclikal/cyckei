@@ -56,17 +56,14 @@ class ChannelTab(QWidget):
 
         self.channels = []
         for channel in config["channels"]:
-            try:
-                self.channels.append(ChannelWidget(
-                    channel["channel"],
-                    config,
-                    resource,
-                    plugin_info,
-                    channel_info[str(channel["channel"])]
-                ))
-                rows.addWidget(self.channels[-1])
-            except KeyError:
-                pass
+            self.channels.append(ChannelWidget(
+                channel["channel"],
+                config,
+                resource,
+                plugin_info,
+                channel_info[str(channel["channel"])]
+            ))
+            rows.addWidget(self.channels[-1])
         self.alternate_colors()
 
         # Set initial status and set status timer
