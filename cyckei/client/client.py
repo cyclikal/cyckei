@@ -109,9 +109,17 @@ class MainWindow(QMainWindow):
             event (QCloseEvent): An event carrying flags for closing the Q application.
         |
         """
-        close_time = time.strftime("%m-%d-%y %H:%M", time.localtime(time.time()))
-        logger.info("Client window closed by user on {} ".format(close_time))
-        event.accept() # let the window close
+        msg = {
+            "text": "Are you sure you want to close this client window?",
+            "confirm": True,
+        }
+        close = gui.message(**msg)
+        if close:
+            close_time = time.strftime("%m-%d-%y %H:%M", time.localtime(time.time()))
+            logger.info("Client window closed by user on {} ".format(close_time))
+            event.accept() # let the window close
+        else:
+            event.ignore()
 
     def create_menu(self):
         """Sets up the menu bar at the top of the Main Window.
