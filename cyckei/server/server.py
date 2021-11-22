@@ -218,10 +218,15 @@ def record_data(data_path, data):
         pass
     
     #writes the data to the server file
-    data_file = open(data_path, "w")
-    data_file.write(json.dumps(data))
-    data_file.close()
-
+    try:
+        data_file = open(data_path, "w")
+        data_file.write(json.dumps(data))
+        data_file.close()
+    except OSError as e:
+        logger.error(f"Server status could not be saved. \n" +
+                        f"Opening {data_path} failed with exception:")
+        logger.error(e)
+        
 def process_socket(config, socket, runners, sources, server_time,
                    plugins, plugin_names):
     """Checks the running socket for messages and then parses them into actions to take.
