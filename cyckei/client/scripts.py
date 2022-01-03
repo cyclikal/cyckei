@@ -2,7 +2,7 @@
 
 |
 """
-
+import os
 from PySide2.QtWidgets import QListWidgetItem
 
 
@@ -48,7 +48,7 @@ class Script(QListWidgetItem):
         self.title = title
         self.path = path
         try:
-            self.content = open(self.path + "/" + self.title, "r").read()
+            self.content = open(os.path.join(self.path, self.title), "r").read()
         except (UnicodeDecodeError, PermissionError) as error:
             self.content = "Could not read file: {}".format(error)
         self.setText(self.title)
@@ -58,7 +58,7 @@ class Script(QListWidgetItem):
         
         |
         """
-        with open(self.path + "/" + self.title, "w") as file:
+        with open(os.path.join(self.path, self.title), "w") as file:
             file.write(self.content)
         self.update_status()
 
@@ -68,7 +68,7 @@ class Script(QListWidgetItem):
         |
         """
         try:
-            file_content = open(self.path + "/" + self.title, "r").read()
+            file_content = open(os.path.join(self.path, self.title), "r").read()
         except UnicodeDecodeError as error:
             file_content = "Could not decode: {}".format(error)
 

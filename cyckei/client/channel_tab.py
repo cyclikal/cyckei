@@ -4,6 +4,7 @@ Listed in the channel tab of the main window.
 
 import json
 import logging
+import os
 from pathlib import Path
 
 from PySide2.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, \
@@ -160,7 +161,7 @@ class ChannelWidget(QWidget):
             "celltype": None,
             "requester": None,
             "plugins": {},
-            "record_folder": config["arguments"]["record_dir"] + "/tests",
+            "record_folder": os.path.join(config["arguments"]["record_dir"], "tests"),
             "mass": None,
             "protocol_name": None,
             "script_path": None,
@@ -208,7 +209,7 @@ class ChannelWidget(QWidget):
         else:
             self.script_label = gui.label("Script: "+cur_channel_info["protocol_name"], "Current script")
             # If a script was running when the client was closed this line keeps that script as the active one
-            self.set_script("",self.config["arguments"]["record_dir"] + "/scripts/"+ cur_channel_info["protocol_name"])
+            self.set_script("",os.path.join(self.config["arguments"]["record_dir"], "scripts", cur_channel_info["protocol_name"]))
         left.addWidget(self.script_label)
 
         # Status
@@ -389,7 +390,7 @@ class ChannelWidget(QWidget):
             filename = QFileDialog.getOpenFileName(
                 self,
                 "Open Script",
-                self.config["arguments"]["record_dir"] + "/scripts")
+                os.path.join(self.config["arguments"]["record_dir"], "scripts"))
             filename = filename[0]
 
         self.attributes["protocol_name"] = filename.split("/")[-1]

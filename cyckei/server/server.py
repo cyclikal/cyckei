@@ -3,7 +3,7 @@
 import logging
 import time
 import traceback
-from os.path import isfile, basename
+from os.path import isfile, basename, join as joinPaths
 from collections import OrderedDict
 import json
 
@@ -199,7 +199,7 @@ def record_data(data_path, data):
         data_path (str): The path to the area where the user wants the server_data file stored.
     |
     """
-    data_path = data_path + "\\server_data.txt"
+    data_path = joinPaths(data_path, "server_data.txt")
     #loads server_file into a dict
     try:
         data_file = open(data_path, "r")
@@ -334,7 +334,7 @@ def info_server_file(config):
         dict: The json data of channels recorded in a file, converted to a dict.
     |
     """
-    data_path = config["arguments"]["record_dir"] + "\\server_data.txt"
+    data_path = joinPaths(config["arguments"]["record_dir"], "server_data.txt")
     #loads server_file into a dict
     try:
         data_file = open(data_path, "r")
