@@ -354,6 +354,10 @@ class ChannelWidget(QWidget):
                 self.setStyleSheet(
                     f"background-color: {gui.yellow}")
                 self.state_changed = False
+            elif self.state == "no control":
+                self.setStyleSheet(
+                    f"background-color: {gui.light_blue}")
+                self.state_changed = False
             else:
                 self.setStyleSheet(
                     f"background-color: {self.default_color}")

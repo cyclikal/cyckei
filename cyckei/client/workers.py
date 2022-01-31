@@ -142,7 +142,9 @@ class UpdateStatus(QRunnable):
                 # This section parses the state for the client to change 
                 # channel background colors
                 full_state = func.not_none(info["state"])
-                if(full_state is not None):
+                if info["status"] == "no control":
+                    channel.set_state(info["status"])
+                elif full_state is not None:
                     channel.set_state(full_state.split("_")[0])
                 else:
                     channel.set_state(None)
