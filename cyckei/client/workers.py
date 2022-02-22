@@ -139,15 +139,6 @@ class UpdateStatus(QRunnable):
                     channel.unlock_settings()
                 else:
                     channel.lock_settings()
-                # This section parses the state for the client to change 
-                # channel background colors
-                full_state = func.not_none(info["state"])
-                if info["status"] == "no control":
-                    channel.set_state(info["status"])
-                elif full_state is not None:
-                    channel.set_state(full_state.split("_")[0])
-                else:
-                    channel.set_state(None)
 
             except (TypeError, KeyError) as error:
                 logger.error(f"Could not get status from server: {error}")
