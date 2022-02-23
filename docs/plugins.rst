@@ -97,10 +97,11 @@ Custom plugins are simple to create, especially if there is an established metho
 It is recommended that you follow the scheme of the [Randomizer Plugin](https://github.com/cyclikal/cyp-randomizer).
 
 The main component of any plugin is the ``PluginController`` class.
-This class is a child of Cyckei's BaseController class which provides a number of helper functions including the very important ``read()`` method.
+This class is a child of Cyckei's BaseController class which provides a number of helper functions including the essential ``read()`` method.
 The ``cyp-randomizer`` package includes in-line documentation to demonstrate the changes that need to be made to create a plugin for a new device.
-Generally most setup should be put in the ``load_sources()`` method, and any steps to capture data should be put into the ``read()`` method.
-It is good practice to create some basic documentation to accompany a custom plugin, particularly if additional drivers need to be installed.
+Generally most setup should be performed in the ``load_sources()`` method, and any steps to capture data should occur in the ``read()`` method.
+It is good practice to create some basic documentation to accompany a custom plugin, particularly if additional drivers need to be installed. Without
+sufficient documentation it is unlikely that plugins will be officially supported.
 
 Another good example is the ``mettlerscale`` plugin, which gathers data from a Mettler-Toledo balance.
 In addition to having a ``read()`` function, this plugin utilizes a ``MettlerLogger`` object to interact with each individual scale on a different port.

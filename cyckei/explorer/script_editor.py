@@ -4,7 +4,7 @@ from os.path import join
 from os import listdir
 
 from os import remove
-from os.path import exists
+from os.path import exists, join as joinPaths
 
 import webbrowser
 
@@ -140,7 +140,7 @@ class ScriptEditor(QWidget):
     def delete(self, text):
         """Deletes the active file and removes it from the UI"""
         active_file = self.file_list.currentItem()
-        path_to_delete = active_file.path + "/" + active_file.title
+        path_to_delete = joinPaths(active_file.path, active_file.title)
         # Checking path with os.path.exists()
         if exists(path_to_delete):
             verify_msg = {
@@ -308,21 +308,21 @@ class Script(QListWidgetItem):
         self.title = title
         self.path = path
         try:
-            self.content = open(self.path + "/" + self.title, "r").read()
+            self.content = open(joinPaths(self.path, self.title), "r").read()
         except (UnicodeDecodeError, PermissionError) as error:
             self.content = "Could not read file: {}".format(error)
         self.setText(self.title)
 
     def save(self):
         """Overwrites the file that shares a file path and title witht the script"""
-        with open(self.path + "/" + self.title, "w") as file:
+        with open(joinPaths(self.path, self.title), "w") as file:
             file.write(self.content)
         self.update_status()
 
     def update_status(self):
         """Changes the file title in the Script interface if the script and the file differ"""
         try:
-            file_content = open(self.path + "/" + self.title, "r").read()
+            file_content = open(joinPaths(self.path, self.title), "r").read()
         except UnicodeDecodeError as error:
             file_content = "Could not decode: {}".format(error)
 
@@ -335,7 +335,7 @@ class Script(QListWidgetItem):
 class ScriptList(object):
     def __init__(self, config):
         self.script_list = []
-        self.default_scripts(config["arguments"]["record_dir"] + "/scripts")
+        self.default_scripts(joinPaths(config["arguments"]["record_dir"], "scripts"))
 
     def default_scripts(self, path):
         """Load scripts from scripts folder in the directory specified by the config file"""

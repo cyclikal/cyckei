@@ -4,6 +4,7 @@ Listed in the channel tab of the main window.
 
 import json
 import logging
+import os
 from pathlib import Path
 
 from PySide2.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, \
@@ -56,14 +57,17 @@ class ChannelTab(QWidget):
 
         self.channels = []
         for channel in config["channels"]:
-            self.channels.append(ChannelWidget(
-                channel["channel"],
-                config,
-                resource,
-                plugin_info,
-                channel_info[str(channel["channel"])]
-            ))
-            rows.addWidget(self.channels[-1])
+            try:
+                self.channels.append(ChannelWidget(
+                    channel["channel"],
+                    config,
+                    resource,
+                    plugin_info,
+                    channel_info[str(channel["channel"])]
+                ))
+                rows.addWidget(self.channels[-1])
+            except KeyError:
+                pass
         self.alternate_colors()
 
         # Set initial status and set status timer
@@ -157,7 +161,7 @@ class ChannelWidget(QWidget):
             "celltype": None,
             "requester": None,
             "plugins": {},
-            "record_folder": config["arguments"]["record_dir"] + "/tests",
+            "record_folder": os.path.join(config["arguments"]["record_dir"], "tests"),
             "mass": None,
             "protocol_name": None,
             "script_path": None,
@@ -205,7 +209,7 @@ class ChannelWidget(QWidget):
         else:
             self.script_label = gui.label("Script: "+cur_channel_info["protocol_name"], "Current script")
             # If a script was running when the client was closed this line keeps that script as the active one
-            self.set_script("",self.config["arguments"]["record_dir"] + "/scripts/"+ cur_channel_info["protocol_name"])
+            self.set_script("",os.path.join(self.config["arguments"]["record_dir"], "scripts", cur_channel_info["protocol_name"]))
         left.addWidget(self.script_label)
 
         # Status
@@ -319,42 +323,6 @@ class ChannelWidget(QWidget):
 
         return elements
 
-    def set_state(self, state=None):
-        """Changes the state of the channel and marks if the state has been changed or not.
-        
-        Args:
-            state (str, optional): The step the channel protocol is on. Defaults to None.
-        |
-        """
-        if self.state != state:
-            self.state = state
-            self.state_changed = True
-        else:
-            self.state_changed = False
-
-    def set_bg_color(self):
-        """Checks whether the background needs to be changed and acts accordingly
-        
-        |
-        """
-        if self.state_changed:
-            if self.state == "charge":
-                self.setStyleSheet(
-                    f"background-color: {gui.green}")
-                self.state_changed = False
-            elif self.state == "discharge":
-                self.setStyleSheet(
-                    f"background-color: {gui.red}")
-                self.state_changed = False
-            elif self.state == "sleep":
-                self.setStyleSheet(
-                    f"background-color: {gui.yellow}")
-                self.state_changed = False
-            else:
-                self.setStyleSheet(
-                    f"background-color: {self.default_color}")
-                self.state_changed = False
-
     def unlock_settings(self):
         """Sets the status of each QObject in settings to be interactable
         
@@ -386,7 +354,7 @@ class ChannelWidget(QWidget):
             filename = QFileDialog.getOpenFileName(
                 self,
                 "Open Script",
-                self.config["arguments"]["record_dir"] + "/scripts")
+                os.path.join(self.config["arguments"]["record_dir"], "scripts"))
             filename = filename[0]
 
         self.attributes["protocol_name"] = filename.split("/")[-1]

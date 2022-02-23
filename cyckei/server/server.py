@@ -3,9 +3,11 @@
 import logging
 import time
 import traceback
-from os.path import isfile, basename
+from os.path import isfile, basename, join as joinPaths
 from collections import OrderedDict
 import json
+
+from pyvisa.constants import VI_ERROR_TMO
 import zmq
 from pyvisa import VisaIOError
 
@@ -197,25 +199,34 @@ def record_data(data_path, data):
         data_path (str): The path to the area where the user wants the server_data file stored.
     |
     """
-    data_path = data_path + "\\server_data.txt"
+    data_path = joinPaths(data_path, "server_data.txt")
     #loads server_file into a dict
     try:
         data_file = open(data_path, "r")
         old_data = json.load(data_file)
         data_file.close()
+        try:
         #This section is to avoid overwriting the previous protocol with the nulls
         #from when a cell runner finishes and is deleted from runners
-        for i in old_data:
-            if old_data[i]["state"] != None and data[i]["state"] == None:
-                data[i] = old_data[i]
+            for i in old_data:
+                if old_data[i]["state"] != None and data[i]["state"] == None:
+                    data[i] = old_data[i]
+        except KeyError:
+            pass
     # The server_data file does not exist yet
     except IOError:
         pass
+    
     #writes the data to the server file
-    data_file = open(data_path, "w")
-    data_file.write(json.dumps(data))
-    data_file.close()
-
+    try:
+        data_file = open(data_path, "w")
+        data_file.write(json.dumps(data))
+        data_file.close()
+    except OSError as e:
+        logger.error(f"Server status could not be saved. \n" +
+                        f"Opening {data_path} failed with exception:")
+        logger.error(e)
+        
 def process_socket(config, socket, runners, sources, server_time,
                    plugins, plugin_names):
     """Checks the running socket for messages and then parses them into actions to take.
@@ -323,7 +334,7 @@ def info_server_file(config):
         dict: The json data of channels recorded in a file, converted to a dict.
     |
     """
-    data_path = config["arguments"]["record_dir"] + "\\server_data.txt"
+    data_path = joinPaths(config["arguments"]["record_dir"], "server_data.txt")
     #loads server_file into a dict
     try:
         data_file = open(data_path, "r")

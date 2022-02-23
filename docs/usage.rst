@@ -6,9 +6,10 @@ First Launch
 
 Upon first launch, Cyckei will create a ``cyckei`` directory in the
 user's home folder to hold scripts, test results, logs, and
-configuration. Before running tests, Cyckei must be configured to
-properly interface with any devices. Each channel should be setup in the
-``config.json`` file with the correct GPIB address and any other
+configuration. Cyckei will also create a serverinfo file that facilitates 
+the clients memory of the server's activities. Before running tests, Cyckei 
+must be configured to properly interface with any devices. Each channel should 
+be setup in the ``config.json`` file with the correct GPIB address and any other
 relevant information. A default configuration is automatically
 generated, and instructions on further configuration can be found in the `Editing Configuration`_ section.
 
@@ -135,8 +136,8 @@ Results are created to document measurements from each cell throughout it's
 cycle. They also have details about the cell and the cycle that was run
 on it. Result files are saved to the ``tests`` folder specified in the
 configuration under the specified name. To view a result file from the client
-application, just open the explorer application . All result files are automatically
-loaded on startup, and new or updated ones can be viewed after clicking
+application, just open the explorer application. All result files are automatically
+loaded on startup in the explorer application, and new or updated ones can be viewed after clicking
 reload. Although you can copy the contents of a result file to an excel
 spreadsheet, result files *should not* be opened with excel or another
 application directly. Doing this can cause the file to become locked and
@@ -256,4 +257,4 @@ Here is an example configuration file for a simple setup running on port
   }
 
 
-.. _GitLab: https://gitlab.com
+.. _GitHub: https://github.com

@@ -7,6 +7,7 @@ import time
 from datetime import datetime
 import operator
 import logging
+from typing import Type
 
 logger = logging.getLogger('cyckei_server')
 
@@ -441,13 +442,20 @@ class CellRunner(object):
             voltage (float): The recorded voltage data of the controlled cell.
         |
         """
+        if current == None:
+            current = "None"
+            voltage = "None"
+            capacity = "None"
         try:
             with open(self.fpath, 'a') as file:
                 try:
                     time = timestamp - self.start_time - self.total_pause_times
                 except AttributeError:
                     time = timestamp - self.start_time
-                data_format = "    " + ",".join(["{:0.8g}"] * 4)
+                if current == "None":
+                    data_format = "    {:0.8g},{},{},{}"
+                else:
+                    data_format = "    " + ",".join(["{:0.8g}"] * 4)
                 writeout = data_format.format(time, current, voltage, capacity)
                 for value in plugin:
                     writeout += ",{:0.8g}".format(value[1])
@@ -738,7 +746,7 @@ class ProtocolStep(object):
         """
         self.last_time = time.time()
         current, voltage = self.parent.source.read_iv()
-
+       
         # Get plugin values
         plugin_values = []
         for en_plugin, plugin_source in self.parent.meta["plugins"].items():
@@ -764,20 +772,24 @@ class ProtocolStep(object):
 
         self.check_in_control(self.last_time, current, voltage)
 
+        # Current has to have been properly read to calculate capacity
         # Currents are reported only in absolute values
-        current = abs(current)
-
-        if self.data:
-            # Record the capacity in mAh
-            capacity = (self.data[-1][3]
-                        + (self.last_time - self.data[-1][0])
-                        / 3600.
-                        * self.cap_sign
-                        * (current + self.data[-1][1])
-                        / 2.0
-                        * 1000.)
+        if current == None:
+            capacity = None
         else:
-            capacity = self.starting_capacity
+            current = abs(current)
+
+            if self.data:
+                # Record the capacity in mAh
+                capacity = (self.data[-1][3]
+                            + (self.last_time - self.data[-1][0])
+                            / 3600.
+                            * self.cap_sign
+                            * (current + self.data[-1][1])
+                            / 2.0
+                            * 1000.)
+            else:
+                capacity = self.starting_capacity
 
         self.data.append([self.last_time, current,
                           voltage, capacity, plugin_values])
@@ -953,7 +965,9 @@ class CurrentStep(ProtocolStep):
             bool: True if cell is in control, False otherwise
         |
         """
-        if self.data:
+        if current == None:
+            self.in_control = False
+        elif self.data:
             self.in_control = abs((current-self.current)/self.current) < 0.95
 
         if not self.in_control:
@@ -1055,7 +1069,6 @@ class VoltageStep(ProtocolStep):
         """
         self.i_limit = 1.0
         if self.state_str.startswith("charge"):
-            print(self.parent.source.current_ranges[-1])
             self.i_limit = self.parent.source.current_ranges[-1]
         elif self.state_str.startswith("discharge"):
             self.i_limit = -self.parent.source.current_ranges[-1]
@@ -1104,7 +1117,9 @@ class VoltageStep(ProtocolStep):
             bool: True if cell is in control, False otherwise
         |
         """
-        if self.data:
+        if voltage == None:
+            self.in_control = False
+        elif self.data:
             # Give some leeway if the protocol has just been started
             tolerance = 0.1
             dt = last_time - self.data[0][0]
@@ -1273,7 +1288,10 @@ class Rest(ProtocolStep):
             bool: True if cell is in control, False otherwise.
         |
         """
-        self.in_control = abs(current) < 0.00001
+        if current == None:
+            self.in_control = False
+        else:
+            self.in_control = abs(current) < 0.00001
 
         if not self.in_control:
             self.status = STATUS.nocontrol
@@ -1441,7 +1459,10 @@ class Sleep(ProtocolStep):
             bool: True if cell is in control, False otherwise
         |
         """
-        self.in_control = abs(current) < 0.00001
+        if current == None:
+            self.in_control = False
+        else:
+            self.in_control = abs(current) < 0.00001
 
         if not self.in_control:
             self.status = STATUS.nocontrol
@@ -1547,7 +1568,7 @@ class ConditionDelta(Condition):
                     return True
                 else:
                     return False
-        except IndexError:
+        except IndexError or ValueError or TypeError:
             return False
 
 
@@ -1592,7 +1613,7 @@ class ConditionTotalDelta(Condition):
         try:
             delta = abs(step.data[-1][self.index] - step.report[0][self.index])
             return self.comparison(delta, self.delta)
-        except IndexError:
+        except IndexError or ValueError or TypeError:
             return False
 
 
@@ -1642,7 +1663,7 @@ class ConditionTotalTime(ConditionTotalDelta):
                     self.value_str,
                     step.next_time))
                 return False
-        except IndexError:
+        except IndexError or ValueError or TypeError:
             return False
 
 
@@ -1711,7 +1732,7 @@ class ConditionAbsolute(Condition):
                     return False
             else:
                 return False
-        except IndexError:
+        except IndexError or ValueError or TypeError:
             return False
 
 

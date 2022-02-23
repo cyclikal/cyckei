@@ -96,7 +96,7 @@ class DeviceController(object):
         resource_manager = visa.ResourceManager()
         self.gpib_addr = gpib_addr
         self.source_meter = resource_manager.open_resource(
-            parse_gpib_address(gpib_addr))
+            parse_gpib_address(gpib_addr), timeout = 5000)
         # TODO do not reset? Do something else, clear buffers I think
         self.source_meter.write("abort")
         self.source_meter.write("reset()")
@@ -368,11 +368,14 @@ smu{ch}.source.output = smu{ch}.OUTPUT_ON"""
             (float, float): Returns the (current, voltage) as a tuple.
         |
         """
-        self.source_meter.write(
-            "current, voltage = smu{}.measure.iv()".format(self.kch)
-        )
-        current = float(self.source_meter.query("print(current)"))
-        voltage = float(self.source_meter.query("print(voltage)"))
+        try:
+            self.source_meter.write(
+                "current, voltage = smu{}.measure.iv()".format(self.kch)
+            )
+            current = float(self.source_meter.query("print(current)"))
+            voltage = float(self.source_meter.query("print(voltage)"))
+        except:
+            return None, None
 
         logger.debug(f'Current: {current}, Voltage: {voltage}')
         # The Keithley will report totally out of range numbers like 9.91e+37
