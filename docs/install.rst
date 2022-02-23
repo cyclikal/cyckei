@@ -42,9 +42,11 @@ Installation
 
 For Users
 ^^^^^^^^^
-Cyckei is distributed on PyPi and can easily be acquired with pip. It is recommended that Cyckei is installed into a virtual environment.
+..
+  Cyckei is distributed on PyPi and can easily be acquired with pip. It is recommended that Cyckei is installed into a virtual environment.
 
-After downloading, simply run ``cyckei`` in the command prompt to launch a component. A "cyckei" folder will automatically be created in the user's home directory to store scripts, configuration, and results.
+  After downloading, simply run ``cyckei`` in the command prompt to launch a component. A "cyckei" folder will automatically be created in the user's home directory to store scripts, configuration, and results.
+A stable version of Cyckei can be found on the master branch of our public GitHub repository.
 
 Cyckei will almost certainly need to be configured to work with your instruments. See :ref:`Editing Configuration` for more details.
 
@@ -52,14 +54,14 @@ Frozen versions are only provided for major releases. For the latest (generally 
 
 For Developers
 ^^^^^^^^^^^^^^
-The Cyckei source code is available on `GitLab`_, and can be cloned locally to run the latest version.
+The Cyckei source code is available on `GitHub`_ at our public `repository`_ , and can be cloned locally to run the latest version.
 
 .. code-block:: bash
 
-  git clone https://gitlab.com/cyclikal/cyckei.git
+  git clone https://github.com/cyclikal/cyckei.git
   cd cyckei
 
-Cyckei requires Python 3 in addition to some packages which can be installed via pip. Consult ``setup.py`` for a complete list of requirements.
+Cyckei requires Python 3 in addition to some packages which can be installed via pip and the included requirements file. Consult ``setup.py`` for a complete list of requirements.
 
 Python can be run directly from source using the ``cyckei.py`` script in the root of the repository.
 
@@ -73,8 +75,9 @@ It can also be installed as a package and run by packaging it with ``setup.py``.
 
 For more information about editing and contributing to Cyckei see :doc:`contributing`.
 
-.. _GitLab: https://gitlab.com
-.. _releases: https://gitlab.com/cyclikal/cyckei/-/releases
+.. _GitHub: https://github.com
+.. _repository: https://github.com/cyclikal/cyckei
+.. _releases: https://github.com/cyclikal/cyckei/-/releases
 .. _PyVISA-py: https://pyvisa-py.readthedocs.io/
 .. _NI-VISA: https://www.ni.com/en-us/support/downloads/drivers/download.ni-visa.html
 .. _NI-488.2: https://www.ni.com/en-us/support/downloads/drivers/download.ni-488-2.html
