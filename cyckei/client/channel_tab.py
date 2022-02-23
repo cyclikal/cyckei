@@ -323,46 +323,6 @@ class ChannelWidget(QWidget):
 
         return elements
 
-    def set_state(self, state=None):
-        """Changes the state of the channel and marks if the state has been changed or not.
-        
-        Args:
-            state (str, optional): The step the channel protocol is on. Defaults to None.
-        |
-        """
-        if self.state != state:
-            self.state = state
-            self.state_changed = True
-        else:
-            self.state_changed = False
-
-    def set_bg_color(self):
-        """Checks whether the background needs to be changed and acts accordingly
-        
-        |
-        """
-        if self.state_changed:
-            if self.state == "charge":
-                self.setStyleSheet(
-                    f"background-color: {gui.green}")
-                self.state_changed = False
-            elif self.state == "discharge":
-                self.setStyleSheet(
-                    f"background-color: {gui.red}")
-                self.state_changed = False
-            elif self.state == "sleep":
-                self.setStyleSheet(
-                    f"background-color: {gui.yellow}")
-                self.state_changed = False
-            elif self.state == "no control":
-                self.setStyleSheet(
-                    f"background-color: {gui.light_blue}")
-                self.state_changed = False
-            else:
-                self.setStyleSheet(
-                    f"background-color: {self.default_color}")
-                self.state_changed = False
-
     def unlock_settings(self):
         """Sets the status of each QObject in settings to be interactable
         
