@@ -3,32 +3,59 @@ Using Cyckei
 
 First Launch
 ------------
+Cyckei can be launched for the first time from the root folder using:
+.. code-block:: bash
+  py cykei.py
 
 Upon first launch, Cyckei will create a ``cyckei`` directory in the
 user's home folder to hold scripts, test results, logs, and
-configuration. Cyckei will also create a serverinfo file that facilitates 
-the clients memory of the server's activities. Before running tests, Cyckei 
-must be configured to properly interface with any devices. Each channel should 
+configuration. Cyckei will also create a server_data text file that facilitates 
+the clients memory of the server's activities. 
+
+Before running tests, Cyckei must be configured to properly interface with any devices. Each channel should 
 be setup in the ``config.json`` file with the correct GPIB address and any other
 relevant information. A default configuration is automatically
 generated, and instructions on further configuration can be found in the `Editing Configuration`_ section.
+
+Client, Server, and Explorer
+----------------------------
+
+Cyckei comes with three sibling applications: A server, a client, and the explorer. The server and 
+client act in tandem, while the explorer is independent. Server performs the work of sending commands to cycle
+cells, while the client provides the user an interface to interact with the server. The explorer is used for 
+viewing completed tests and creating new scripts to be run by the server.
+
+The server should be launched before a client from the root directory with
+.. code-block:: bash
+  py cyckei.py server
+
+If a client does not have a server to connect to, it will be essentially non functional. After the server
+is launched the client can be launched from the root directory with
+.. code-block:: bash
+  py cyckei.py client
+
+Finally, the explorer can be launched from the root directory with
+.. code-block:: bash
+  py cyckei.py explorer
+
+On Windows a bash file can be set up as a shortcut to run each command sequence.
 
 Starting a cycle
 ----------------
 
 Various attributes of the cycle may be set in before starting a cycle:
 
-+----------------+------------+-------------------------------------------------------------------------+----------------------+
-| Option         | Type       | Description                                                             | Default              |
-+================+============+=========================================================================+======================+
-| Script         | file       | Script with desired protocol. Gives option to select any local file.    | First scanned file   |
-+----------------+------------+-------------------------------------------------------------------------+----------------------+
-| Log file       | text       | Path to output file. Placed in the specified logs folder.               | "default.pdb"        |
-+----------------+------------+-------------------------------------------------------------------------+----------------------+
-| Cell ID        | text       | Identification for cell. Recorded to output file.                       | 0                    |
-+----------------+------------+-------------------------------------------------------------------------+----------------------+
-| Comment        | text       | Requester's comment for cycle. Recorded to output file.                 | ""                   |
-+----------------+------------+-------------------------------------------------------------------------+----------------------+
++----------------+------------+-------------------------------------------------------------------------+
+| Option         | Type       | Description                                                             |
++================+============+=========================================================================+
+| Script         | file       | Script with desired protocol. Gives option to select any local file.    |
++----------------+------------+-------------------------------------------------------------------------+
+| Log file       | text       | Path to output file. Placed in the specified logs folder.               |
++----------------+------------+-------------------------------------------------------------------------+
+| Cell ID        | text       | Identification for cell. Recorded to output file.                       |
++----------------+------------+-------------------------------------------------------------------------+
+| Comment        | text       | Requester's comment for cycle. Recorded to output file.                 |
++----------------+------------+-------------------------------------------------------------------------+
 
 The available buttons can be used to Start, Stop, Pause, or Resume the
 protocol.
@@ -92,6 +119,24 @@ the scripts folder which is available whenever the client is started.
     CCCharge(0.1, reports=(("voltage", 0.01), ("time", ":5:")), ends=(("voltage", ">", 4.2), ("time", ">", "4::")))
     CCDischarge(0.1, reports=(("voltage", 0.01), ("time", ":5:")), ends=(("voltage", "<", 3.0), ("time", ">", "4::")))
     Rest(reports=(("time", "::1"),), ends=(("time", ">", "::15"),))
+
+It is important to note that variables cannot be assigned in the standard pythonic way 
+.. code-block::
+  C = 0.1
+
+However, for loops can be used to capture values as variables as shown in this next example where C
+is caputred as 0.1 and substituted in for C in the CCCharge and CCDischarge protocols.
+
+.. code-block::
+  for C in [0.1]:
+    for i in range(10):
+        AdvanceCycle()
+        CCCharge(C/20, reports=(("voltage", 0.005), ("time", ":5:")), ends=(("voltage", ">=", 4.2), ("time", ">", "30::")))
+        CCDischarge(C/20, reports=(("voltage", 0.005), ("time", ":5:")), ends=(("voltage", "<", 3), ("time", ">", "30::")))
+        for j in range(49):
+            AdvanceCycle()
+            CCCharge(C/4, reports=(("voltage", 0.005), ("time", ":1:")), ends=(("voltage", ">=", 4.2), ("time", ">", "6::")))
+            CCDischarge(C/4, reports=(("voltage", 0.005), ("time", ":1:")), ends=(("voltage", "<", 3), ("time", ">", "6::")))
 
 Scripts are automatically checked when they are sent to the server. They
 can also be manually checked by clicking the "Check" button below the editor.

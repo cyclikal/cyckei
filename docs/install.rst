@@ -65,10 +65,14 @@ Cyckei requires Python 3 in addition to some packages which can be installed via
 
 Python can be run directly from source using the ``cyckei.py`` script in the root of the repository.
 
+.. code-block:: bash
+
   python cyckei.py
 
 It can also be installed as a package and run by packaging it with ``setup.py``.
 
+.. code-block:: bash
+  
   python setup.py sdist
   pip install dist/cyckei.tar.gz
   cyckei
