@@ -32,7 +32,7 @@ setuptools.setup(
         "pyvisa",
         "PySide2",
         "matplotlib",
-        "numpy==1.21.0"
+        "numpy==1.22.0"
     ],
     extras_require={
         'dev': [
