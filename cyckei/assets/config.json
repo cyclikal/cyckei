@@ -12,55 +12,8 @@
       "gpib_address": 1,
       "keithley_channel": "b",
       "model": "2602A"
-    },
-    {
-      "channel": 3,
-      "gpib_address": 9,
-      "keithley_channel": "a",
-      "model": "2602B"
-    },
-    {
-      "channel": 4,
-      "gpib_address": 9,
-      "keithley_channel": "b",
-      "model": "2602B"
     }
   ],
   "plugins_readme": "List of plugins to connect, each declaring sources.",
-  "plugins": [
-    {
-      "name": "randomizer",
-      "enabled": true,
-      "sources": [
-        {
-          "port": null,
-          "meta": [1, 10]
-        },
-        {
-          "port": null,
-          "meta": [11, 20]
-        }
-      ]
-    },
-    {
-      "name": "mettler_ag204",
-      "enabled": true,
-      "sources": [
-        {
-          "port": "COM5",
-          "meta": null
-        }
-      ]
-    },
-    {
-      "name": "pico_tc08",
-      "enabled": true,
-      "sources": [
-        {
-          "port": 1,
-          "meta": ["K", "K", "K", "K", "K", "K", "K", "K"]
-        }
-      ]
-    }
-  ]
+  "plugins": []
 }
