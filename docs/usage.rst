@@ -4,8 +4,10 @@ Using Cyckei
 First Launch
 ------------
 Cyckei can be launched for the first time from the root folder using:
+
 .. code-block:: bash
-  py cykei.py
+
+  python cykei.py
 
 Upon first launch, Cyckei will create a ``cyckei`` directory in the
 user's home folder to hold scripts, test results, logs, and
@@ -26,17 +28,23 @@ cells, while the client provides the user an interface to interact with the serv
 viewing completed tests and creating new scripts to be run by the server.
 
 The server should be launched before a client from the root directory with
+
 .. code-block:: bash
-  py cyckei.py server
+
+  python cyckei.py server
 
 If a client does not have a server to connect to, it will be essentially non functional. After the server
 is launched the client can be launched from the root directory with
+
 .. code-block:: bash
-  py cyckei.py client
+
+  python cyckei.py client
 
 Finally, the explorer can be launched from the root directory with
+
 .. code-block:: bash
-  py cyckei.py explorer
+
+  python cyckei.py explorer
 
 On Windows a bash file can be set up as a shortcut to run each command sequence.
 
@@ -112,7 +120,7 @@ The following protocols are available:
 An example script is shown below. There is also a simple script saved in
 the scripts folder which is available whenever the client is started.
 
-::
+.. code-block:: python
 
   for i in range(3):
     AdvanceCycle()
@@ -120,23 +128,41 @@ the scripts folder which is available whenever the client is started.
     CCDischarge(0.1, reports=(("voltage", 0.01), ("time", ":5:")), ends=(("voltage", "<", 3.0), ("time", ">", "4::")))
     Rest(reports=(("time", "::1"),), ends=(("time", ">", "::15"),))
 
-It is important to note that variables cannot be assigned in the standard pythonic way 
-.. code-block::
+It is important to note that variables cannot be assigned in the standard pythonic way
+
+.. code-block:: python
+
   C = 0.1
 
 However, for loops can be used to capture values as variables as shown in this next example where C
-is caputred as 0.1 and substituted in for C in the CCCharge and CCDischarge protocols.
+is caputred as 0.1 A and substituted in for C in the CCCharge and CCDischarge protocols.
 
-.. code-block::
+The example also shows the nesting of loops. In this case a total of 500 cycles would be completed, where C/4 cycling is done with a C/20 cycle every 50 cycles.
+
+.. code-block:: python
+
   for C in [0.1]:
-    for i in range(10):
-        AdvanceCycle()
-        CCCharge(C/20, reports=(("voltage", 0.005), ("time", ":5:")), ends=(("voltage", ">=", 4.2), ("time", ">", "30::")))
-        CCDischarge(C/20, reports=(("voltage", 0.005), ("time", ":5:")), ends=(("voltage", "<", 3), ("time", ">", "30::")))
-        for j in range(49):
-            AdvanceCycle()
-            CCCharge(C/4, reports=(("voltage", 0.005), ("time", ":1:")), ends=(("voltage", ">=", 4.2), ("time", ">", "6::")))
-            CCDischarge(C/4, reports=(("voltage", 0.005), ("time", ":1:")), ends=(("voltage", "<", 3), ("time", ">", "6::")))
+      for i in range(10):
+          AdvanceCycle()
+          CCCharge(C/20, reports=(("voltage", 0.005), ("time", ":5:")), ends=(("voltage", ">=", 4.2), ("time", ">", "30::")))
+          CCDischarge(C/20, reports=(("voltage", 0.005), ("time", ":5:")), ends=(("voltage", "<", 3), ("time", ">", "30::")))
+          for j in range(49):
+              AdvanceCycle()
+              CCCharge(C/4, reports=(("voltage", 0.005), ("time", ":1:")), ends=(("voltage", ">=", 4.2), ("time", ">", "6::")))
+              CCDischarge(C/4, reports=(("voltage", 0.005), ("time", ":1:")), ends=(("voltage", "<", 3), ("time", ">", "6::")))
+
+Access to the python interpreter allows powerful options. The next example shows testing of rate capability in a convenient loop.
+Three cycles are completed at discharge rates of C/20, C/10, C/5, C/2, and C with the charge remaining C/20 in all cases.
+
+.. code-block:: python
+
+  for C in [0.1]:
+      for X in [20,10,5,2,1]:
+          for i in range(3):
+              AdvanceCycle()
+              CCCharge(C/20, reports=(("voltage", 0.005), ("time", ":5:")), ends=(("voltage", ">=", 4.2), ("time", ">", "30::")))
+              CCDischarge(C/X, reports=(("voltage", 0.005), ("time", ":5:")), ends=(("voltage", "<", 3), ("time", ">", "30::")))
+
 
 Scripts are automatically checked when they are sent to the server. They
 can also be manually checked by clicking the "Check" button below the editor.
@@ -162,8 +188,7 @@ Below is an example plugin for reference.
   from random import randint
 
   logger = logging.getLogger('cyckei')
-
-
+  
   class DataController(object):
       def __init__(self):
           self.name = "random"
