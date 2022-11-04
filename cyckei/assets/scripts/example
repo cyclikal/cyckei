@@ -1,9 +1,15 @@
-# This script demonstrates some basic Cyckei functions. For more information, view the help document at Menu > Help.
-# This script charges to 4 V at 10 mA, then discharges at 10 mA to 3 V. It then collects data for five minutes without applying voltage or current.
-# The cycle is repeated five times.
+# This script demonstrates some basic Cyckei functions.
+# This script:
+# advances the cycle counter by one
+# charges at 10 mA until the voltage reaches 4.2V or the time reaches 20h, collecting data points every time the voltage changes by 0.01V or the time delta reaches 5 min
+# rests at open circuit for 5 min collecting data every 15 seconds
+# discharges at 10 mA until the voltage reaches 3 V or the time reaches 20h, collecting data points every time the voltage changes by 0.01V or the time delta reaches 5 min
+# rests at open circuit for 5 min collecting data every 15 seconds
+# This is repeated a total of five times
 
 for i in range(10):
 	AdvanceCycle()
-	CCCharge(0.02, reports=(("voltage", 0.01), ("time", ":5:")), ends=(("voltage", ">", 4), ("time", ">", "2::")))
-	CCDischarge(0.02, reports=(("voltage", 0.01), ("time", ":5:")), ends=(("voltage", "<", 3), ("time", ">", "2::")))
-	Sleep(reports=(("time", ":1:"),), ends=(("time", ">", ":5:"),))
+	CCCharge(0.01, reports=(("voltage", 0.01), ("time", ":5:")), ends=(("voltage", ">", 4.2), ("time", ">", "20::")))
+	Rest(reports=(("time", "::15"),), ends=(("time", ">", ":5:"),))
+	CCDischarge(0.01, reports=(("voltage", 0.01), ("time", ":5:")), ends=(("voltage", "<", 3), ("time", ">", "20::")))
+	Rest(reports=(("time", "::15"),), ends=(("time", ">", ":5:"),))
