@@ -245,6 +245,7 @@ class Source(object):
         ch = self.kch
         script = f"""display.screen = display.SMUA_SMUB
 display.smu{ch}.measure.func = display.MEASURE_DCVOLTS
+smu{ch}.sense = smu{ch}.SENSE_REMOTE
 smu{ch}.source.func = smu{ch}.OUTPUT_DCAMPS
 smu{ch}.source.leveli = {current}
 smu{ch}.source.sink = smu{ch}.{'ENABLE' if current < 0.0 else 'DISABLE'}
@@ -347,6 +348,7 @@ smu{ch}.source.output = smu{ch}.OUTPUT_ON"""
         script = \
             """display.screen = display.SMUA_SMUB
             display.smu{ch}.measure.func = display.MEASURE_DCAMPS
+            smu{ch}.sense = smu{ch}.SENSE_REMOTE
             smu{ch}.source.func = smu{ch}.OUTPUT_DCVOLTS
             smu{ch}.source.autorangei = smu{ch}.AUTORANGE_ON
             smu{ch}.source.levelv = {voltage}
