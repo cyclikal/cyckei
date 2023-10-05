@@ -1040,7 +1040,7 @@ class VoltageStep(ProtocolStep):
         voltage (float): The desired voltage for the cell to reach.
     |
     """
-    def __init__(self, voltage,
+    def __init__(self, voltage, i_limit = None,
                  reports=(("current", 0.01), ("time", ":5:")),
                  ends=(("current", "<", 0.001), ("time", ">", "24::")),
                  wait_time=10.0):
@@ -1056,7 +1056,7 @@ class VoltageStep(ProtocolStep):
         |
         """
         super().__init__(wait_time=wait_time)
-        self.i_limit = None
+        self.i_limit = i_limit
         self.voltage = voltage
         self.report_conditions = process_reports(reports)
         self.end_conditions = process_ends(ends)
@@ -1140,7 +1140,7 @@ class CVCharge(VoltageStep):
     
     |
     """
-    def __init__(self, voltage,
+    def __init__(self, voltage, i_limit=None,
                  reports=(("current", 0.01), ("time", ":5:")),
                  ends=(("current", "<", 0.001), ("time", ">", "24::")),
                  wait_time=10.0):
@@ -1155,14 +1155,15 @@ class CVCharge(VoltageStep):
             wait_time (float, optional): Time between data measurements in seconds. Defaults to 10.0.
         |
         """
-        super().__init__(voltage,
+        super().__init__(voltage, i_limit==i_limit if i_limit is None else abs(i_limit),
                          reports=reports, ends=ends,
                          wait_time=wait_time)
         self.state_str = "charge_constant_voltage"
         if parent.isTest:  # noqa: F821
             pass
         else:
-            self.guess_i_limit()
+            if i_limit is None:
+                self.guess_i_limit()
 
 
 class CVDischarge(VoltageStep):
@@ -1170,7 +1171,7 @@ class CVDischarge(VoltageStep):
     
     |
     """
-    def __init__(self, voltage,
+    def __init__(self, voltage, i_limit=None,
                  reports=(("current", 0.01), ("time", ":5:")),
                  ends=(("current", "<", 0.001), ("time", ">", "24::")),
                  wait_time=10.0):
@@ -1185,14 +1186,15 @@ class CVDischarge(VoltageStep):
             wait_time (float, optional): Time between data measurements in seconds. Defaults to 10.0.
         |
         """
-        super().__init__(voltage,
+        super().__init__(voltage, i_limit=i_limit if i_limit is None else -abs(i_limit),
                          reports=reports, ends=ends,
                          wait_time=wait_time)
         self.state_str = "discharge_constant_voltage"
         if parent.isTest:  # noqa: F821
             pass
         else:
-            self.guess_i_limit()
+            if i_limit is None:
+                self.guess_i_limit()
 
 
 class AdvanceCycle(ProtocolStep):
