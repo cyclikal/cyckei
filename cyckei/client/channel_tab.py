@@ -273,7 +273,7 @@ class ChannelWidget(QWidget):
             ["Comment", "Unparsed Comment", "comment"],
         ]
         # Look up regex rules for clarification
-        file_rgx = QRegExp("^[^:\"*?/<>|\\\\]+$")
+        file_rgx = QRegExp("^[^:\"*?/<>\n|\\\\]+$")
         validator = QRegExpValidator(file_rgx)
         for line in editables:
             self.settings.append(gui.line_edit(*line, self.set))
