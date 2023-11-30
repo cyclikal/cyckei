@@ -342,7 +342,7 @@ def info_server_file(config):
         data_file.close()
     #Server file doesn't exist
     except IOError:
-        server_data = None
+        server_data = {}
     return server_data
     
     
