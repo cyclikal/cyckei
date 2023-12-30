@@ -1117,6 +1117,9 @@ class VoltageStep(ProtocolStep):
             bool: True if cell is in control, False otherwise
         |
         """
+        self.in_control = True
+        return self.in_control
+
         if voltage == None:
             self.in_control = False
         elif self.data:
