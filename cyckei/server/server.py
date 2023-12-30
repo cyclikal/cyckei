@@ -202,9 +202,12 @@ def record_data(data_path, data):
     data_path = joinPaths(data_path, "server_data.txt")
     #loads server_file into a dict
     try:
-        data_file = open(data_path, "r")
-        old_data = json.load(data_file)
-        data_file.close()
+        with open(data_path, "r") as data_file:
+            try:
+                old_data = json.load(data_file)
+            except json.decoder.JSONDecodeError:
+                old_data = {}
+
         try:
         #This section is to avoid overwriting the previous protocol with the nulls
         #from when a cell runner finishes and is deleted from runners
@@ -342,7 +345,7 @@ def info_server_file(config):
         data_file.close()
     #Server file doesn't exist
     except IOError:
-        server_data = None
+        server_data = {}
     return server_data
     
     
