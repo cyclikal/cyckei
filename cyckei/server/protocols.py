@@ -1103,8 +1103,11 @@ class VoltageStep(ProtocolStep):
 
     def check_in_control(self, last_time, current, voltage):
         """Method for checking if the desired condition is actually met.
+        With the addition of current limit on a constant voltage step this function no longer
+        works as intended and is hardcoded to always return true.
+        A different strategy must be found to check if the cell is in control.
         
-        Voltage can take a moment to stabalize when a cell is first started, so the tolerance is adjusted accordingly. Otherwise,
+        Voltage can take a moment to stabilize when a cell is first started, so the tolerance is adjusted accordingly. Otherwise,
         The currently measured voltage is compared against the voltage set in this step and if it is too different the in_control value
         is set to False. in_control is then returned. Returning False will completely kill the cell.
 
